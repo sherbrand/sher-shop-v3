@@ -1,0 +1,19 @@
+# macOS
+.DS_Store
+**/.DS_Store
+__MACOSX/
+
+# Claude Code local settings (machine-specific, may contain local paths)
+.claude/settings.local.json
+
+# Node / build (in case code lands here later)
+node_modules/
+dist/
+.next/
+out/
+build/
+
+# Env / secrets
+.env
+.env.*
+*.local
