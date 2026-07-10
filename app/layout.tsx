@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import "@/app/globals.css";
+import { Header } from "@/components/Header";
+import { Footer } from "@/components/Footer";
 
 // Site-wide defaults. Page-level metadata (products, collections) will override
 // these via generateMetadata later.
@@ -19,7 +21,12 @@ export default function RootLayout({
 }): React.ReactElement {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        {/* Global chrome (B-003): sticky/transparent header + slide-in menu, and footer. */}
+        <Header />
+        {children}
+        <Footer />
+      </body>
     </html>
   );
 }
