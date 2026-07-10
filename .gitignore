@@ -6,14 +6,18 @@ __MACOSX/
 # Claude Code local settings (machine-specific, may contain local paths)
 .claude/settings.local.json
 
-# Node / build (in case code lands here later)
+# Node / build
 node_modules/
 dist/
 .next/
 out/
 build/
+next-env.d.ts
+*.tsbuildinfo
 
-# Env / secrets
+# Env / secrets  (real secrets live in .env.local — NEVER committed)
 .env
 .env.*
+!.env.example
 *.local
+.vercel
