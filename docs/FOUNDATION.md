@@ -286,13 +286,20 @@ here is 🧑 **human** — only a person can log into the admin and generate sec
 ## 9. Status / Resume block  ← update every session
 
 **Project:** SHER Shop V3
-**Phase:** 1 — Foundation
-**State:** ✅ **Complete** — merged to `main` (PR #1).
+**State:** 🟢 **Live** — https://sher-shop-v3.vercel.app (production; Vercel git-integration, auto-deploys on every merge to `main`). HEAD = design rebuild (PR #3).
 
-- **Last done:** B-001 scaffold + B-002 `shopifyFetch()` + B-003 global chrome; clean build;
-  merged to `main`; branch deleted.
-- **Blocked on:** design deliverables (DESIGN.md · logo asset · palette/tokens) before the
-  final visual pass on the global chrome; Storefront tokens to be placed in `.env.local`
-  when live data is wired.
-- **Next pickup:** apply the design pass to the chrome, then start **Phase 2 — Browse**
-  (product/collection queries → catalog grid → product page) via the API wrapper.
+- **Last done (2026-07-13):**
+  - Foundation B-001/002/003 merged (PR #1); this runbook merged (PR #2).
+  - **Design rebuild** from the design source-of-truth zip (PR #3, merged): applied `Legacy/DESIGN.md`
+    (5-colour palette `#A99D94`/`#665D55`/`#FBF9F9`, Cormorant Infant · Cardo · Manrope via next/font,
+    5px radius, motion tokens), real logos (white lockup over hero / dark emblem when solid), Home
+    rebuilt to `s-001_home.md`. `next build` clean.
+  - **Vercel** connected under team **SHER** (`sherbrand`), project `sher-shop-v3`, git-integrated.
+- **Not done / blocked:**
+  - `SHOPIFY_STOREFRONT_ACCESS_TOKEN` not set anywhere (no `.env.local`) → needed before live product data.
+  - Category/product tiles are brand-tone **placeholders** — real product/hero photography still pending
+    (the zip shipped only mood boards, not clean photos).
+  - Pages `s-002..s-014` (shop, categories, about, contact, legal) not built yet — routes currently 404.
+  - Open: whether to move `brand-xxx.md` / `style-xxx.md` into `Legacy/` (asked Stamp, unanswered).
+- **Next pickup:** build the remaining page routes `s-002..s-014` (auto-deploy on merge); wire Shopify
+  product data (needs token) for shop + PDP; optionally attach custom domain `sherbrand.co`.
