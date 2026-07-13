@@ -1,15 +1,15 @@
 ---
 name: fe
-description: Wire each section of a page to a reusable component (C-xxx), creating new ones when needed, and record the component map and assets in the PRD's screen entry. Needs the page's Content MD already written.
+description: Wire each section of a page to a reusable component (C-xxx), creating new ones when needed, and record the component map and image slots in the PRD screen entry's Components & Assets line. Needs the page's Content MD already written.
 ---
 
 # FE
 
-Wire each section of a page to a reusable component (C-xxx) — reusing what exists, creating what doesn't — and record the result in the PRD.
+Wire each section of a page to a reusable component (C-xxx): reuse what exists, create what doesn't, and record the result in the PRD.
 
 ## Running it
 
-If you can read CLAUDE.md, you're in the repo: work from its paths — read the inputs, save new outputs, and apply this skill's changes to existing files in place. If you can't, you're in a chat: ask for the inputs this skill lists, plus the project's `CLAUDE.md` (repo rules) the repo reads by default, then hand back everything that changed — new files to save, and edits to existing files for the user to apply — and say which file each change belongs in.
+Check CLAUDE.md first. If there's no CLAUDE.md at all, hand your work back in chat: read the inputs that are here, ask for the ones that aren't, then give back every new file and edit — and say which file each belongs in. Otherwise follow CLAUDE.md for where outputs go — read the inputs, save new outputs where it says, and change existing files in place.
 
 ## Inputs
 
@@ -25,37 +25,36 @@ Work straight through, pausing only to get a new component signed off (Create).
 
 ### 1. Match
 
-Match each section in the Content MD by shape, not copy. Read the shape from its notation (per outline-notation.md) — the bracketed label and its slots, like `[2-Col: Image · (Title / Paragraph)]` — and reuse the existing C-xxx with the same shape. Different copy under the same shape shares one component. Variations within a shape — a mirror (image left vs right), column order, or an optional extra like a button — are props or optional slots of that component, so its C-xxx stays the same. A new C-xxx is only for a genuinely different shape, like two columns vs three. Reuse before creating.
+Match each section in the Content MD by shape, not copy. Read the shape from its notation (per outline-notation.md) — its operators, brackets, and slots, like `Image | (H2 / Paragraph)`. Reuse the existing C-xxx with the same shape. Different copy under the same shape shares one component. Variations within a shape, like a mirror (image left vs right), column order, or an optional extra like a button, are props or optional slots of that component, so its C-xxx stays the same. A new C-xxx is only for a genuinely different shape, like two columns vs three. Reuse before creating.
 
 ### 2. Create
 
-When no existing component has the section's shape, build a new one; when a component has the shape but lacks a slot the section needs — a button, say — add that slot as optional, so pages already using it are unaffected. Either way, work from DESIGN.md and the page's mockup. A new component takes the next unused C-xxx — IDs are tracked in the PRD's What's on it (path in CLAUDE.md), append-only, never renumber — with a PascalCase file named for its shape; an extended component keeps its C-xxx. Generate a preview HTML for the user to confirm or revise; finalise only once they confirm.
+When no existing component has the section's shape, build a new one; when a component has the shape but lacks a slot the section needs (a button, say), add that slot as optional, so pages already using it are unaffected. Either way, work from DESIGN.md and the page's mockup. A new component takes a fresh C-xxx named for its shape (`C-TwoColFeature`), never numbered and never reused. Its file is PascalCase, named to match. Existing names live in the PRD's Components & Assets lines and its `### C-xxx` entries. An extended component keeps its C-xxx. Generate a preview HTML for the user to confirm or revise; finalise only once they confirm.
 
 ### 3. Update
 
-In the screen entry, write each section's C-xxx into **What's on it** and each image slot into **Required assets** (target `TBC` until the file exists). Touch only those two bullets — leave the entry's others untouched. Format per Output.
+In the screen entry, write each section into **Components & Assets**: its section ID → the C-xxx you matched or built, plus `; N images` when the section declares generated image slots. Assets are named by the convention in CLAUDE.md and resolved from the assets folder, so record the count, not paths. Touch only that bullet; leave the entry's others, including the PO's **What's on it** pointer, untouched. Format per Output.
 
 ## Output
 
-Two bullets in the screen entry. **What's on it** maps each section to a component — a line per section: its section ID, a short label, and the C-xxx. **Required assets** lists each image slot the section's notation declares — a line per slot, target `TBC` until the file exists. Other sub-bullets in the entry are left as they are.
+One bullet in the screen entry: **Components & Assets**, a line per section — its section ID → the C-xxx, plus `; N images` when the section declares generated image slots. A section with none is just section ID → C-xxx. Assets are named by the convention in CLAUDE.md and resolved from the assets folder, so record the count, never a path. Leave the entry's other bullets, including **What's on it**, as they are.
 
 ```
-#### S-010 — About Us
-- **What's on it:** (content → `content/about-us.md`)
-  - S-010.1 Hero — "Our SHER Brand" → C-010 Hero Banner
-  - S-010.2 "Sensuality That Elevates" → C-011 Two-Column Feature
-  - S-010.3 "For the Woman who Notices" → C-011 Two-Column Feature
-  - S-010.4 "The Woman Behind It" → C-011 Two-Column Feature
-- **Required assets:**
-  - Image in S-010.1 → TBC
-  - Image in S-010.2 → TBC
-  - Image in S-010.3 → TBC
-  - Image in S-010.4 → TBC
+### S-010 — About Us
+- **What's on it:**
+  - Refer to /docs/content/s-010_about-us.md
+- **Feature:** None
+- **Behavior:**
+  - Static content; no interactive behavior.
+- **Components & Assets:**
+  - S-010.1 → C-PageIntro
+  - S-010.2 → C-TwoColFeature; 1 image
+  - S-010.3 → C-TwoColFeature; 1 image
 ```
 
 ## Scope
 
-Wire and build components, nothing else. Don't touch copy (the content file), the page's structure (the plan), or its behaviour (the rest of the PRD).
+Wire and build components, nothing else. Don't touch copy (the content file), the page's structure (the plan), or its behavior (the rest of the PRD).
 
 ## Stop conditions
 

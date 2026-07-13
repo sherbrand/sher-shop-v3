@@ -16,6 +16,7 @@ Write with specificity and conviction. Every sentence earns its place by saying 
 - **No generic advice.** "Find what works best for your needs and preferences" says nothing. Replace with a specific recommendation or cut entirely.
 - **Commit to claims.** If the research supports a position, state it directly. Don't soften with "may," "could," "might," or "it's possible that" unless genuine uncertainty exists.
 - **Prefer short, direct sentences over long, qualified ones.** If a sentence has more than one comma-separated qualifier, it's probably hedging.
+- **Use em-dashes sparingly, and never two in the same phrase.** They read as AI-written and push up the reading level. Prefer a period or colon.
 - **No slow-start preambles.** The opening paragraph hooks immediately with a specific observation or direct answer — not a setup paragraph about what the article will cover.
 
 ### 1.2 Banned phrases
@@ -84,6 +85,12 @@ CTA references the specific product, collection, or action relevant to this piec
 - Replace vague claims with specific numbers. "Many users" → "over 60% of users".
 - Every claim is backed by evidence or clearly marked as brand opinion.
 - For Blog posts, cite sources by name (full entity name on first mention — "Shopify Inc." not "Shopify"). For Information pages, state brand and product facts first-hand.
+
+### 1.9 Spelling by locale
+
+- Copy uses the spelling of its page locale.
+- Default and US pages use US English.
+- Locale pages use that market's English. For example, `/en-au/` and `/en-sg/` use British spelling.
 
 ---
 

@@ -6,14 +6,13 @@ import { useEffect, useState } from "react";
 import { Menu, ShoppingBag } from "lucide-react";
 import { MenuDrawer } from "@/components/MenuDrawer";
 
-// Announcement text is hard-coded per PRD C-Transparent / C-Sticky.
-// TODO: move to D-006 site config when that lands.
-const ANNOUNCEMENT = "Delivers Worldwide. Free Global Shipping over $180";
+// Announcement bar copy (DESIGN: announcement-bar, label-sm on background-alt).
+const ANNOUNCEMENT = "Delivers Worldwide · Free Global Shipping over $180";
 
-// Global header. Two looks from the PRD:
-//  - C-Transparent: Home only, sits over the hero, white, non-solid.
-//  - C-Sticky: solid + sticky everywhere; on Home it takes over after 60vh of scroll.
-// NOTE: colors/logo are placeholders until DESIGN.md defines tokens + the real logo asset.
+// Global header. Two looks from the PRD + DESIGN.md:
+//  - Transparent: Home only, over the hero — white logo lockup, white chrome.
+//  - Solid/sticky: everywhere else; on Home it takes over after 60vh of scroll —
+//    white background, the dark circular emblem.
 export function Header(): React.ReactElement {
   const pathname = usePathname();
   const isHome = pathname === "/";
@@ -21,12 +20,11 @@ export function Header(): React.ReactElement {
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    // On Home the solid header appears after 60vh; elsewhere it is always solid.
     if (!isHome) return;
     const onScroll = (): void => {
       setScrolledPastHero(window.scrollY > window.innerHeight * 0.6);
     };
-    onScroll(); // set initial state
+    onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, [isHome]);
@@ -38,54 +36,51 @@ export function Header(): React.ReactElement {
     <>
       <header
         className={
-          "fixed inset-x-0 top-0 z-40 transition-colors duration-300 " +
+          "fixed inset-x-0 top-0 z-40 transition-colors duration-500 " +
           (transparent
-            ? "bg-transparent text-white"
-            : "bg-white text-neutral-900 shadow-[0_1px_0_rgba(0,0,0,0.06)]")
+            ? "text-white"
+            : "bg-background text-ink shadow-[0_1px_0_rgba(0,0,0,0.05)]")
         }
       >
-        {/* Announcement bar */}
+        {/* Announcement bar — background-alt fill + label-sm when solid. */}
         <div
           className={
-            "text-center text-[11px] uppercase tracking-[0.18em] py-2 " +
-            (transparent ? "text-white/90" : "bg-neutral-900 text-white")
+            "eyebrow text-center py-2.5 " +
+            (transparent ? "text-white/80" : "bg-surface text-ink")
           }
         >
           {ANNOUNCEMENT}
         </div>
 
-        {/* Header row */}
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-5 py-4">
+        {/* Header row — display container width. */}
+        <div className="mx-auto flex max-w-[1600px] items-center justify-between px-4 sm:px-6 py-3">
           <button
             type="button"
             aria-label="Open menu"
             onClick={() => setMenuOpen(true)}
-            className="p-1"
+            className="-ml-1 p-1 transition-opacity hover:opacity-70"
           >
-            <Menu className="h-6 w-6" strokeWidth={1.5} />
+            <Menu className="h-5 w-5" strokeWidth={1.5} />
           </button>
 
-          {/* Logo → home. Placeholder wordmark; swap for the real logo asset later.
-              PRD: oversized white square logo on transparent, dark symbol logo on sticky. */}
-          <Link
-            href="/"
-            aria-label="SHER home"
-            className={
-              "font-semibold tracking-[0.35em] " +
-              (transparent ? "text-3xl" : "text-xl")
-            }
-          >
-            SHER
+          {/* Logo → home. White emblem+wordmark on transparent, dark emblem on solid. */}
+          <Link href="/" aria-label="SHER home" className="flex items-center">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={transparent ? "/logo-square-white.png" : "/logo-icon-dark.png"}
+              alt="SHER"
+              className={transparent ? "h-14 w-auto" : "h-9 w-auto"}
+            />
           </Link>
 
           <button
             type="button"
             aria-label="Open cart"
-            // C-Cart drawer is Phase 3 / B-006 — icon is wired, drawer comes later.
-            onClick={() => console.log("[cart] open — C-Cart drawer lands in Phase 3")}
-            className="p-1"
+            // C-Cart drawer lands in a later phase — icon wired now.
+            onClick={() => console.log("[cart] open — C-Cart drawer lands later")}
+            className="-mr-1 p-1 transition-opacity hover:opacity-70"
           >
-            <ShoppingBag className="h-6 w-6" strokeWidth={1.5} />
+            <ShoppingBag className="h-5 w-5" strokeWidth={1.5} />
           </button>
         </div>
       </header>

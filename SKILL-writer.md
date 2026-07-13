@@ -1,15 +1,15 @@
 ---
 name: writer
-description: Write page content from the Planning TSV. Takes each page's outline notation, carries the layout across unchanged, writes the copy into it, and tags each section with a screen-qualified Section ID. Outputs one Content MD file per page.
+description: Write page content from the Planning TSV. Takes each page's outline notation, keeps its layout structure, writes the copy and alt text for images into bullets under each section, and tags each with a screen-qualified Section ID. Outputs one Content MD file per page.
 ---
 
 # Writer
 
-Turn a page's outline in the Planning TSV into a Content MD file: the layout notation carried across unchanged, with the copy written into it.
+Turn a page's outline in the Planning TSV into a Content MD file: the layout kept as notation, with the copy written into bullets beneath each section.
 
 ## Running it
 
-If you can read CLAUDE.md, you're in the repo: work from its paths — read the inputs, save new outputs, and apply this skill's changes to existing files in place. If you can't, you're in a chat: ask for the inputs this skill lists, plus the project's `CLAUDE.md` (repo rules) the repo reads by default, then hand back everything that changed — new files to save, and edits to existing files for the user to apply — and say which file each change belongs in.
+Check CLAUDE.md first. If there's no CLAUDE.md at all, hand your work back in chat: read the inputs that are here, ask for the ones that aren't, then give back every new file and edit — and say which file each belongs in. Otherwise follow CLAUDE.md for where outputs go — read the inputs, save new outputs where it says, and change existing files in place.
 
 ## Inputs
 
@@ -25,21 +25,25 @@ Work straight through; the page is the only thing to ask about.
 
 ### 1. Write
 
-Read the assigned rows from the Planning TSV. Carry the outline notation across unchanged and write the copy into its text slots (per outline-notation.md). Never translate the notation into sentences, reorder it, or alter the layout markers.
+Read the assigned rows from the Planning TSV. Keep the layout structure (operators, brackets, targets, and elements) but strip each text slot to a bare role marker and write its copy into a bullet beneath the line (per outline-notation.md and Output).
 
-- Give each top-level section a screen-qualified Section ID at the front of its notation line — `<screen_id>.<n>`, numbered top to bottom from 1 (see Output). Items nested in a container — the `>` lines under a 3-Col, Accordion, and the like — stay under their parent and take no ID.
-- A section with no text slots gets its notation line and nothing beneath.
-- Use `P:` text verbatim — it's copy already specified.
-- Keep the H1/H2/H3 wording the outline gives; where a heading is only a placeholder, write it.
-- A `Title` slot takes its governing heading — the nearest `H1`/`H2`/`H3` above it.
-- An `Eyebrow` slot takes the paired `P:` text (`P: … → H2: …`).
-- Under an `Accordion`, write an answer beneath each `H3` question.
-- Write fresh copy for a slot only when the outline gives it nothing to echo.
+**General & Sectioning.**
+- Give each top-level section a screen-qualified Section ID at the front of its notation line — `<screen_id>.<n>:`, numbered top to bottom from 1 (see Output). A container's items (an Accordion's questions, a column group's cards) stay inline on the section's line and take no ID of their own; `.n`/`#n` keys them instead.
+- A section with nothing to write, only bare structure like an element fed whole from a source (a Hero Carousel, a Product Grid), gets its notation line and nothing beneath.
+- A data-fed slot is one whose content comes from a source — flagged `<D-xxx: …>`/`<F-xxx: …>`, or plainly a data value. A computed or system value (a price, a cart total, a quantity) and an element fed whole (a Hero Carousel, a Product Grid) get no bullet.
+
+**Text slots.**
+- Move each slot's copy to a bullet; the slot in the line becomes its bare role (`H2`, `Subtitle`). Keep `< >` in the line — it marks a target, a data-fed source (`<D-xxx: …>` / `<F-xxx: …>`), or an element build-note.
+- If it's data-fed *copy* (a product name, a banner headline), give it a placeholder bullet: realistic sample text, so the page still renders in design; the source stays the truth.
+- When a text role repeats on the same line, key each `.n` in the line and on its bullet, left to right (`H3.1`, `H3.2`). A text role that appears once takes none.
+- Write to a `< >` brief. It says what to write, not the words themselves. Write it fresh; don't reword the brief. Only quoted literal copy and headings are echoed as-is.
 - Write in the brand voice and follow the writing rules; the row's `type` selects which apply.
 - Treat the row's `seo_keyword` as the target keyword and place it per the writing rules; with no `seo_keyword`, write with no keyword target.
-- If the row's `seo_role` is Cluster, link to its `seo_parent`.
 
-There is no separate review pass.
+**Asset slots.**
+- Give each asset slot (`Image`, `Video`) an alt bullet: what it should show, written for SEO and GEO as per the writing rules. List these after the section's copy bullets.
+- A data-fed image (a product photo, or a config-fed banner or tile) gets no bullet; its source owns the alt.
+- Key each asset slot that gets a bullet `#n` in the line and on its bullet (`#1`, `#2`), from 1 across the section's assets, images and videos together, always.
 
 ### 2. Save
 
@@ -47,37 +51,67 @@ Save the Content MD file to the content directory (path in CLAUDE.md). Name it `
 
 ## Output
 
-A Markdown file (`.md`): frontmatter, then each top-level section's notation line — prefixed with its Section ID and wrapped in backticks — with the copy written into its slots as bullets beneath. Items nested in a container (the `>` lines) keep their notation line but take no ID.
+A Markdown file (`.md`): frontmatter, then each top-level section's notation line, prefixed with its Section ID, wrapped in backticks, its text slots reduced to bare role markers (`.n` when a text role repeats; asset slots keyed `#n`), with each slot's copy written as a bullet beneath. A container's items stay inline on the line; their `.n`/`#n` keys them to their bullets.
 
 ```
 ---
-title: [the page's H1 if it has one, else an SEO title 50–60 chars]
-description: [meta description, 150–160 chars]
+title: "[the page's H1 if it has one, else an SEO title 50–60 chars]"
+description: "[meta description, 150–160 chars]"
 url: [page url from the plan]
 ---
 
-`S-010.1 | P: About Us → H1: How our brand all began [Hero Image: Eyebrow / Title]`
-- Eyebrow: About Us
-- Title: How our brand all began
+`S-007.1: H1 / Subtitle / Btn <to /shop/corset-tops>`
+- H1: Corset Tops: Built by Hand for the Modern Woman
+- Subtitle: <copy>
+- Btn: <copy>
 
-`S-010.2 | H2: What We Do [2-Col: Image · (Title / Paragraph)]`
-- Title: What We Do
+`S-007.2: (Eyebrow / H2 / Paragraph) | Image#1`
+- Eyebrow: What is a Corset Top?
+- H2: Structured Boning That Commands the Silhouette
 - Paragraph: <copy>
+- Image#1: <what it should show>
 
-`S-010.3 | H2: How It Started [2-Col: (Title / Paragraph) · Image]`
-- Title: How It Started
+`S-007.3: Image#1 | (Eyebrow / H2 / Paragraph)`
+- Eyebrow: How is SHER different?
+- H2: Each Bone Set by Hand, Not by Machine
 - Paragraph: <copy>
+- Image#1: <what it should show>
 
-`S-010.4 | H2: What We Believe [Title / 3-Col]`
-- Title: What We Believe
+`S-007.4: Eyebrow / H2 / (Image#1 [H3.1 / Paragraph.1] | Image#2 [H3.2 / Paragraph.2])`
+- Eyebrow: Pick your Corset Closure Type
+- H2: Each Corset Closure Designed for a Different Priority
+- H3.1: Lace Closure: Adjustable Fit
+- Paragraph.1: <copy>
+- H3.2: Zip Closure: Effortless to Wear
+- Paragraph.2: <copy>
+- Image#1: <what it should show>
+- Image#2: <what it should show>
 
-`> H3: Craft [Image / Title / Paragraph]`
-- Title: Craft
+`S-007.5: Image#1 | (Eyebrow / H2 / Paragraph)`
+- Eyebrow: Quality from Inside Out
+- H2: Built with High Quality Fabrics, Materials and Craft
 - Paragraph: <copy>
+- Image#1: <what it should show>
 
-`> H3: Fit [Image / Title / Paragraph]`
-- Title: Fit
-- Paragraph: <copy>
+`S-007.6: H2 | Accordion [H3.1 / Paragraph.1 / H3.2 / Paragraph.2 / H3.3 / Paragraph.3]`
+- H2: Frequently Asked Questions
+- H3.1: How do I measure for a corset top?
+- Paragraph.1: <copy>
+- H3.2: How should a corset top fit?
+- Paragraph.2: <copy>
+- H3.3: What if I am between sizes?
+- Paragraph.3: <copy>
+```
+
+Data-fed slots and no-copy sections (from S-001 Home):
+
+```
+`S-001.1: Hero Carousel <F-xxx: featured banners>`
+
+`S-001.4: H2 / (Image Link <to product> [Title.1 <D-xxx: product name>] | Image Link <to product> [Title.2 <D-xxx: product name>])`
+- H2: Featured Products
+- Title.1: Silk Lace Corset Top
+- Title.2: Satin Trouser Set
 ```
 
 ## Stop conditions

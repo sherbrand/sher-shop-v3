@@ -2,403 +2,427 @@
 
 ---
 
-# SHER — Web Store Requirements Document
+# SHER — SHER Web Store Requirements Document
 
-**Platform:** Next.js 15 (App Router) with Shopify headless — Storefront API (GraphQL) for data, Shopify hosted checkout and customer accounts, TypeScript, Tailwind CSS, deployed on Vercel.
+**Platform:** Next.js 15 (App Router), TypeScript, Tailwind CSS, Shopify headless (Storefront API, hosted checkout, hosted customer accounts), deployed on Vercel.
 **Version:** v3
 
 ## 1. Main Goals
-1. Ship a full shoppable storefront: a shopper can browse, open a product, add to cart, and check out.
-2. Give each product page the detail a shopper needs to buy — images, price, colour and size choices, size chart, and shipping facts.
-3. Stand up the SEO pillar and category pages so the store can rank for corset tops and matching sets.
-4. Publish the required info and policy pages, plus the global header, menu, cart, and footer that tie the site together.
+1. Launch a store people can shop: browse the range, open a product, pick a size and color, add to cart, and check out through Shopify.
+2. Win the category head terms with information-first pillar pages for corset tops, matching sets, and cocktail dresses.
+3. Ship the full site chrome, the commerce browse and product pages, and the required content and policy pages.
 
 ## 2. User Stories
 | ID | Story |
 |---|---|
-| US-001 | As a shopper, I want a home page that shows featured products and categories, so I can start browsing right away. |
-| US-002 | As a shopper, I want to see all products in one place and change how many fit per row, so I can scan them my way. |
-| US-003 | As a shopper, I want to filter a category by type, so I only see the pieces I care about. |
-| US-004 | As a shopper, I want a product page with photos, price, and details, so I can decide if it is right for me. |
-| US-005 | As a shopper, I want to pick a colour, size, and quantity and add the item to my cart, so I can buy what I chose. |
-| US-006 | As a shopper, I want a Buy Now button, so I can go straight to checkout for one item. |
-| US-007 | As a shopper, I want to see a size chart, so I can pick the right size before I buy. |
-| US-008 | As a shopper, I want to read shipping and returns facts on the product page, so I know what to expect before I buy. |
-| US-009 | As a shopper, I want to review my cart, change quantities, or remove items, then check out, so I control my order. |
-| US-010 | As a shopper, I want a clear message when my cart is empty, so I know what to do next. |
-| US-011 | As a shopper, I want a way to ask for an item that is sold out, so I can still get it. |
+| US-001 | As a customer, I want to land on a home page that shows featured pieces and categories so I can start where I like. |
+| US-002 | As a customer, I want to browse every product in one place so I can see the whole range. |
+| US-003 | As a customer, I want to browse one category on its own so I can focus on one type. |
+| US-004 | As a customer, I want to filter a category by its key attribute so I can narrow to what fits me. |
+| US-005 | As a customer, I want to see a product's photos, price, colors, and sizes so I can decide to buy. |
+| US-006 | As a customer, I want to add a product to my cart so I can keep shopping before I pay. |
+| US-007 | As a customer, I want to review my cart and change amounts or remove items so I can confirm my order. |
+| US-008 | As a customer, I want to check out securely so I can pay for my order. |
 
 ## 3. Features
-### F-001 — Home Hero & Featured Content
-- **What it does:** Fills the Home page from a content source — the sliding hero carousel, the two category cards, and the featured product slots, each with its image, overlay text, and link.
-- **When it appears:** On load of Home (`/`), S-001.
-- **If something goes wrong:** If the content source fails to load, show the static page copy and category cards without the carousel; never a blank hero.
+### F-001 — Product Grid
+- **What it does:** Shows a grid of products pulled from a Shopify collection. Reused on the Shop page, the three category pages, the Home featured block, and the "You May Also Like" block.
+- **When it appears:** On any screen that lists products (S-001, S-002, S-003, S-004, S-005, S-006).
+- **If something goes wrong:** If products fail to load, show a skeleton, then an error or retry state, not a blank grid. An empty collection shows a short "nothing here yet" note.
 
-### F-002 — Product Catalogue & Grid
-- **What it does:** Reads products from a collection and lays them out in a responsive grid (2 columns mobile, 3 desktop). Each card links to its product page. Used on Shop, both category pages, and the "You May Also Like" strip.
-- **When it appears:** On Shop (`/shop`), Shop Corset Tops (`/shop/corset-tops`), Shop Matching Sets (`/shop/matching-sets`), and inside Product Detail (S-005).
-- **If something goes wrong:** If a collection is empty or fails, show a short "No products to show" message in the grid area.
+### F-002 — Attribute Filter
+- **What it does:** Filters the category grid in place by one attribute: closure type (corset tops), set type (matching sets), or length (cocktail dresses). No page reload.
+- **When it appears:** On the three category pages (S-003, S-004, S-005), above the grid, as Button Pills.
+- **If something goes wrong:** If a filter matches no products, show a short empty message and keep the pills so the customer can clear it.
 
 ### F-003 — Grid View Toggle
-- **What it does:** Lets the shopper switch grid density — 1 or 2 columns on mobile, 2 or 3 on desktop.
-- **When it appears:** Above the grid on Shop and both category pages.
-- **If something goes wrong:** If no choice is saved, fall back to the default (2 columns mobile, 3 desktop).
+- **What it does:** Lets the customer switch grid columns: 1 or 2 on mobile, 2 or 3 on desktop.
+- **When it appears:** On the Shop and category pages (S-002, S-003, S-004, S-005), next to the grid.
+- **If something goes wrong:** If no choice is set, fall back to the default (2 on mobile, 3 on desktop).
 
-### F-004 — Attribute Filter
-- **What it does:** Filters the grid in place by one attribute — closure type on corset tops, set type on matching sets — using the pills at the top. No page reload.
-- **When it appears:** On Shop Corset Tops and Shop Matching Sets.
-- **If something goes wrong:** If a filter returns nothing, keep the pills visible and show "No products match" so the shopper can clear it.
+### F-004 — Add to Cart
+- **What it does:** Adds the chosen variant to the Shopify cart and opens the cart drawer. Creates the cart on the first add and stores the cart ID in a cookie.
+- **When it appears:** On the Product Detail page (S-006), from the Add to Cart button.
+- **If something goes wrong:** If the add fails, keep the customer on the page and show a short error. Block the add if the variant is sold out.
 
-### F-005 — Cart
-- **What it does:** Holds the shopper's items. Adds an item from the product page, changes quantity, removes an item, and shows the subtotal. Opens in the cart drawer. Keeps the cart across pages and refreshes.
-- **When it appears:** The drawer opens from the header cart icon and after Add to Cart; the cart persists site-wide.
-- **If something goes wrong:** If a cart action fails, keep the last good state and show a short retry message. When the cart is empty, show the empty state, not a blank drawer.
+### F-005 — Cart Management
+- **What it does:** Shows cart line items (image, name, options, quantity stepper, price, remove), updates the cart and subtotal when a quantity changes or an item is removed, and shows an empty state when the cart is empty.
+- **When it appears:** In the cart drawer (C-Cart), opened from the header cart icon or after add to cart.
+- **If something goes wrong:** If an update fails, keep the last good cart and show a short error.
 
 ### F-006 — Checkout
-- **What it does:** Sends the shopper to Shopify's hosted checkout. From the cart drawer's Checkout button (full cart) or from Buy Now on a product (that one item). Checkout settles in USD.
-- **When it appears:** Checkout button in C-Cart; Buy Now on Product Detail (S-005).
-- **If something goes wrong:** If the checkout URL is missing, keep the shopper on the site and show a retry message.
+- **What it does:** Sends the customer to Shopify hosted checkout using the cart's checkout URL. Buy Now on the product page skips the cart and goes straight there. Checkout settles in USD.
+- **When it appears:** From the Checkout button in the cart drawer (C-Cart) and the Buy Now button on the product page (S-006).
+- **If something goes wrong:** If the checkout URL is missing, show an error and keep the cart.
 
 ### F-007 — Size Chart
-- **What it does:** Shows a per-product size guide in a drawer. Reads centimetre measurements from a size-chart source and auto-calculates the inches table from them.
-- **When it appears:** From the "Size Guide" link on Product Detail (S-005), opening C-Sizing.
-- **If something goes wrong:** If a product has no size-chart entry, hide the link rather than open an empty drawer.
+- **What it does:** Renders a product's size chart from the D-005 size-chart TSV. Shows only the measurements the product defines and works out the inches table from the cm values.
+- **When it appears:** In the size chart drawer (C-Sizing), opened from the product page.
+- **If something goes wrong:** If a product has no chart data, hide the size-guide link.
 
-### F-008 — Shipping & Returns Info
-- **What it does:** Presents the shipping, customs, and returns facts — in a drawer on the product page and as the full Shipping & Returns page.
-- **When it appears:** From the "Shipping & Returns" link on Product Detail (opens C-Shipping), and at `/shipping-returns` (S-010).
-- **If something goes wrong:** Static content; if the page copy is missing, show the section headings with a "Coming soon" note.
+### F-008 — Home Content
+- **What it does:** Renders the Home hero carousel, the category tiles, and the featured products from D-004 Home content. Each slot gives placement, image, overlay text, and link. The hero slides.
+- **When it appears:** On the Home page (S-001).
+- **If something goes wrong:** If content is missing, show the first hero banner only and leave any empty slot out.
 
-### F-009 — Sold-Out Preorder Fallback
-- **What it does:** Disables sold-out sizes and colours. When every variant of a product is sold out, swaps the Add to Cart and Buy Now buttons for a Preorder link to Contact.
-- **When it appears:** On Product Detail (S-005).
-- **If something goes wrong:** If stock data is missing, treat the variant as unavailable rather than sell something out of stock.
+### F-009 — Structured Data
+- **What it does:** Adds JSON-LD Product data to each product page: name, description, image, price, currency, and availability. Placed in a script tag in the page's Server Component.
+- **When it appears:** On every product page (S-006), in the server-rendered markup.
+- **If something goes wrong:** If a field is missing, skip that field but still render the page.
 
 ## 4. Data
-| ID | What the Product Needs | Source | Details |
+| ID | Data Item | Source | Details |
 |---|---|---|---|
-| D-001 | Product | Shopify Storefront API | One product with its variants, colour and size options, images, price, description, and type attribute (closure type for corsets, set type for sets), plus per-variant stock. |
-| D-002 | Collection | Shopify Storefront API | The corset-tops and matching-sets collections that feed the Shop and category grids and the related-products strip. Cursor-based pagination. |
-| D-003 | Cart | Shopify Storefront API (cart) | Line items, quantities, subtotal, and the hosted `checkoutUrl`. Cart ID stored in a cookie; cart created on first Add to Cart. |
-| D-004 | Home content | Repo config file | Hero banners, category card images and links, and featured product slots — each with slot placement, image, overlay text, and link. |
-| D-005 | Size chart | Size-chart TSV in repo config | Centimetre measurements per product or style; the inches table is calculated from these. |
-| D-006 | Site config | App config in repo | Announcement bar text, free-shipping threshold, footer links, social URLs, contact email, and warehouse address. |
-| D-007 | Page content | Markdown in `/docs/content/` | Copy for the SEO pillar pages and the info and policy pages (About, Contact, Shipping & Returns, Privacy, Terms). |
+| D-001 | Product | Shopify Storefront API | Title, slug, description, price, images, color and size variants, availability, and type attribute (closure, set type, or length). |
+| D-002 | Collection | Shopify Storefront API | The shop and three category collections, plus which products belong to each. Powers the Shop and category grids. |
+| D-003 | Cart | Shopify Storefront API + cart ID cookie | Line items, quantities, subtotal, and checkout URL. The cart ID lives in a cookie. |
+| D-004 | Home Content | App repo config file | Hero banners, category tiles, and featured product refs: slot placement, image, overlay text, and link. |
+| D-005 | Size Chart | Size-chart TSV in app repo config | Per-style cm measurements. Inches are worked out from these. |
+| D-006 | Page Content | Content MD files in `/docs/content/` | The copy for the info pillars, About, Contact, and policy pages. |
+| D-007 | Site Config | App repo config | Announcement bar text, nav and footer links, social URLs, contact email, and warehouse address. |
 
 ## 5. Screens & Components
 
 ### S-001 — Home
-- **What's on it:** (FE will update this)
-  - Outline in the Planning TSV
-- **Required assets:** (Director will update this)
-  - S-001.1 → 3-5x Hero Carousel banner
-  - S-001.3 → 2x Category card image (Corset Tops, Matching Sets)
-- **Feature:** F-001 Home Hero & Featured Content
-- **Behaviour:**
+- **What's on it:**
+  - Refer to /docs/content/s-001_home.md
+- **Feature:** F-008 Home Content, F-001 Product Grid
+- **Behavior:**
   - The hero carousel slides through its banners.
-  - Hero banners, category images, and featured product images come from D-004 Home content — each slot's placement, image, overlay text, and link.
-  - Category cards link to `/corset-tops` and `/shop/matching-sets`; featured product cards link to their product pages.
+  - The hero banners, category tiles, and featured products come from D-004 Home content.
+  - The header starts transparent (C-Transparent); the sticky header (C-Sticky) takes over after 60vh of scroll.
+- **Components & Assets:**
+  - (to be updated later)
 
 ### S-002 — Shop
-- **What's on it:** (FE will update this)
-  - Outline in the Planning TSV
-- **Required assets:** None
-- **Feature:** F-002 Product Catalogue & Grid, F-003 Grid View Toggle
-- **Behaviour:**
-  - Button pills link to `/shop/corset-tops` and `/shop/matching-sets`.
-  - View toggle switches grid density — 1 or 2 columns on mobile, 2 or 3 on desktop.
-  - Grid shows 2 columns on mobile, 3 on desktop by default.
+- **What's on it:**
+  - Refer to /docs/content/s-002_shop.md
+- **Feature:** F-001 Product Grid, F-003 Grid View Toggle
+- **Behavior:**
+  - The button pills link to the three category pages.
+  - The view toggle sets 1 or 2 columns on mobile and 2 or 3 on desktop.
+- **Components & Assets:**
+  - (to be updated later)
 
 ### S-003 — Shop Corset Tops
-- **What's on it:** (FE will update this)
-  - Outline in the Planning TSV
-- **Required assets:** (Director will update this)
-  - S-003.5 → 1x "About our Corset Tops" band image
-- **Feature:** F-002 Product Catalogue & Grid, F-003 Grid View Toggle, F-004 Attribute Filter
-- **Behaviour:**
-  - Button pills filter the grid in place by closure type.
-  - View toggle switches grid density — 1 or 2 columns on mobile, 2 or 3 on desktop.
-  - The "About our Corset Tops" band links to `/corset-tops`.
+- **What's on it:**
+  - Refer to /docs/content/s-003_shop-corset-tops.md
+- **Feature:** F-001 Product Grid, F-002 Attribute Filter, F-003 Grid View Toggle
+- **Behavior:**
+  - The filter narrows the grid in place by closure type.
+  - The view toggle sets 1 or 2 columns on mobile and 2 or 3 on desktop.
+- **Components & Assets:**
+  - (to be updated later)
 
 ### S-004 — Shop Matching Sets
-- **What's on it:** (FE will update this)
-  - Outline in the Planning TSV
-- **Required assets:** (Director will update this)
-  - S-004.5 → 1x "About our Matching Sets" band image
-- **Feature:** F-002 Product Catalogue & Grid, F-003 Grid View Toggle, F-004 Attribute Filter
-- **Behaviour:**
-  - Button pills filter the grid in place by set type.
-  - View toggle switches grid density — 1 or 2 columns on mobile, 2 or 3 on desktop.
-  - The "About our Matching Sets" band links to `/matching-sets`.
+- **What's on it:**
+  - Refer to /docs/content/s-004_shop-matching-sets.md
+- **Feature:** F-001 Product Grid, F-002 Attribute Filter, F-003 Grid View Toggle
+- **Behavior:**
+  - The filter narrows the grid in place by set type.
+  - The view toggle sets 1 or 2 columns on mobile and 2 or 3 on desktop.
+- **Components & Assets:**
+  - (to be updated later)
 
-### S-005 — Product Detail
-- **What's on it:** (FE will update this)
-  - Outline in the Planning TSV
-- **Required assets:** None
-- **Feature:** F-005 Cart, F-006 Checkout, F-007 Size Chart, F-008 Shipping & Returns Info, F-009 Sold-Out Preorder Fallback
-- **Behaviour:**
-  - Media gallery: a thumbnail sets the main image; picking a colour jumps to that colour's variant image.
-  - The breadcrumb truncates the product name with an ellipsis on small screens; the full name stays in the markup.
-  - Add to Cart opens C-Cart; Buy Now goes to Shopify checkout.
-  - Sold-out sizes and colours are disabled; when all are sold out, the buy buttons swap to a Preorder link to `/contact`.
-  - Size Guide link opens C-Sizing; Shipping & Returns link opens C-Shipping.
-  - The related strip shows 2 random products from the same category.
+### S-005 — Shop Cocktail Dresses
+- **What's on it:**
+  - Refer to /docs/content/s-005_shop-cocktail-dresses.md
+- **Feature:** F-001 Product Grid, F-002 Attribute Filter, F-003 Grid View Toggle
+- **Behavior:**
+  - The filter narrows the grid in place by length.
+  - The view toggle sets 1 or 2 columns on mobile and 2 or 3 on desktop.
+- **Components & Assets:**
+  - (to be updated later)
 
-### S-006 — Corset Tops
-- **What's on it:** (FE will update this)
-  - Outline in the Planning TSV
-- **Required assets:** (Director will update this)
-  - S-006.2 → 1x "What is a Corset Top?" band image
-  - S-006.3 → 1x "How is SHER different?" band image
-  - S-006.4 → 2x Closure type images (Lace, Zip)
-  - S-006.5 → 1x "Quality from Inside Out" band image
+### S-006 — Product Detail
+- **What's on it:**
+  - Media gallery: thumbnail strip and main image.
+  - Breadcrumb: Shop › Category › product.
+  - Product name, price, and description.
+  - Color selector (image thumbnails per color) and size selector.
+  - Quantity selector, Add to Cart button, and Buy Now button.
+  - Type attribute: closure type for corsets, set type for matching sets, length for cocktail dresses.
+  - A link that opens the Size Chart (C-Sizing) and a link that opens Shipping & Returns (C-Shipping).
+  - "You May Also Like": a Back to Category button, a More about Category button, and a grid of 2 random products from the same category.
+- **Feature:** F-004 Add to Cart, F-006 Checkout, F-001 Product Grid, F-009 Structured Data
+- **Behavior:**
+  - A thumbnail sets the main image; picking a color jumps to that color's image.
+  - The breadcrumb trims the product name with an ellipsis on small screens; the full name stays in the markup.
+  - Add to Cart opens C-Cart. Buy Now goes straight to Shopify checkout.
+  - Sold-out sizes and colors are disabled. When every variant is sold out, the buy buttons swap to a Preorder link to /contact.
+  - The sizing and shipping links open C-Sizing and C-Shipping.
+- **Components & Assets:**
+  - (to be updated later)
+
+### S-007 — Corset Tops
+- **What's on it:**
+  - Refer to /docs/content/s-007_corset-tops.md
 - **Feature:** None
-- **Behaviour:**
+- **Behavior:**
   - The FAQ accordion keeps one item open at a time.
-  - The intro and closing buttons link to `/shop/corset-tops`.
+- **Components & Assets:**
+  - (to be updated later)
 
-### S-007 — Matching Sets
-- **What's on it:** (FE will update this)
-  - Outline in the Planning TSV
-- **Required assets:** (Director will update this)
-  - S-007.2 → 1x "What is a Matching Set?" band image
-  - S-007.3 → 1x "How is SHER different?" band image
-  - S-007.4 → 2x Set type images (Skirt, Trouser)
-  - S-007.5 → 1x "Quality from Inside Out" band image
+### S-008 — Matching Sets
+- **What's on it:**
+  - Refer to /docs/content/s-008_matching-sets.md
 - **Feature:** None
-- **Behaviour:**
+- **Behavior:**
   - The FAQ accordion keeps one item open at a time.
-  - The intro and closing buttons link to `/shop/matching-sets`.
+- **Components & Assets:**
+  - (to be updated later)
 
-### S-008 — About Us
-- **What's on it:** (FE will update this)
-  - Outline in the Planning TSV
-- **Required assets:** (Director will update this)
-  - S-008.2 → 1x "Our Philosophy" image
-  - S-008.3 → 1x "Meet the Founder" image
+### S-009 — Cocktail Dresses
+- **What's on it:**
+  - Refer to /docs/content/s-009_cocktail-dresses.md
 - **Feature:** None
-- **Behaviour:**
-  - Static content page.
+- **Behavior:**
+  - The FAQ accordion keeps one item open at a time.
+- **Components & Assets:**
+  - (to be updated later)
 
-### S-009 — Contact
-- **What's on it:** (FE will update this)
-  - Outline in the Planning TSV
-- **Required assets:** None
+### S-010 — About Us
+- **What's on it:**
+  - Refer to /docs/content/s-010_about-us.md
 - **Feature:** None
-- **Behaviour:**
-  - Social messaging links open Instagram, Facebook, and TikTok.
-  - The email and warehouse address come from D-006 Site config.
+- **Behavior:**
+  - None
+- **Components & Assets:**
+  - (to be updated later)
 
-### S-010 — Shipping & Returns
-- **What's on it:** (FE will update this)
-  - Outline in the Planning TSV
-- **Required assets:** None
-- **Feature:** F-008 Shipping & Returns Info
-- **Behaviour:**
-  - Static content page; same facts as the C-Shipping drawer.
-
-### S-011 — Privacy Policy
-- **What's on it:** (FE will update this)
-  - Outline in the Planning TSV
-- **Required assets:** None
+### S-011 — Contact
+- **What's on it:**
+  - Refer to /docs/content/s-011_contact.md
 - **Feature:** None
-- **Behaviour:**
-  - Static content page.
+- **Behavior:**
+  - The social messaging links, email, and address come from D-007 Site config.
+- **Components & Assets:**
+  - (to be updated later)
 
-### S-012 — Terms of Service
-- **What's on it:** (FE will update this)
-  - Outline in the Planning TSV
-- **Required assets:** None
+### S-012 — Shipping & Returns
+- **What's on it:**
+  - Refer to /docs/content/s-012_shipping-returns.md
 - **Feature:** None
-- **Behaviour:**
-  - Static content page.
+- **Behavior:**
+  - None
+- **Components & Assets:**
+  - (to be updated later)
+
+### S-013 — Privacy Policy
+- **What's on it:**
+  - Refer to /docs/content/s-013_privacy-policy.md
+- **Feature:** None
+- **Behavior:**
+  - None
+- **Components & Assets:**
+  - (to be updated later)
+
+### S-014 — Terms of Service
+- **What's on it:**
+  - Refer to /docs/content/s-014_terms-of-service.md
+- **Feature:** None
+- **Behavior:**
+  - None
+- **Components & Assets:**
+  - (to be updated later)
 
 ### C-Transparent — Transparent Header
 - **What's on it:**
-  - Announcement bar: "Delivers Worldwide. Free Global Shipping over $180".
-  - Hamburger icon (opens C-Menu), oversized white square logo (to `/`), cart icon (opens C-Cart).
-- **Behaviour:**
-  - Home only; transparent and non-sticky, sitting over the hero.
-  - Scrolls away with the page; the oversized logo overflows below the header.
+  - Announcement bar ["Delivers Worldwide. Free Global Shipping over $250"]
+  - Hamburger icon (opens C-Menu), oversized white square logo (to /, overflows below the header), cart icon (opens C-Cart)
+- **Behavior:**
+  - Home only. Transparent and non-sticky. Scrolls away with the page.
 
 ### C-Sticky — Sticky Header
 - **What's on it:**
-  - Announcement bar: "Delivers Worldwide. Free Global Shipping over $180".
-  - Hamburger icon (opens C-Menu), dark symbol logo (to `/`), cart icon (opens C-Cart).
-- **Behaviour:**
-  - Solid and sticky on every screen.
-  - On Home, takes over from C-Transparent after 60vh of scroll.
+  - Announcement bar ["Delivers Worldwide. Free Global Shipping over $250"]
+  - Hamburger icon (opens C-Menu), dark symbol logo (to /), cart icon (opens C-Cart)
+- **Behavior:**
+  - Sticky on every screen. On Home it takes over after 60vh of scroll.
 
 ### C-Menu — Menu Drawer
 - **What's on it:**
-  - Dark symbol logo (to `/`).
-  - "Shop Now" group: Corset Tops (`/corset-tops`), Matching Sets (`/matching-sets`), Shop All (`/shop`).
-  - Our Story (`/about`), Contact Us (`/contact`), Login/Account (Shopify account).
-- **Behaviour:**
-  - Opens from the hamburger icon in either header.
+  - Dark symbol logo (to /)
+  - "Shop Now": Corset Tops, Matching Sets, Cocktail Dress, Shop All
+  - Our Story, Contact Us, and Login/Account (to the Shopify hosted account)
+- **Behavior:**
+  - Opens from the hamburger icon. A link closes the drawer and goes to the page.
 
 ### C-Cart — Cart Drawer
 - **What's on it:**
-  - "Your Cart" heading.
-  - Line items: image, name, options, quantity stepper, price, remove.
-  - Subtotal, Checkout button, and "Checkout securely in USD, powered by Shopify".
-- **Feature:** F-005 Cart, F-006 Checkout
-- **Behaviour:**
+  - "Your Cart"
+  - Line items: image, name, options, quantity stepper, price, remove
+  - Subtotal
+  - Checkout button, and "Checkout securely in USD, powered by Shopify"
+- **Feature:** F-005 Cart Management, F-006 Checkout
+- **Behavior:**
   - Changing an item's quantity or removing it updates the cart and subtotal.
   - Checkout opens Shopify's hosted checkout.
   - Shows an empty state when the cart is empty.
 
+### C-Footer — Footer
+- **What's on it:**
+  - "Shop & Learn": Corset Tops, Matching Sets, Cocktail Dress, Shop All
+  - "More Information": Our Story, Contact, Shipping & Returns
+  - "Connect with Us": Instagram, Facebook, TikTok
+  - "© SHER {year}", Privacy Policy, and Terms of Service
+- **Behavior:**
+  - Social icons open the external profiles. Links mapped in section 6.
+
 ### C-Sizing — Size Chart Drawer
 - **What's on it:**
-  - "Size Chart" heading and product name.
-  - Guidance paragraph on measurements-based sizing and tailoring.
-  - Measurements table in cm and a matching table in inches.
+  - "Size Chart" and the product name
+  - A note: the guide is measurements-based and varies by style; each piece can be tailored; reach out if unsure
+  - A cm measurements table and an inches measurements table
 - **Feature:** F-007 Size Chart
-- **Behaviour:**
-  - Opens from the Size Guide link on Product Detail.
-  - The inches table is auto-calculated from each product's cm measurements; cm values come from D-005 Size chart.
+- **Behavior:**
+  - Renders only the measurements a product defines; one it omits (say, no Hip on a corset top) is left out of the table.
+  - The inches table is worked out from the cm values. The cm values come from D-005 Size Chart.
 
 ### C-Shipping — Shipping & Returns Drawer
 - **What's on it:**
-  - "Shipping & Returns" heading.
-  - Sections: Where Do You Ship?, When Will I Receive My Order?, About Customs & Duties, Returns & Exchanges.
-- **Feature:** F-008 Shipping & Returns Info
-- **Behaviour:**
-  - Opens from the Shipping & Returns link on Product Detail.
-
-### C-Footer — Footer
-- **What's on it:**
-  - "Shop & Learn": Corset Tops (`/corset-tops`), Matching Sets (`/matching-sets`), Shop All (`/shop`).
-  - "More Information": Our Story (`/about`), Contact (`/contact`), Shipping & Returns (`/shipping-returns`).
-  - "Connect with Us": Instagram, Facebook, TikTok icons.
-  - "© SHER {year}", Privacy Policy (`/privacy-policy`), Terms of Service (`/terms-of-service`).
-- **Behaviour:**
-  - Links mapped in section 6; the year fills automatically.
+  - Refer to /docs/content/s-012_shipping-returns.md
+- **Behavior:**
+  - Opens from the product page. Shows the same content as the /shipping-returns page.
 
 ## 6. Navigation
 
 ```
-Header — every screen (C-Transparent on Home hero, C-Sticky elsewhere and after 60vh on Home)
- ├── Logo → S-001 (/)
+Header — every screen (C-Transparent on the Home hero, then C-Sticky after 60vh; C-Sticky everywhere else)
  ├── Hamburger → opens C-Menu
+ ├── Logo → S-001
  └── Cart → opens C-Cart
 
 Menu Drawer (C-Menu)
- ├── Logo → S-001 (/)
  ├── Shop Now
- │    ├── Corset Tops → S-006 (/corset-tops)
- │    ├── Matching Sets → S-007 (/matching-sets)
+ │    ├── Corset Tops → S-007 (/corset-tops)
+ │    ├── Matching Sets → S-008 (/matching-sets)
+ │    ├── Cocktail Dress → S-009 (/cocktail-dresses)
  │    └── Shop All → S-002 (/shop)
- ├── Our Story → S-008 (/about)
- ├── Contact Us → S-009 (/contact)
+ ├── Our Story → S-010 (/about)
+ ├── Contact Us → S-011 (/contact)
  └── Login/Account → Shopify hosted account
 
-Cart Drawer (C-Cart)
- └── Checkout → Shopify hosted checkout
+Shop button pills — S-002
+ ├── Corset Tops → S-003 (/shop/corset-tops)
+ ├── Matching Sets → S-004 (/shop/matching-sets)
+ └── Cocktail Dresses → S-005 (/shop/cocktail-dresses)
 
-Footer — every screen (C-Footer)
+Product Detail — in page (S-006)
+ ├── Sizing link → opens C-Sizing
+ └── Shipping link → opens C-Shipping
+
+Footer (C-Footer) — every screen
  ├── Shop & Learn
- │    ├── Corset Tops → S-006 (/corset-tops)
- │    ├── Matching Sets → S-007 (/matching-sets)
+ │    ├── Corset Tops → S-007 (/corset-tops)
+ │    ├── Matching Sets → S-008 (/matching-sets)
+ │    ├── Cocktail Dress → S-009 (/cocktail-dresses)
  │    └── Shop All → S-002 (/shop)
  ├── More Information
- │    ├── Our Story → S-008 (/about)
- │    ├── Contact → S-009 (/contact)
- │    └── Shipping & Returns → S-010 (/shipping-returns)
+ │    ├── Our Story → S-010 (/about)
+ │    ├── Contact → S-011 (/contact)
+ │    └── Shipping & Returns → S-012 (/shipping-returns)
  ├── Connect with Us
  │    ├── Instagram → external URL
  │    ├── Facebook → external URL
  │    └── TikTok → external URL
- ├── Privacy Policy → S-011 (/privacy-policy)
- └── Terms of Service → S-012 (/terms-of-service)
+ └── Legal
+      ├── Privacy Policy → S-013 (/privacy-policy)
+      └── Terms of Service → S-014 (/terms-of-service)
 ```
 
 ## 7. Build Steps
 ### Phase 1 — Foundation
 | Step | What to Build | References |
 |---|---|---|
-| B-001 | Next.js App Router project, TypeScript strict, Tailwind, and Vercel deployment set up so the site is shippable from day one. | claude-repo.md |
-| B-002 | The single `shopifyFetch()` Storefront API wrapper, typed responses, and the query/mutation folders. | D-001, D-002, D-003 |
-| B-003 | Global chrome: both headers with the transparent→sticky swap, the menu drawer, and the footer. | C-Transparent, C-Sticky, C-Menu, C-Footer |
+| B-001 | Set up the project and deploy: Next.js 15 (TypeScript strict, Tailwind), env vars, design tokens and theme, and the Vercel pipeline. Keep it shippable from day one. | Stack, Section 8 |
+| B-002 | Build the Shopify data layer: one `shopifyFetch()` wrapper, product and collection queries, and cart Server Actions. Front-load this risky integration. | D-001, D-002, D-003 |
+| B-003 | Build the global chrome: C-Transparent, C-Sticky (with the 60vh takeover), C-Menu, C-Footer, the announcement bar, and the navigation. | C-Transparent, C-Sticky, C-Menu, C-Footer, D-007, Section 6 |
 
 ### Phase 2 — Browse
 | Step | What to Build | References |
 |---|---|---|
-| B-004 | Product catalogue grid with the view toggle, used on Shop and both category pages; add the in-place attribute filter for the category pages. | F-002, F-003, F-004, S-002, S-003, S-004, D-002 |
-| B-005 | Product Detail page: media gallery, variant selection, size chart and shipping drawers, and the sold-out preorder fallback. | S-005, F-007, F-008, F-009, C-Sizing, C-Shipping, D-001, D-005 |
+| B-004 | Build the product grid, the Shop hub, and the three category pages, with the attribute filter and the view toggle. | S-002, S-003, S-004, S-005, F-001, F-002, F-003, D-002 |
+| B-005 | Build the Home page: hero carousel, category tiles, and featured products from Home content. | S-001, F-008, F-001, D-004 |
 
-### Phase 3 — Cart & Checkout
+### Phase 3 — Product Detail
 | Step | What to Build | References |
 |---|---|---|
-| B-006 | Cart with Server Actions — add, update, remove, subtotal, cookie-stored cart ID, and the cart drawer with its empty state; hand off to Shopify hosted checkout from the drawer and from Buy Now. | F-005, F-006, C-Cart, D-003 |
+| B-006 | Build the Product Detail page: media gallery, variant selection, sold-out and preorder states, and the related grid. | S-006, F-001, D-001 |
+| B-007 | Build the size chart drawer (from the size-chart TSV) and the shipping drawer. | C-Sizing, C-Shipping, F-007, D-005, D-006 |
 
-### Phase 4 — Content
+### Phase 4 — Cart & Checkout
 | Step | What to Build | References |
 |---|---|---|
-| B-007 | Home page fed by the Home content config — hero carousel, category cards, and featured product slots. | S-001, F-001, D-004 |
-| B-008 | SEO pillar pages (Corset Tops, Matching Sets) with their FAQ accordions. | S-006, S-007, D-007 |
-| B-009 | Info and policy pages (About, Contact, Shipping & Returns, Privacy, Terms). | S-008, S-009, S-010, S-011, S-012, D-006, D-007 |
+| B-008 | Build the cart drawer, add to cart, Buy Now, the empty state, and the checkout handoff to Shopify. | C-Cart, F-004, F-005, F-006, D-003 |
 
-### Phase 5 — Launch Gate
+### Phase 5 — Content & Launch
 | Step | What to Build | References |
 |---|---|---|
-| B-010 | Launch readiness: SEO metadata and Product JSON-LD, performance and accessibility targets, and full-site QA before go-live. | Section 8 |
+| B-009 | Build the info pillars (with the accordion) and the About, Contact, and policy pages as one static-content set. | S-007, S-008, S-009, S-010, S-011, S-012, S-013, S-014, D-006 |
+| B-010 | Add SEO: per-page metadata, canonical URLs, JSON-LD Product structured data, the sitemap, and robots. | F-009, all screens, Section 8 |
+| B-011 | Run the launch gate: hit the performance target, meet accessibility, and run full QA. | Section 8 |
 
 ## 8. Extra Details
 ### Connectivity
-The store needs a network connection to reach the Shopify Storefront API for products, collections, and cart, and to open hosted checkout and accounts. Without it, product data, cart actions, and checkout all fail; static page copy that is built at deploy time can still render.
+The store needs the network to reach the Shopify Storefront API for products, collections, and the cart, and to open Shopify hosted checkout. Without it, product data, cart, and checkout do not work. Content and policy pages render from repo content and the Home layout from repo config, so they hold up better.
 
 ### Storage
-On the client: the Shopify cart ID in a cookie, and the grid view-toggle choice. Everything else — products, collections, cart contents, orders, and customer accounts — lives on Shopify's servers.
+- **Client:** the Shopify cart ID in a cookie, so the cart survives page moves and refreshes. The view-toggle and filter state sit in the URL or local UI state.
+- **Server:** none of its own. The cart lives in Shopify; content lives in the repo.
 
 ### Accessibility
-Every screen meets WCAG 2.1 AA — keyboard access for all controls, visible focus, labelled form fields, alt text on images, and colour contrast that passes.
+Every screen meets WCAG 2.1 AA: keyboard access, visible focus, alt text on images, heading order that follows the H1, H2, H3 outline, and focus handling in the drawers and the accordion.
 
 ### Performance
-Every screen meets a Lighthouse target of 90+ on Performance, Accessibility, Best Practices, and SEO. Use Server Components, `next/image`, Suspense skeletons, and minimal client JavaScript.
+Every screen meets a Lighthouse score of 90 or higher. Use `next/image` for all product and collection images, Suspense skeletons for async sections, Server Components, and minimal client JavaScript.
 
 ### Security & Privacy
-All Shopify calls run server-side; the Storefront access token and any secrets never ship to the client. Checkout, payment, and customer accounts are handled by Shopify, so the store never touches card data or account passwords. Personal data is covered by the Privacy Policy page.
+- The Storefront access token is used server-side only and never ships in the client bundle.
+- Shopify hosted checkout handles all payment and personal data, so the store never touches card data.
+- The only cookie the store sets is the cart ID.
+- The Privacy Policy page states what data is collected and how.
 
 ### Integrations / External Services
-- Shopify Storefront API — products, collections, cart.
-- Shopify hosted checkout — payment, tax, shipping, discounts.
-- Shopify hosted customer accounts — login and account.
-- Vercel — hosting and deployment.
-- Social profiles — Instagram, Facebook, TikTok (outbound links only).
+- Shopify Storefront API (products, collections, cart)
+- Shopify hosted checkout (payment, tax, shipping, discounts)
+- Shopify hosted customer accounts (the Login/Account link)
+- Shopify CDN (product images)
+- Vercel (hosting and deploy)
+- Instagram, Facebook, and TikTok as outbound links only
 
 ### Environment / Config
-- `SHOPIFY_STORE_DOMAIN` — the Shopify store domain.
-- `SHOPIFY_STOREFRONT_ACCESS_TOKEN` — Storefront API token (server-side only).
-- Repo config for D-004 Home content, D-005 Size chart TSV, and D-006 Site config.
+- `SHOPIFY_STORE_DOMAIN`
+- `SHOPIFY_STOREFRONT_ACCESS_TOKEN` (server-side only)
+- Storefront API version
+- Site base URL
+- Home content config path (D-004)
+- Size-chart TSV path (D-005)
 
 ### Active Items
 | ID | Name | Status |
 |---|---|---|
-| US-001 | Browse from Home | Active |
-| US-002 | Browse all products with grid toggle | Active |
-| US-003 | Filter a category | Active |
-| US-004 | View product detail | Active |
-| US-005 | Pick options and add to cart | Active |
-| US-006 | Buy Now | Active |
-| US-007 | View size chart | Active |
-| US-008 | Read shipping & returns | Active |
-| US-009 | Review and edit cart, then checkout | Active |
-| US-010 | Empty-cart state | Active |
-| US-011 | Preorder when sold out | Active |
-| F-001 | Home Hero & Featured Content | Active |
-| F-002 | Product Catalogue & Grid | Active |
+| US-001 | Home browse and discover | Active |
+| US-002 | Browse all products | Active |
+| US-003 | Browse a category | Active |
+| US-004 | Filter by attribute | Active |
+| US-005 | View product and pick variant | Active |
+| US-006 | Add to cart | Active |
+| US-007 | Review the cart | Active |
+| US-008 | Checkout | Active |
+| F-001 | Product Grid | Active |
+| F-002 | Attribute Filter | Active |
 | F-003 | Grid View Toggle | Active |
-| F-004 | Attribute Filter | Active |
-| F-005 | Cart | Active |
+| F-004 | Add to Cart | Active |
+| F-005 | Cart Management | Active |
 | F-006 | Checkout | Active |
 | F-007 | Size Chart | Active |
-| F-008 | Shipping & Returns Info | Active |
-| F-009 | Sold-Out Preorder Fallback | Active |
+| F-008 | Home Content | Active |
+| F-009 | Structured Data | Active |
 | D-001 | Product | Active |
 | D-002 | Collection | Active |
 | D-003 | Cart | Active |
-| D-004 | Home content | Active |
-| D-005 | Size chart | Active |
-| D-006 | Site config | Active |
-| D-007 | Page content | Active |
+| D-004 | Home Content | Active |
+| D-005 | Size Chart | Active |
+| D-006 | Page Content | Active |
+| D-007 | Site Config | Active |
