@@ -9,7 +9,7 @@ brand: SHER
 
 ### Target User
 
-List any: common characteristics ("urban professionals, 30–45"), hopes/fears in life ("to feel ahead of the curve"), pain points ("mass-market options feel generic").
+Fill each: **Common** (shared traits — "urban professionals, 30–45"), **Hope/Fear** (what they want or worry about — "to feel ahead of the curve"), **Pain** (the problem they hit today — "mass-market options feel generic").
 
 - `Common` - Style-aware women 22–35, active on Instagram, who take their appearance seriously
 - `Hope/Fear` - To dress in a way that shows off their body and have it read as elegant rather than cheap
@@ -17,7 +17,7 @@ List any: common characteristics ("urban professionals, 30–45"), hopes/fears i
 
 ### Selling Point
 
-List any: reasons-to-believe (why the product is better — "made by hand, not machine") or emotions-to-believe (feelings from the product — "a sense of competence").
+Fill each: **Reason** (why the product is better — "lasts twice as long as the high-street version"), **Emotion** (the feeling it gives — "a sense of competence").
 
 - `Reason` - Each bone hand-set on a mannequin — structured corsetry shaped by hand, not laid flat by machine
 - `Reason` - Two closure types — adjustability (Lace Closure), ease (Zip Closure)
@@ -25,11 +25,11 @@ List any: reasons-to-believe (why the product is better — "made by hand, not m
 
 ### Brand Identity
 
-List any: reason-to-exist ("making X accessible for all"), personality adjectives ("bold, playful"), famous brand/person ("Nike, Adidas, Rihanna").
+Fill each: **Vision** (reason-to-exist — "making X accessible for all"), **Personality** (in a few words — "bold, playful"), **Resemblance** (a brand or person it's most like, and why — "Nike (relentless drive)"), **Voice** (how it speaks — "playful, a little irreverent").
 
-- `Vision` - SHER is a modern womenswear brand built around handcrafted corset tops, empowering women with sensuality that elevates rather than cheapens — each bone hand-set on a mannequin for a refined silhouette.
-- `Adjective` - Magnetic, Sensual, Feminine, Refined
-- `Brand/Person` - Cherie (cherieattire.com — Sweet Sensuality), Perfect Corset (perfectcorsetny.com — Bold Sensuality), Gigi Hadid (Off-Duty Model)
+- `Vision` - SHER is a modern womenswear brand, empowering women with sensuality that elevates rather than cheapens.
+- `Personality` - Magnetic, Sensual, Feminine, Refined
+- `Resemblance` - Cherie (sweet sensuality), Perfect Corset (bold sensuality), Gigi Hadid (off-duty model)
 - `Voice` - Direct, assured, quietly seductive. Never promotional
 
 ---
@@ -59,6 +59,10 @@ List product categories and their sub-categories, e.g., "Apparel — Dresses, To
 - `Matching Sets` - Two pieces that match — a top with a skirt or trousers
   - `Skirt Set` - A matching top and skirt
   - `Trouser Set` - A matching top and trousers
+- `Cocktail Dresses` - Sensual going-out dresses in satin and slip cuts, made to be seen
+  - `Mini` - Short; hits the thigh
+  - `Midi` - Mid length; between knee and ankle
+  - `Maxi` - Long; to the ankle or floor
 
 ### Key Terms (optional)
 
@@ -76,13 +80,14 @@ List any: product attributes ("book binding: layflat, canvas finishing: framed")
 
 ## 4. Competitors
 
-List 5-12 brands worth tracking — comparable category, aesthetic, or positioning, plus any aspirational references whose approach is instructive even if they're out of tier.
+List 5-12 brands worth tracking — comparable category, aesthetic, or positioning, plus any aspirational references whose approach is instructive even if they're out of tier. Mark a ✓ in each column the brand does well: **Product** (the garments themselves), **Visual** (photography, art direction, web design), **Marketing** (ads, social, positioning).
 
 | URL | Product | Visual | Marketing | Notes |
 |---|:-:|:-:|:-:|---|
 | cherieattire.com | ✓ | ✓ | ✓ | Most aspirational — the closest match |
 | perfectcorsetny.com | ✓ | ✓ | ✓ | Aspirational — better photos than Cherie, but the site skews too masculine |
 | malimarea.com | ✓ | ✓ |  | Aspirational — more sensual and bold than Cherie, but skews young |
+| fanciclub.com | ✓ | ✓ |  | Aspirational — for its product quality |
 | statnaia.com | ✓ | ✓ |  | Strong art direction, but a little too masculine |
 | milin.co.th |  | ✓ | ✓ | Sensual aesthetic, celebrity-driven, local reference |
 | bupbes.com | ✓ |  | ✓ | Good social ads & videos |

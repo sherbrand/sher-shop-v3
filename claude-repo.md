@@ -4,10 +4,14 @@
 
 ### Important rules
 
-- Write in plain language and short sentences — grade-5 reading level — in everything: docs, specs, and comments. Use technical names only where they're the real ones.
+- Write in plain language and short sentences at a grade-5 reading level, in everything: docs, specs, and comments. Use US English spelling. Use technical names only where they're the real ones.
+- Write the least that does the job. Cut any clause that restates, caveats, or explains what the words already say. After stating what something is, don't add what it isn't unless the exclusion is non-obvious and prevents a real mistake.
+- Never two em-dashes in the same phrase, in any file (internal included). Prefer a period or colon.
+- Markdown frontmatter is YAML — quote free-text values (`title`, `description`, a skill's `description`); an unquoted colon breaks it.
 - Always add debug logs and comments in the code for easier debug and readability.
 - Every time you apply a rule, explicitly state the rule in the output. Abbreviate to a single word or phrase if needed.
 - Do not make any changes until you have 95% confidence that you know what to build. Ask follow-up questions until you reach that confidence.
+- Track open threads. When any are live, end the turn with a short numbered list: an edit still to apply, or a decision still to make. Drop each once it is applied or decided.
 
 ### Coding
 
@@ -27,6 +31,7 @@
 
 - When introducing a new design system element — color, typography level, spacing token, rounded value, or reusable component — ask whether to update the design spec.
 - See the design spec for icon library and defaults. Do not write custom SVGs unless explicitly requested.
+- After editing DESIGN.md, run `pnpm design:sync` to export `/app/theme.css` and `tokens.json` and lint the tokens.
 
 ### Writing
 
@@ -52,7 +57,7 @@ When available, use the Shopify MCP tools to look things up before guessing:
 - `introspect_admin_schema` — check the Shopify Admin API GraphQL schema.
 - `search_dev_docs` — search Shopify developer documentation.
 
-Use these tools to confirm field names, query shapes, and API behaviour instead of relying on memory.
+Use these tools to confirm field names, query shapes, and API behavior instead of relying on memory.
 
 ### Next.js App Router
 
@@ -190,21 +195,23 @@ The SHER web store lives at `sherbrand.co`.
 
 - `/docs/prd-shershop-v<n>.md` is the single source of truth for features, screens, data, design, and scope — one file per version, the highest `v<n>` is live. Always read the latest before building anything.
 - `/docs/brand-sher.md` is the single source of truth for brand voice, audience, product categories, selling points, key terms, competitor positioning, and words to avoid. Always read it before writing content, SEO copy, or marketing materials.
+- `/docs/style-sher.md` is the human style brief. It seeds Claude Design and DESIGN.md, then stops being the live source once DESIGN.md exists (see Conflict Rules).
 - `/docs/writing-rules.md` is the single source of truth for content writing standards — voice, SEO, GEO, and banned phrases. Apply it when writing any prose content.
-- `/docs/planning-shershop.tsv` is the plan of what to build — pages (URLs, titles, outline, SEO) and planned components and features, each tagged by version. It seeds each version's PRD and isn't a historical record; once a version's PRD is generated, that PRD owns the spec (see Conflict Rules). Read it before creating or modifying a page, and update it in the same change.
+- `/docs/planning-shershop.tsv` is the plan of what to build — pages (URLs, titles, outline, SEO) and planned components and features, each tagged by version. It seeds the PRD and Content MDs (see Conflict Rules). Read it before creating a page, and update it when the plan changes.
 - `/docs/outline-notation.md` is the single source of truth for the outline notation — the layout grammar used in the plan's `outline` column and in Content MD layout lines. Read it before writing or interpreting a page outline.
-- `/DESIGN.md` is the single source of truth for the design system — colors, typography, spacing, radius, motion, icons, container widths. It follows Google's DESIGN.md format — DTCG token YAML on top, prose below, no Components section. Always read it before doing design work. After editing, run `pnpm design:sync` to export `/app/theme.css` (and `tokens.json`) and lint the tokens; it uses Google's exporter, falling back to the W3C `tokens.json` standard if the alpha format breaks. Lint before trusting the tokens.
+- `/DESIGN.md` is the single source of truth for the design system: colors, typography, spacing, radius, motion, icons, container widths. It follows Google's DESIGN.md format: DTCG token YAML on top, prose below, no Components section. Read it before design work.
 
 ### Conflict Rules
 
 - Planning handoffs — a planning column or row seeds a downstream doc, then stops being the live source:
   - `outline` → a content file in `/docs/content/`. Once that file exists, it owns the page's outline and copy; until then, the plan's outline is the source.
-  - `functionality` → a screen's Behaviour in the PRD. Once that entry exists, the PRD owns the behaviour; until then, the plan's functionality is the source.
-  - `C-`/`F-` rows → components and features in the PRD. The plan seeds them (name, what's in it, behaviour); once the PRD is generated, the PRD owns their spec.
+  - `functionality` → a screen's Behavior in the PRD. Once that entry exists, the PRD owns the behavior; until then, the plan's functionality is the source.
+  - `C-`/`F-` rows → components and features in the PRD. The plan seeds them (name, what's in it, behavior); once the PRD is generated, the PRD owns their spec.
 - The plan is forward-looking — it plans what's coming, by version. The PRD is the historical source of truth and the ID authority (US/F/D maxes, the Active Items ledger); the plan's IDs may be incomplete.
+- Style handoff — `style-sher.md` seeds Claude Design and DESIGN.md, then stops being the live source. Once DESIGN.md exists, DESIGN.md owns the visual style.
 
 ### Documentation Map
 
 - `/docs/content/` — final SEO content: Markdown pages with frontmatter, plus grid TSVs that are the source for page families sharing an outline
 - `/docs/design/` — Figma exports, PNG/HTML mockups, and other visual design reference
-- `/docs/assets/` — images, icons, fonts, and other static assets referenced from docs
+- `/docs/assets/` — images, icons, fonts, and other static assets referenced from docs. A page's static image and video assets are named `<section-id>-<n>.<ext>` (e.g. `s-007.4-1.webp`) — the Content MD section ID plus the asset slot's `#n`

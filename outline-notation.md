@@ -7,7 +7,10 @@
 - **`< >` qualifies the word before it.** `< >` adds one note about the word right before it — a link target, a size, or a content brief. "The word before it" means the nearest slot, asset, or element on its left.
 - **Mixing.** One operator can repeat in a row. To mix different operators, group them with `( )` — and use `( )` for nothing else. A single-operator run needs none.
 - **Condition scope.** A `{condition}` gates its enclosing `( )` group.
-- **No bare text slot.** Every text slot needs literal copy or a `< >` brief. Asset slots may skip the brief.
+- **Where copy lives.** In the Planning TSV outline, a text slot carries its copy inline — a literal in quotes or a `< >` brief. In a Content MD, the slot is a bare role marker and its copy sits in a bullet beneath the line (see the Writer skill). `< >` stays in the line either way; it marks a target, a data-fed source, or a build-note, never copy. Asset slots may skip the brief.
+- **Data-fed slot (optional flag).** A slot whose content comes from a source, not written copy. Flag it when it helps, with `<D-xxx: …>` (a Data resource) or `<F-xxx: …>` (a Feature), or leave it bare (`Title <product name>`) when the source is obvious. The flag is a hint, not required.
+- **Text slot numbering (Content MD).** When a text role repeats on a line, key each `.n` in the line and its bullet, left to right (`H3.1`, `H3.2`); a text role that appears once takes none.
+- **Asset slot numbering (Content MD).** Key every asset slot (`Image`, `Video`) `#n` in the line and its bullet (`#1`, `#2`), from 1 across the section's assets, images and videos together, always.
 - **No bare element.** Every element carries a `< >` brief — its content, target, behavior, or variant — or `[ ]` contents. This often pairs with the `functionality` column when applicable.
 
 ## Markers
@@ -73,7 +76,7 @@ Two image cards side by side (`|`). Each `[ ]` holds what sits on the image: the
 
 `(Image | ("H2: About our Corset Tops" / Paragraph <handcraft piece by piece> / Paragraph <attention to details> / Paragraph <can tell quality from afar> / Btn <to /corset-tops>))`
 
-An image beside a stack of text. Each `Paragraph` carries a `< >` brief, so no text slot is bare. The row uses `|` and the stack uses `/` — two different operators — so each side is wrapped in `( )`.
+An image beside a stack of text. Each `Paragraph` carries a `< >` brief, so no text slot is bare. The row uses `|` and the stack uses `/` (two different operators), so each side is wrapped in `( )`.
 
 `Line Items <image, name, options, qty stepper, price, remove> // Subtotal // Btn ["Checkout"]`
 

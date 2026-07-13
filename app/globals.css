@@ -1,3 +1,90 @@
-/* Tailwind CSS v4 — single import pulls in base, components, and utilities.
-   Design tokens (colors, type, spacing) will live here later, exported from DESIGN.md. */
+/* Tailwind CSS v4 — single import pulls in base, components, and utilities. */
 @import "tailwindcss";
+
+/* ------------------------------------------------------------------ *
+ *  Design tokens — exported verbatim from DESIGN.md (Legacy/DESIGN.md)
+ *  Palette is closed (5 colours). Three typefaces, each a fixed role.
+ * ------------------------------------------------------------------ */
+@theme {
+  --color-background: #ffffff; /* default page background        */
+  --color-surface: #fbf9f9;    /* background-alt — subtle contrast */
+  --color-primary: #a99d94;    /* sandy grey — the only interactive colour */
+  --color-primary-dark: #97897d; /* one step darker — button hover */
+  --color-ink: #665d55;        /* all text, headings, labels     */
+  --color-icon: #94a3b8;       /* non-interactive icons only     */
+
+  /* Cormorant Infant = display (uppercase headings), Cardo = editorial
+     body/product text, Manrope = functional UI chrome. Loaded via next/font. */
+  --font-display: var(--font-cormorant), "Cormorant Infant", Georgia, serif;
+  --font-body: var(--font-cardo), "Cardo", Georgia, serif;
+  --font-ui: var(--font-manrope), ui-sans-serif, system-ui, sans-serif;
+
+  --radius-card: 5px; /* single corner radius across buttons/cards/inputs */
+}
+
+@layer base {
+  html {
+    color: var(--color-ink);
+    background: var(--color-background);
+  }
+  body {
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  ::selection {
+    background: var(--color-primary);
+    color: #fff;
+  }
+  /* Honour reduced-motion — disable non-essential transitions (DESIGN motion §). */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* Display face — headings only. Always uppercase, 1.2 line-height. */
+  .font-display-h {
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    line-height: 1.2;
+    font-weight: 400;
+    letter-spacing: 0.01em;
+  }
+  .font-ui {
+    font-family: var(--font-ui);
+  }
+  /* Eyebrow / label-sm — Manrope 11px, uppercase, letter-spaced. */
+  .eyebrow {
+    font-family: var(--font-ui);
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  /* Primary button — primary bg, white, label-lg, 5px, 12x24. */
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-ui);
+    font-weight: 600;
+    font-size: 13px;
+    letter-spacing: 0.02em;
+    color: #fff;
+    background: var(--color-primary);
+    border-radius: var(--radius-card);
+    padding: 12px 24px;
+    transition: background 200ms cubic-bezier(0, 0, 0.2, 1);
+  }
+  .btn-primary:hover {
+    background: var(--color-primary-dark);
+  }
+}

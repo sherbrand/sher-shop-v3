@@ -5,39 +5,40 @@ description: Draft a product's PRD for one development iteration from the Planni
 
 # PO
 
-Turn the Planning TSV into one iteration's PRD: the build spec for what this version adds — functionality, behaviour, data, screens, navigation, and build order. Each run is a new version that carries IDs forward but lists only what's new.
+Turn the Planning TSV into one iteration's PRD: the build spec for what this version adds — functionality, behavior, data, screens, navigation, and build order. Each run is a new version that carries IDs forward but lists only what's new.
 
 ## Running it
 
-If you can read CLAUDE.md, you're in the repo: work from its paths — read the inputs, save new outputs, and apply this skill's changes to existing files in place. If you can't, you're in a chat: ask for the inputs this skill lists, plus the project's `CLAUDE.md` (repo rules) the repo reads by default, then hand back everything that changed — new files to save, and edits to existing files for the user to apply — and say which file each change belongs in.
+Check CLAUDE.md first. If there's no CLAUDE.md at all, hand your work back in chat: read the inputs that are here, ask for the ones that aren't, then give back every new file and edit — and say which file each belongs in. Otherwise follow CLAUDE.md for where outputs go — read the inputs, save new outputs where it says, and change existing files in place.
 
 ## Inputs
 
-- The Planning TSV (path in CLAUDE.md) — the plan, and the source of truth for this iteration. Rows marked **In Progress** are this iteration's items. `S-` rows are screens, `C-`/`F-` rows seed components and features. Each screen's job and its `functionality` seed the user stories. The `outline` column holds what's on a screen or in a component; the `functionality` column seeds behaviour (screens, components) or what-it-does (features).
+- The Planning TSV (path in CLAUDE.md) — the plan, and the source of truth for this iteration. Rows marked **In Progress** are this iteration's items. `S-` rows are screens, `C-`/`F-` rows seed components and features. Each screen's job and its `functionality` seed the user stories. The `outline` column holds what's on a screen or in a component; the `functionality` column seeds behavior (screens, components) or what-it-does (features).
 - The previous PRD (versioned path in CLAUDE.md), if one exists — for the running ID maxes in its Active Items list.
-- outline-notation.md (path in CLAUDE.md) — the notation; needed to read outlines and find image slots.
+- outline-notation.md (path in CLAUDE.md) — the notation; needed to read outlines.
+- The Content MD files (path in CLAUDE.md), if they exist — the source for a screen's or component's **What's on it**. One whose copy lives in a Content MD points to it; one without lists its contents inline. Optional: with none yet, everything lists inline.
 
 ## Workflow
 
 ### 1. Gather
 
-Take the version from the TSV. If the In-Progress label names it — `In Progress (v3)` — that's this run. If it just says `In Progress`, the version is one below the next version group (a `v4` group → this run is v3).
+Take the version from the TSV. If the In-Progress label names it, like `In Progress (v3)`, that's this run. If it just says `In Progress`, the version is one below the next version group (a `v4` group → this run is v3).
 
-Read the previous PRD — the highest `…-v<n>` at the path in CLAUDE.md — for the running US/F/D maxes in its Active Items list. If there is none at that path, those IDs start at 1.
+Read the previous PRD (the highest `…-v<n>` at the path in CLAUDE.md) for the running US/F/D maxes in its Active Items list. If there is none at that path, those IDs start at 1.
 
 ### 2. User Stories
 
-Read the customer capabilities from the In-Progress rows — a screen's job, and the capability-level items (not the behaviours) in its `functionality` (add to cart, filter, check out). Turn those into user stories, and add a secondary story only when a main flow has a gap that needs one — the empty-cart view, or a cart-review step before checkout. Don't back-fill a story for a screen, feature, or behaviour you've added — content, policy, and contact pages are required by the plan, not by a story.
+Read the customer capabilities from the In-Progress rows — a screen's job, and the capability-level items (not the behaviors) in its `functionality` (add to cart, filter, check out). Turn those into user stories, and add a secondary story only when a main flow has a gap that needs one — the empty-cart view, or a cart-review step before checkout. Don't back-fill a story for a screen, feature, or behavior you've added — content, policy, and contact pages are required by the plan, not by a story.
 
 ### 3. Write the Specs
 
 Build the spec outward from the confirmed user stories and the `C-`/`F-` rows the plan flags for this version — each layer answers the one before it:
 
 - **Features** — what the product must do to deliver the stories, plus the `F-` rows the plan flags for this version. Take the planned ones as seeds and add what the stories still need; combine and de-duplicate per *Granularity*. Each: what it does, when it appears (trigger and route/screen), and how it fails. A story may need several features; a feature may serve several stories.
-  - *Granularity* — a feature has substance of its own: it operates on data, runs a flow, or is a capability that recurs across screens (browse, filter, add to cart, checkout, the shipping disclaimer). A single-screen element is a feature too when the plan drives it from its own dedicated data resource — a separate content source with its own D-xxx, not the fields of an entity the screen already shows: a hero carousel fed by Home content is a feature; a product gallery fed by the product's own images is not. Anything else owned by one screen — a sub-step like variant-picking, or chrome like a sticky header or nav menu — isn't a feature; it lives in that screen's or component's Behaviour.
-- **Data** — for each feature, what the product must store or fetch to power it, and where it lives: the concrete source that holds it — a specific API, store, field, external service, or the app's own config/repo — not a vague "ours vs theirs". Name the source on every resource. When the plan doesn't say where a resource lives, ask — don't assume.
+  - *Granularity* — a feature has substance of its own: it operates on data, runs a flow, or is a capability that recurs across screens (browse, filter, add to cart, checkout, the shipping disclaimer). A single-screen element is a feature too when the plan drives it from its own dedicated data resource — a separate content source with its own D-xxx, not the fields of an entity the screen already shows: a hero carousel fed by Home content is a feature; a product gallery fed by the product's own images is not. Anything else owned by one screen (a sub-step like variant-picking, or chrome like a sticky header or nav menu) isn't a feature; it lives in that screen's or component's Behavior.
+- **Data** — for each feature, what the product must store or fetch to power it, and where it lives: the concrete source that holds it (a specific API, store, field, external service, or the app's own config/repo), not a vague "ours vs theirs". Name the source on every resource. When the plan doesn't say where a resource lives, ask — don't assume.
   - *Granularity* — a distinct resource the product reads or stores, at the entity level. Fold a resource's fields and nested objects in (a product's variants, options, images, and attributes are the Product item); keep separate resources separate (product, collection, cart, page content), and group small config-like bits into one Site config item.
-- **Screens & components** — place the features on the In-Progress screens (step 4). Components come from the plan's `C-` rows plus any chrome or drawer that recurs across screens; a recurring behaviour is a named component (C-xxx), not a per-screen feature.
+- **Screens & components** — place the features on the In-Progress screens (step 4). Components come from the plan's `C-` rows plus any chrome or drawer that recurs across screens; a recurring behavior is a named component (C-xxx), not a per-screen feature.
 - **Navigation** — each navigation surface (header, footer, menu, tab bar…) and where its items link.
 - **Build steps** — the work ordered by dependency: foundation first, then what sits on it.
   - *Granularity* — group work that shares a pattern into one step (all static content pages; all category grids; the global chrome) rather than a step per screen or component. Give a step of its own only to work with real risk or its own logic — the data wrapper, the cart/checkout flow.
@@ -51,13 +52,11 @@ ID rules:
 
 ### 4. Screens
 
-Write a `### S-xxx — <name>` entry for each In-Progress row; Output shows its four-part shape. The PO writes two parts now — **Feature** (the screen's `F-xxx`) and **Behaviour** (start from the row's `functionality`, then add what else it needs). The other two are placeholders for later hands: **What's on it** holds `(FE will update this)`, then a sub-bullet pointing to the row's outline; **Required assets** holds `(Director will update this)` over the image slots; a screen with no generated images gets just `None` on the line — no placeholder, no sub-bullet.
+Write a `### S-xxx — <name>` entry for each In-Progress row; Output shows its four-part shape. The PO writes three parts now — **What's on it**, **Feature** (the screen's `F-xxx`), and **Behavior** (start from the row's `functionality`, then add what else it needs). A screen with no feature or no behavior writes `None` on that line. **What's on it** points to the Content MD that owns the screen's copy (`Refer to /docs/content/<file>`) when one exists; a dynamic screen with no Content MD lists its contents inline instead, seeded from the row's `outline`. The fourth part, **Components & Assets**, is a placeholder for later hands — it holds `(to be updated later)` on a sub-bullet.
 
-**Write the components.** Write each component as a `### C-xxx` entry — its content inline under **What's on it** (seeded from its `C-` row's `outline` if the plan has one), its **Behaviour** (from the row's `functionality`), plus **Feature** where it applies. List components after the screens.
+**Write the components.** Write each component as a `### C-xxx` entry. Its **What's on it** follows the same rule as a screen: when a Content MD owns its copy, as with a component whose `outline` is `(same as /page)`, point to that Content MD; otherwise list its content inline, seeded from its `C-` row's `outline`. Add its **Behavior** (from the row's `functionality`), plus **Feature** where it applies. A component takes no Components & Assets line. List components after the screens.
 
-**Mint a missing screen.** If a confirmed story needs a key screen the plan doesn't have, give it the next S-xxx after the plan's highest, write a stub entry — its name, **Feature**, and **Behaviour** from the story — and flag the human to add the row to the plan as In Progress. A stub has no outline yet, so its **What's on it** and **Required assets** read `(pending planning row)`.
-
-**List required assets.** Read the screen's `outline` and number its top-level sections top to bottom from 1. A `>` child row stays under its parent and gets no number of its own. List a slot only for sections carrying images the Director generates, as `<screen_id>.<n> → <count>x <description>`; when one section holds several generated images, raise the count (e.g. `3x`) instead of giving each image its own number. Skip product grids and product-detail galleries — those render catalogue photos, not generated assets. A screen with no generated images gets `None`.
+**Mint a missing screen.** If a confirmed story needs a key screen the plan doesn't have, give it the next S-xxx after the plan's highest, write a stub entry (its name, **Feature**, and **Behavior** from the story) and flag the human to add the row to the plan as In Progress. A stub has no outline yet, so its **What's on it** and **Components & Assets** read `(pending planning row)`.
 
 ### 5. Extra Details
 
@@ -111,33 +110,34 @@ A Markdown file: the scope blockquote, the title and metadata block, then sectio
 - **If something goes wrong:** …
 
 ## 4. Data
-| ID | What the Product Needs | Source | Details |
+| ID | Data Item | Source | Details |
 |---|---|---|---|
 | D-007 | <name> | <the specific API, store, field, or file> | … |
 
 ## 5. Screens & Components
 
 ### S-011 — <name>
-- **What's on it:** (FE will update this)
-  - Outline in the Planning TSV
-- **Required assets:** (Director will update this)
-  - S-011.1 → 3-5x Hero Carousel image
-- **Feature:** F-014 <name>
-- **Behaviour:**
-  - <interaction>
+- **What's on it:**
+  - Refer to /docs/content/s-011_<slug>.md
+- **Feature:** None
+- **Behavior:**
+  - None
+- **Components & Assets:**
+  - (to be updated later)
 
 ### S-012 — <name>
-- **What's on it:** (FE will update this)
-  - Outline in the Planning TSV
-- **Required assets:** None
+- **What's on it:**
+  - <inline content; dynamic screen, no Content MD>
 - **Feature:** F-015 <name>
-- **Behaviour:**
+- **Behavior:**
   - <interaction>
+- **Components & Assets:**
+  - (to be updated later)
 
 ### C-Cart — Cart Drawer
 - **What's on it:**
   - <inline content>
-- **Behaviour:**
+- **Behavior:**
   - <interaction>
 
 ### C-Footer — Footer
