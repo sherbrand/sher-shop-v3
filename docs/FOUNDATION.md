@@ -106,6 +106,8 @@ Each step uses the same shape: **Owner · Preconditions · Do this · Inputs →
   - *SHER (Shopify):* Admin → **Headless** channel → **Storefront API**. Confirm scopes for
     **products**, **cart/checkout**, and **customers**; generate the **public** token
     (client) and **private** token (server).
+  - **Starting from zero** (no store / channel / tokens yet)? Follow the full click-path in
+    **Appendix B**, then come back here.
 - **🔒 Gate:** the agent cannot generate secrets. It waits until the human confirms tokens exist.
 - **Inputs → Outputs:** backend admin → public + private tokens, store/endpoint domain.
 - ✅ **Done-check:** required scopes are on, and both tokens exist (values stay with the human for S3).
@@ -209,7 +211,7 @@ When all six are ticked, Phase 1 is done and the next phase can start.
 
 ---
 
-## 8. Appendix — copy-paste templates
+## 8. Appendix A — copy-paste templates
 
 **`.env.example`** (names only — no real values):
 ```
@@ -244,6 +246,40 @@ npm install                        # (fallback if pnpm EPERM)
 npm run build                      # clean build + type-check
 git check-ignore .env.local        # must report it as ignored
 ```
+
+---
+
+## 8b. Appendix B — set up Shopify from zero (S1 in detail)
+
+Use this the **first time**, when there's no store, channel, or token yet. Every step
+here is 🧑 **human** — only a person can log into the admin and generate secrets. (If your
+`BACKEND` isn't Shopify, replace this appendix with your provider's equivalent.)
+
+0. **Have a Shopify store + admin access.** A plan that allows the Storefront API. If there's
+   no store yet, create one at shopify.com first.
+1. **Install the Headless channel.** Admin → *Settings → Apps and sales channels* →
+   **Shopify App Store** → search **"Headless"** → add Shopify's official **Headless** channel.
+2. **Create a storefront.** Open the **Headless** channel → **Create storefront**. This gives
+   you a storefront with the **Storefront API** and **Customer Account API**.
+3. **Storefront API — tokens + permissions.** In the storefront's **Storefront API** section:
+   - Note the **Public access token** (client-side) and create a **Private access token** (server-side).
+   - **Manage API permissions** and enable the scopes you need:
+     - **Products** — read product listings, inventory, tags (browse the catalog).
+     - **Checkout** — `read_checkouts` **and `write_checkouts`** (this is what makes selling work).
+     - **Customers** — read/write (sign up / login).
+     - **Content** and **Selling plans** as needed.
+4. **Put tokens in env.** Copy the tokens + your store domain (`your-store.myshopify.com`) into
+   `.env.local` — **private → server, public → client** — and into the deploy target's env
+   (see §6). Never commit them.
+5. **Publish products to the channel.** A product is only readable through the API once it's
+   **published to the Headless storefront/channel**. Publish the catalog (or the test products).
+
+**Alternative — custom app** (instead of the Headless channel): Admin → *Settings → Apps* →
+**Develop apps** → create an app → enable **Storefront API** scopes → **Install** → reveal the
+**Storefront API access token**.
+
+> Shopify moves menu labels between UI versions. If a label here doesn't match, an agent can
+> drive the admin screen to find and confirm it (that's step **S1v**).
 
 ---
 
