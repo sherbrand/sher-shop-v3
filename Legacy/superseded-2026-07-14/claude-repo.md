@@ -4,23 +4,18 @@
 
 ### Important rules
 
-- Ask first. Do not change a file until I say go.
-- Show a short plan before any edit.
-- If anything is missing or unclear, ask follow-ups until you're confident you know what to build. Do not guess.
-- Push back when you disagree. Skip flattery.
-- Track open threads. When any are live, end the turn with a short numbered list: an edit still to apply, or a decision still to make. Drop each once it is applied or decided.
-- Pick the simple option. Say so when something looks over-built.
 - Write in plain language and short sentences at a grade-5 reading level, in everything: docs, specs, and comments. Use US English spelling. Use technical names only where they're the real ones.
 - Write the least that does the job. Cut any clause that restates, caveats, or explains what the words already say. After stating what something is, don't add what it isn't unless the exclusion is non-obvious and prevents a real mistake.
-- Don't add guardrails, exceptions, or "just in case" rules by default. Add one only when a real gap needs it.
 - Never two em-dashes in the same phrase, in any file (internal included). Prefer a period or colon.
 - Markdown frontmatter is YAML — quote free-text values (`title`, `description`, a skill's `description`); an unquoted colon breaks it.
 - Always add debug logs and comments in the code for easier debug and readability.
 - Every time you apply a rule, explicitly state the rule in the output. Abbreviate to a single word or phrase if needed.
+- Do not make any changes until you have 95% confidence that you know what to build. Ask follow-up questions until you reach that confidence.
+- Track open threads. When any are live, end the turn with a short numbered list: an edit still to apply, or a decision still to make. Drop each once it is applied or decided.
 
 ### Coding
 
-- Always prefer simple coding solutions.
+- Always prefer simple solutions.
 - Before creating a new component, utility, or type, check if it already exists. Avoid duplication — reuse existing code rather than recreating it. When the same pattern appears in two or more places, ask whether to extract it to a reusable component.
 - Write code that takes into account the different environments: dev, test, and prod.
 - Only make changes that are requested, or that are well understood and related to the change being requested.
@@ -34,10 +29,6 @@
 
 ### Design
 
-- A C-xxx is a component ID: `C-` plus its PascalCase role or shape name (C-Cart, C-HeroBanner). Each name is used once, never reused.
-- DESIGN.md owns the tokens and documents the components (the Components section: each component's C-xxx and the tokens it uses). The C-xxx files own the component code. The same C-xxx ties the doc entry to the code file.
-- Components come in two tiers: primitives like Button and Card, and sections built from them like a feature row or category grid.
-- The DESIGN.md component docs and the C-xxx code files are generated together from the Claude Design export, so they stay in sync. Wiring a section to a component references it by its C-xxx.
 - When introducing a new design system element — color, typography level, spacing token, rounded value, or reusable component — ask whether to update the design spec.
 - See the design spec for icon library and defaults. Do not write custom SVGs unless explicitly requested.
 - After editing DESIGN.md, run `pnpm design:sync` to export `/app/theme.css` and `tokens.json` and lint the tokens.
@@ -208,7 +199,7 @@ The SHER web store lives at `sherbrand.co`.
 - `/docs/writing-rules.md` is the single source of truth for content writing standards — voice, SEO, GEO, and banned phrases. Apply it when writing any prose content.
 - `/docs/planning-shershop.tsv` is the plan of what to build — pages (URLs, titles, outline, SEO) and planned components and features, each tagged by version. It seeds the PRD and Content MDs (see Conflict Rules). Read it before creating a page, and update it when the plan changes.
 - `/docs/outline-notation.md` is the single source of truth for the outline notation — the layout grammar used in the plan's `outline` column and in Content MD layout lines. Read it before writing or interpreting a page outline.
-- `/DESIGN.md` is the single source of truth for the design system: colors, typography, spacing, radius, motion, icons, container widths. It follows Google's DESIGN.md format: the token YAML on top, prose below, including a Components section that documents each component. The component code itself lives in C-xxx files (see Design). Read it before design work.
+- `/DESIGN.md` is the single source of truth for the design system: colors, typography, spacing, radius, motion, icons, container widths. It follows Google's DESIGN.md format: DTCG token YAML on top, prose below, no Components section. Read it before design work.
 
 ### Conflict Rules
 

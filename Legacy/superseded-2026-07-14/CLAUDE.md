@@ -6,16 +6,14 @@ This folder holds SherShop files. Each file is a draft. Fine-tune it here, then 
 
 - Ask first. Do not change a file until I say go.
 - Show a short plan before any edit.
-- If anything is missing or unclear, ask follow-ups until you're confident you know what to build. Do not guess.
-- Push back when you disagree. Skip flattery.
 - Track open threads. When any are live, end the turn with a short numbered list: an edit still to apply, or a decision still to make. Drop each once it is applied or decided.
+- Push back when you disagree. Skip flattery.
+- Keep reasoning and "why" in chat. Never put them inside a file.
+- Write at a grade-5 reading level.
+- If something is missing or unclear, ask. Do not guess.
 - Pick the simple option. Say so when something looks over-built.
-- Write in plain language and short sentences at a grade-5 reading level, in everything: docs, specs, and comments. Use US English spelling. Use technical names only where they're the real ones.
 - Write the least that does the job. Cut any clause that restates, caveats, or explains what the words already say. After stating what something is, don't add what it isn't unless the exclusion is non-obvious and prevents a real mistake.
 - Don't add guardrails, exceptions, or "just in case" rules by default. Add one only when a real gap needs it.
-- Never two em-dashes in the same phrase, in any file (internal included). Prefer a period or colon.
-- Markdown frontmatter is YAML — quote free-text values (`title`, `description`, a skill's `description`); an unquoted colon breaks it.
-- Keep reasoning and "why" in chat. Never put them inside a file.
 - Ignore the `Legacy/` folder — set-aside drafts, not inputs. Never read it or treat it as a source of truth.
 
 ## Running a skill here
@@ -23,8 +21,8 @@ This folder holds SherShop files. Each file is a draft. Fine-tune it here, then 
 This is the drafting folder, not the repo. Before running a `SKILL-*.md`:
 
 - Read `claude-repo.md` for the repo rules and paths the skill needs. When a skill says "path in CLAUDE.md," it means `claude-repo.md`, not this file.
-- Ignore any `/docs/` prefix when looking for a file. It may sit at root or in a subfolder.
-- Save skill outputs at root, and say which repo path each belongs in.
+- Input files sit flat in this folder — ignore any `/docs/` prefix.
+- There is no content folder here. Save skill outputs flat in this folder, and say which repo path each belongs in.
 
 ## Files
 
@@ -48,6 +46,4 @@ Each file owns one job. Do not repeat its content in another file.
 
 - `claude-repo.md` becomes `CLAUDE.md` at the repo root.
 - Each `SKILL-*.md` becomes `SKILL.md` in its own folder under `.claude/skills/`.
-- `content/` and `assets/` port under `/docs/`: `/docs/content/`, `/docs/assets/`.
-- `components/` ports to `/components/` at the repo root, not under `/docs/`.
 - Every other file keeps its name.
