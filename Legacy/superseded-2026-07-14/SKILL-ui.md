@@ -27,13 +27,13 @@ Read the export bundle: its tokens, its component source, and the UI kit. Read t
 
 ### 2. DESIGN.md
 
-Write DESIGN.md from the export, in the repo's DESIGN.md format (path in CLAUDE.md): the tokens, plus a Components section documenting each component (its C-xxx and the tokens it uses). Create it if none exists; update it to match the export if one does. After writing it, run `design:sync` per CLAUDE.md to export the theme file, and lint the tokens before trusting them.
+Write DESIGN.md from the export's tokens, in the repo's format (path in CLAUDE.md): DTCG token YAML on top, prose below, no Components section. Create it if none exists; update it to match the export if one does. After writing it, run `design:sync` per CLAUDE.md to export the theme file, and lint the tokens before trusting them.
 
 Report the result as an FYI diff: list each token added, changed, renamed, or removed. Flag renamed or removed tokens loudly, with the count of C-xxx that use them, since those components break.
 
 ### 3. Harvest C-xxx
 
-Pull each reusable piece from the export's components. Reuse before creating: if an existing C-xxx has the same shape, reuse or extend it. A variant (a mirror, a button, mobile) is a prop or optional slot under the same C-xxx. Mint a new C-xxx only for a new shape, taking its C-xxx from the component's name in the export. Each name is used once and never reused. FE later references these by name.
+Pull each reusable piece from the export's components. Reuse before creating: if an existing C-xxx has the same shape, reuse or extend it. A variant (a mirror, a button, mobile) is a prop or optional slot under the same C-xxx. Mint a new C-xxx only for a new shape. Name it for its shape.
 
 - Build each as a template: HTML with Tailwind classes bound to DESIGN.md tokens, so it ports to React near-losslessly.
 - Capture a short usage note per component from the export's component notes.
