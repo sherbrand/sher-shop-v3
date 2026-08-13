@@ -1,0 +1,49 @@
+<!-- @dsCard group="6. Layout Components" viewport="900x1180" name="C-HeroTitle" subtitle="Editorial title band · breadcrumb + eyebrow + heading + lead + actions (align = center, start | background = transparent, surface, accent | tone = light, inverse | breadcrumb = set, omitted | headingFont = display, body | headingLevel = 1–4 | measure / headingMeasure = ch caps)" -->
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<style>body{margin:0;background:var(--surface-page)}.lbl{font-family:var(--font-body);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-meta);margin:0;padding:18px 24px 0}.rule{height:1px;background:var(--border-default);margin:8px 0 0}</style></head><body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<script type="text/babel">
+const { HeroTitle, Button } = window.SHERDesignSystem_84f0d7;
+function Demo(){
+  return (<div>
+    <p className="lbl">align="center" (default)</p>
+    <HeroTitle breadcrumb={[{label:"Home",href:"/"},{label:"Corset Tops"}]} eyebrow="Refined Sensuality" heading="Modern Womenswear by SHER"
+      description="Structured corsetry, shaped by hand — sensual without looking cheap, magnetic without trying." />
+    <div className="rule"></div>
+    <p className="lbl">align="start" · with actions</p>
+    <HeroTitle align="start" eyebrow="Refined Sensuality" heading="Modern Womenswear by SHER"
+      measure="46ch"
+      description="Structured corsetry, shaped by hand — sensual without looking cheap, magnetic without trying.">
+      <Button as="a" href="/shop" variant="primary" size="lg">Shop the Collection</Button>
+      <Button as="a" href="/about" variant="accent" size="lg">Read our Story</Button>
+    </HeroTitle>
+    <div className="rule"></div>
+    <p className="lbl">tone="inverse" · white text on the accent band</p>
+    <HeroTitle headingLevel={2} background="var(--accent)" tone="inverse"
+      heading="Made to Be Seen"
+      description="The right piece turns heads before you say a word. Find yours and own the room." />
+    <div className="rule"></div>
+    <p className="lbl">background="var(--surface-raised)" · closing band</p>
+    <HeroTitle headingFont="body" headingLevel={2}
+      heading="Corset Tops: Built by Hand for the Modern Woman"
+      description="A SHER corset top is built on real corsetry. Each bone is set by hand, so the shape holds and the silhouette stays clean." />
+    <div className="rule"></div>
+    <p className="lbl">tone="inverse" · white text on the accent band</p>
+    <HeroTitle headingLevel={2} background="var(--accent)" tone="inverse"
+      heading="Made to Be Seen"
+      description="The right piece turns heads before you say a word. Find yours and own the room." />
+    <div className="rule"></div>
+    <p className="lbl">background="var(--surface-raised)" · closing band</p>
+    <HeroTitle headingLevel={2} background="var(--surface-raised)"
+      heading="Made to Be Seen"
+      description="The right piece turns heads before you say a word. Find yours and own the room.">
+      <Button as="a" href="/shop" variant="primary" size="lg">Shop the Full Collection</Button>
+    </HeroTitle>
+  </div>);
+}
+ReactDOM.createRoot(document.getElementById("root")).render(<Demo/>);
+</script></body></html>

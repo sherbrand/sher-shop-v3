@@ -1,0 +1,85 @@
+/* SHER — Spacing, radius, depth, layout tokens
+   Spacing rhythm was open ("None yet"): proposed a 4px base, generous editorial
+   scale — fashion layouts breathe. Radius character is "small". Depth is tonal:
+   SHER leans flat, deriving separation from color/hairlines, not heavy shadow. */
+:root {
+  /* Spacing scale — 4px base */
+  --space-0:  0;
+  --space-1:  0.25rem; /* 4  */
+  --space-2:  0.5rem;  /* 8  */
+  --space-3:  0.75rem; /* 12 */
+  --space-4:  1rem;    /* 16 */
+  --space-5:  1.5rem;  /* 24 */
+  --space-6:  2rem;    /* 32 */
+  --space-7:  3rem;    /* 48 */
+  --space-8:  4rem;    /* 64 */
+  --space-9:  6rem;    /* 96 */
+  --space-10: 8rem;    /* 128 */
+
+  /* Radius — small, understated */
+  --radius-none: 0;
+  --radius-sm:   2px;
+  --radius-md:   4px;
+  --radius-pill: 999px;
+
+  /* Vertical banner aspect ratios (portrait crops for hero/imagery) */
+  --ratio-2-3: 2 / 3; /* @kind other */
+  --ratio-3-4: 3 / 4; /* @kind other */
+  --ratio-4-5: 4 / 5; /* @kind other */
+  /* Landscape / square crops (editorial bands) */
+  --ratio-1-1: 1 / 1; /* @kind other */
+  --ratio-5-4: 5 / 4; /* @kind other */
+  --ratio-4-3: 4 / 3; /* @kind other */
+
+  /* Control paddings — off the 4px grid by design (optical balance for caps) */
+  --pad-btn-md: 1.75rem; /* @kind spacing */
+  --pad-btn-lg: 2.5rem;  /* @kind spacing */
+  --pad-pill-x: 1.25rem; /* @kind spacing */
+  --pad-pill-y: 0.6rem;  /* @kind spacing */
+  /* Tight vertical rhythm for stacked link lists and table cells — deliberately
+     between --space-1 (4px) and --space-2 (8px) so rows stay dense but tappable. */
+  --pad-row-sm: 0.35rem; /* @kind spacing */
+  --pad-row-md: 0.4rem;  /* @kind spacing */
+
+  /* Editorial band column gap — C-EditorialSplit / C-ShopEditorial step this per
+     container query; declared here so it is a first-class token, not a
+     component-scope custom property. */
+  --editorial-gap: 1.5rem; /* @kind spacing */
+
+  /* Depth — restrained; used only for lifted overlays (drawers, dropdowns) */
+  --shadow-none:    none;
+  --shadow-hairline:0 0 0 1px var(--border-default);
+  --shadow-drawer:  -8px 0 40px rgba(51,50,49,0.12);
+  --shadow-raised:  0 4px 24px rgba(51,50,49,0.08);
+
+  /* HeroTitle measures — the band tightens both on narrow widths (see
+     tokens/components.css); declared here so they are first-class tokens. */
+  --ht-hd-measure:   34ch; /* @kind other */
+  --ht-desc-measure: 68ch; /* @kind other */
+
+  /* Layout — breakpoints, containers (was "None yet") */
+  --bp-sm:  640px;
+  --bp-md:  768px;
+  --bp-lg:  1024px;
+  --bp-xl:  1280px;
+  --bp-2xl: 1536px;
+
+  --container:      1536px; /* max content width */
+  --container-media:1536px; /* wide media bands — category tiles, galleries: runs
+                               wider than text content but still capped */
+  --container-prose:768px;  /* readable measure for policy / info pages */
+  --gutter:         1.5rem; /* 24 — page padding */
+  --header-h:       4.5rem; /* 72 */
+  --announce-h:     2.25rem;/* 36 */
+
+  /* Motion — quick, ease-out, no bounce/overshoot */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1); /* @kind other */
+  --dur-fast: 160ms; /* @kind other */
+  --dur-med:  240ms; /* @kind other */
+  --dur-slow: 360ms; /* @kind other */
+
+  /* Z-index */
+  --z-header:  100; /* @kind other */
+  --z-overlay: 200; /* @kind other */
+  --z-drawer:  210; /* @kind other */
+}

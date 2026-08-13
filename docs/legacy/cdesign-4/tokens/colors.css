@@ -1,0 +1,53 @@
+/* SHER — Color tokens
+   Palette is fixed by the brand style guide. Warm, tonal neutrals — no color
+   outside this set. Every text/background pairing below passes WCAG 2.1 AA.
+   Contrast ratios (vs. --sher-background unless noted):
+     text  #514F4E  → 7.7:1   dark #333231 → 12.2:1
+     muted #929291  → 3.0:1 (LARGE text / decorative only — fails AA for body)
+     primary #A99D94→ carries dark text at 4.8:1; not a text color itself */
+:root {
+  /* Base palette */
+  --sher-background: #FAF9F6; /* base background */
+  --sher-tint:       #EFEBE7; /* light primary tint — alternating band, primary-derived */
+  --sher-surface:    #E4E2DC; /* secondary background / cards / drawers */
+  --sher-text:       #514F4E; /* body text */
+  --sher-primary:    #A99D94; /* interactive accent — fills, not text */
+  --sher-accent:     #7C736B; /* accent — carries white text at AA (≈4.6:1) */
+  --sher-muted:      #929291; /* secondary / large text, hairlines */
+  --sher-dark:       #333231; /* near-black — strong text, inverted surfaces */
+  --sher-white:      #FFFFFF;
+
+  /* Hairline / border — tonal, never pure black */
+  --sher-border:        #D8D5CE; /* on background */
+  --sher-border-strong: #C3BFB6;
+
+  /* Semantic aliases — reference these in components */
+  --surface-page:     var(--sher-background);
+  --surface-tint:     var(--sher-tint);
+  --surface-raised:   var(--sher-surface);
+  --surface-inverse:  var(--sher-dark);
+
+  --text-default:        var(--sher-text);
+  --text-strong:      var(--sher-dark);
+  --text-muted:       var(--sher-muted);
+  /* Small-caps meta text (eyebrows, counts, labels, table heads). NOT --text-muted:
+     muted is 3.0:1 on the page and 2.4:1 on surface, so it fails AA at label sizes.
+     --text-muted is for hairlines, decorative separators, and placeholder chrome only. */
+  --text-meta:        var(--sher-text);
+  --text-on-inverse:  var(--sher-background);
+  --text-on-primary:  var(--sher-dark); /* dark on primary = AA */
+
+  --accent:           var(--sher-accent);
+  --accent-hover:     #6B635B; /* accent, one step darker (hover) */
+
+  --border-default:   var(--sher-border);
+  --border-strong:    var(--sher-border-strong);
+  --border-focus:     var(--sher-dark);
+
+  /* Translucent overlays */
+  --scrim:          rgba(51,50,49,0.32);  /* drawer / modal backdrop */
+  --scrim-soft:     rgba(51,50,49,0.28);  /* image tile veil */
+  --overlay-hero:   linear-gradient(180deg, rgba(51,50,49,0.28) 0%, rgba(51,50,49,0.10) 40%, rgba(51,50,49,0.42) 100%); /* @kind other */
+  --border-inverse: rgba(250,249,246,0.16);/* hairline on dark surfaces */
+  --dot-idle:       rgba(250,249,246,0.5); /* inactive carousel dot */
+}
