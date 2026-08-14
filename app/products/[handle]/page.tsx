@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import type { ReactElement } from "react";
-import Image from "next/image";
 import { notFound } from "next/navigation";
 import { getProduct, getProducts } from "@/lib/shopify/fetchers";
 import type { Product } from "@/lib/shopify/types";
 import { RelatedProducts } from "@/components/C-RelatedProducts";
 import type { GridProduct } from "@/components/C-ProductGrid";
+import { toGridProduct } from "@/lib/listing";
 import type { Crumb } from "@/components/Breadcrumb";
 import type { SizeOption } from "@/components/SizeSelector";
 import type { MediaItem } from "@/components/MediaGallery";
@@ -75,24 +75,10 @@ export default async function ProductPage({
   const breadcrumb: Crumb[] = [{ label: "Shop", href: "/shop" }, { label: product.title }];
   const path = `/products/${handle}`;
 
-  // "You May Also Like": up to 2 products that are not this one (F-001).
+  // "You May Also Like": up to 2 products that are not this one (F-001). Mapped
+  // through toGridProduct so the cards get the same hover/touch image swap.
   const others = (await getProducts(12)).filter((p) => p.handle !== product.handle);
-  const related: GridProduct[] = others.slice(0, 2).map((p): GridProduct => ({
-    id: p.id,
-    title: p.title,
-    price: Number(p.minPrice.amount),
-    href: `/products/${p.handle}`,
-    soldOut: !p.availableForSale,
-    media: p.featuredImage ? (
-      <Image
-        src={p.featuredImage.url}
-        alt={p.featuredImage.altText ?? p.title}
-        fill
-        sizes="(min-width: 768px) 33vw, 50vw"
-        className="object-cover"
-      />
-    ) : undefined,
-  }));
+  const related: GridProduct[] = others.slice(0, 2).map(toGridProduct);
 
   return (
     <main className="mx-auto flex max-w-[var(--container)] flex-col gap-[var(--space-9)] px-[var(--gutter)] py-[var(--space-7)]">

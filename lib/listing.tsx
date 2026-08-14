@@ -1,26 +1,28 @@
-import Image from "next/image";
+import { HoverMedia } from "@/components/HoverMedia";
 import type { Product } from "@/lib/shopify/types";
 import type { GridProduct } from "@/components/C-ProductGrid";
 import type { ListingItem } from "@/components/ShopListing";
 
 /* Data mapping for the listing pages (B-004): Shopify Product -> the flat
-   GridProduct / ListingItem shapes the grid and filter consume. Invisible
-   plumbing — no markup beyond the product card image. */
+   GridProduct / ListingItem shapes the grid and filter consume. The card media
+   is a HoverMedia so the thumbnail swaps to the product's next image on
+   hover/touch (F-001); a product with only one image simply never swaps. */
 
 export function toGridProduct(product: Product): GridProduct {
+  const first = product.featuredImage?.url ?? product.images[0]?.url;
+  // The next image after the primary one (images carry no video), for the swap.
+  const second = first ? product.images.find((image) => image.url !== first)?.url : undefined;
   return {
     id: product.id,
     title: product.title,
     price: Number(product.minPrice.amount),
     soldOut: !product.availableForSale,
     href: `/products/${product.handle}`,
-    media: product.featuredImage ? (
-      <Image
-        src={product.featuredImage.url}
-        alt={product.featuredImage.altText ?? product.title}
-        fill
-        sizes="(min-width: 768px) 50vw, 100vw"
-        className="object-cover"
+    media: first ? (
+      <HoverMedia
+        first={first}
+        second={second}
+        alt={product.featuredImage?.altText ?? product.title}
       />
     ) : undefined,
   };

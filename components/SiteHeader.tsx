@@ -19,7 +19,7 @@ import { ANNOUNCEMENT } from "@/lib/site";
 // Fraction of the viewport height scrolled before the sticky header takes over.
 const HERO_TAKEOVER = 0.6;
 
-export function SiteHeader(): ReactElement {
+export function SiteHeader({ accountHref = "/account" }: { accountHref?: string }): ReactElement {
   const pathname = usePathname();
   const router = useRouter();
   const isHome = pathname === "/";
@@ -44,8 +44,22 @@ export function SiteHeader(): ReactElement {
   const openMenu = (): void => setMenuOpen(true);
   const closeMenu = (): void => setMenuOpen(false);
   const navigate = (href: string): void => {
+    // Absolute URLs (e.g. Shopify hosted customer accounts) leave the app;
+    // in-app paths use the router for client-side navigation.
+    if (/^https?:\/\//.test(href)) {
+      window.location.assign(href);
+      return;
+    }
     router.push(href);
   };
+
+  // The menu's secondary links, with Login/Account pointing at Shopify hosted
+  // customer accounts (built from the store domain, passed down from layout).
+  const secondaryLinks = [
+    { label: "Our Story", href: "/about" },
+    { label: "Contact Us", href: "/contact" },
+    { label: "Login / Account", href: accountHref },
+  ];
   // Cart drawer + item count come from the global CartProvider (B-007).
   const { count: cartCount, openCart } = useCart();
 
@@ -68,7 +82,12 @@ export function SiteHeader(): ReactElement {
           cartCount={cartCount}
         />
       )}
-      <Menu open={menuOpen} onClose={closeMenu} onNavigate={navigate} />
+      <Menu
+        open={menuOpen}
+        onClose={closeMenu}
+        onNavigate={navigate}
+        secondaryLinks={secondaryLinks}
+      />
     </>
   );
 }
