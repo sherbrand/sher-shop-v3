@@ -20,6 +20,8 @@ export type ShopifyFetchArgs = {
   // Next.js data-cache controls for RSC fetching.
   cache?: RequestCache;
   tags?: string[]; // pair with revalidateTag() after mutations
+  // Time-based ISR window in seconds. Applies only when `cache` is not set.
+  revalidate?: number;
 };
 
 type ShopifyGraphQLResponse<T> = {
@@ -31,8 +33,9 @@ type ShopifyGraphQLResponse<T> = {
 export async function shopifyFetch<T>({
   query,
   variables,
-  cache = "force-cache",
+  cache,
   tags,
+  revalidate = 60,
 }: ShopifyFetchArgs): Promise<T> {
   // Fail loud when env is missing, so setup mistakes surface immediately.
   if (!DOMAIN || !TOKEN) {
@@ -52,8 +55,14 @@ export async function shopifyFetch<T>({
       "X-Shopify-Storefront-Access-Token": TOKEN,
     },
     body: JSON.stringify({ query, variables }),
-    cache,
-    ...(tags ? { next: { tags } } : {}),
+    // Default to time-based ISR (revalidate) so product/collection edits in
+    // Shopify appear without a redeploy. Callers can force a mode instead —
+    // the cart passes cache: "no-store" for always-fresh reads.
+    ...(cache ? { cache } : {}),
+    next: {
+      ...(tags ? { tags } : {}),
+      ...(cache ? {} : { revalidate }),
+    },
   });
 
   if (!res.ok) {
