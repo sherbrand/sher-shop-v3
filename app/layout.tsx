@@ -6,6 +6,7 @@ import { SiteHeader } from "@/components/SiteHeader";
 import { Footer } from "@/components/C-Footer";
 import { CartProvider } from "@/components/CartProvider";
 import { SOCIAL_LINKS } from "@/lib/site";
+import { SITE_URL } from "@/lib/seo";
 
 /* Brand faces (see DESIGN.md and tokens.css):
    Cormorant Infant = display (headings, nav, buttons), Cardo = body/editorial.
@@ -27,7 +28,10 @@ const cardo = Cardo({
   display: "swap",
 });
 
+// metadataBase resolves every page's relative canonical / Open Graph URL to an
+// absolute one (B-010). The title template wraps each page's own title.
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "Modern Womenswear by SHER",
     template: "%s · SHER",
