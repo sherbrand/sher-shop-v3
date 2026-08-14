@@ -14,6 +14,16 @@ import { Icon } from "@/components/Icon";
    two-up grid it receives about half the frame, so a page-level breakpoint would
    never fire. */
 
+// Shopify's image CDN resizes via a `width` query param. Requesting a
+// display-sized image instead of the full-resolution original is the single
+// biggest win for the product page's LCP and total bytes (B-011). Non-Shopify
+// or already-parameterised sizes are left as given.
+function sized(url: string | undefined, width: number): string | undefined {
+  if (!url || !url.includes("cdn.shopify.com")) return url;
+  const separator = url.includes("?") ? "&" : "?";
+  return `${url}${separator}width=${width}`;
+}
+
 export interface MediaItem {
   /** "video" or "image". Video renders in the stage with a play badge on its thumb. */
   type?: "video" | "image";
@@ -42,6 +52,7 @@ export function MediaGallery({ media = [], className = "" }: MediaGalleryProps):
   );
   const [active, setActive] = useState(firstImage);
   const [reduced, setReduced] = useState(false);
+  const [loadVideo, setLoadVideo] = useState(false);
 
   useEffect(() => {
     const query = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -49,6 +60,21 @@ export function MediaGallery({ media = [], className = "" }: MediaGalleryProps):
     const onChange = (event: MediaQueryListEvent): void => setReduced(event.matches);
     query.addEventListener("change", onChange);
     return () => query.removeEventListener("change", onChange);
+  }, []);
+
+  // Hold the video's src until the browser is idle after first paint, so the
+  // first image wins LCP and the video doesn't compete for it (F-010, B-011).
+  // It still auto-switches and plays once loaded.
+  useEffect(() => {
+    const win = window as typeof window & {
+      requestIdleCallback?: (cb: () => void) => number;
+    };
+    if (typeof win.requestIdleCallback === "function") {
+      const id = win.requestIdleCallback(() => setLoadVideo(true));
+      return () => window.cancelIdleCallback?.(id);
+    }
+    const timer = window.setTimeout(() => setLoadVideo(true), 1200);
+    return () => window.clearTimeout(timer);
   }, []);
 
   // Once the video can play, take over the stage and autoplay it — unless reduced motion.
@@ -88,8 +114,13 @@ export function MediaGallery({ media = [], className = "" }: MediaGalleryProps):
               {item.thumb ||
                 item.node ||
                 (item.src && item.type !== "video" ? (
-                  // eslint-disable-next-line @next/next/no-img-element -- gallery thumbs come from the Shopify CDN, already sized
-                  <img src={item.src} alt="" className="h-full w-full object-cover" />
+                  // eslint-disable-next-line @next/next/no-img-element -- thumbs come from the Shopify CDN, sized down here
+                  <img
+                    src={sized(item.src, 200)}
+                    alt=""
+                    loading="lazy"
+                    className="h-full w-full object-cover"
+                  />
                 ) : null)}
               {item.type === "video" && (
                 <span
@@ -115,13 +146,16 @@ export function MediaGallery({ media = [], className = "" }: MediaGalleryProps):
               {item.type === "video" && item.src ? (
                 <video
                   ref={videoRef}
-                  src={item.src}
+                  src={loadVideo ? item.src : undefined}
                   muted
                   loop
                   playsInline
-                  poster={item.poster}
+                  poster={sized(item.poster, 1200)}
                   autoPlay={!reduced}
                   controls={reduced}
+                  // Don't preload the video: the first image wins LCP, then the
+                  // src is set on idle so it loads and takes over (F-010, B-011).
+                  preload="none"
                   onCanPlay={onVideoReady}
                   aria-label={item.alt || "Product video"}
                   className="block h-full w-full object-cover"
@@ -129,8 +163,10 @@ export function MediaGallery({ media = [], className = "" }: MediaGalleryProps):
               ) : item.src ? (
                 // eslint-disable-next-line @next/next/no-img-element -- placement passes a next/image via `node`; `src` is the plain fallback
                 <img
-                  src={item.src}
+                  src={sized(item.src, 1200)}
                   alt={item.alt || ""}
+                  loading={i === firstImage ? "eager" : "lazy"}
+                  fetchPriority={i === firstImage ? "high" : "auto"}
                   className="block h-full w-full object-cover"
                 />
               ) : (

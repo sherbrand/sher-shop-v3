@@ -120,6 +120,7 @@ export function Sizing({
   return (
     <div
       aria-hidden={!open}
+      inert={!open}
       className={`fixed inset-0 z-[var(--z-drawer)] ${open ? "pointer-events-auto" : "pointer-events-none"}`}
     >
       <div
