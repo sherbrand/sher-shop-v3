@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { Transparent } from "@/components/C-Transparent";
 import { Sticky } from "@/components/C-Sticky";
 import { Menu } from "@/components/C-Menu";
+import { useCart } from "@/components/CartProvider";
 import { ANNOUNCEMENT } from "@/lib/site";
 
 /* Global chrome orchestrator (build step B-003).
@@ -45,17 +46,27 @@ export function SiteHeader(): ReactElement {
   const navigate = (href: string): void => {
     router.push(href);
   };
-  // Placeholder until B-007 wires the cart drawer.
-  const openCart = (): void => {};
+  // Cart drawer + item count come from the global CartProvider (B-007).
+  const { count: cartCount, openCart } = useCart();
 
   const transparent = isHome && !pastHero;
 
   return (
     <>
       {transparent ? (
-        <Transparent announcement={ANNOUNCEMENT} onMenu={openMenu} onCart={openCart} />
+        <Transparent
+          announcement={ANNOUNCEMENT}
+          onMenu={openMenu}
+          onCart={openCart}
+          cartCount={cartCount}
+        />
       ) : (
-        <Sticky announcement={ANNOUNCEMENT} onMenu={openMenu} onCart={openCart} />
+        <Sticky
+          announcement={ANNOUNCEMENT}
+          onMenu={openMenu}
+          onCart={openCart}
+          cartCount={cartCount}
+        />
       )}
       <Menu open={menuOpen} onClose={closeMenu} onNavigate={navigate} />
     </>

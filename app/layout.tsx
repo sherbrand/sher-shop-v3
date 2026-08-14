@@ -4,6 +4,7 @@ import { Cormorant_Infant, Cardo } from "next/font/google";
 import "@/app/globals.css";
 import { SiteHeader } from "@/components/SiteHeader";
 import { Footer } from "@/components/C-Footer";
+import { CartProvider } from "@/components/CartProvider";
 import { SOCIAL_LINKS } from "@/lib/site";
 
 /* Brand faces (see DESIGN.md and tokens.css):
@@ -46,9 +47,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${cormorant.variable} ${cardo.variable}`}>
-        <SiteHeader />
-        {children}
-        <Footer socialLinks={SOCIAL_LINKS} />
+        <CartProvider>
+          <SiteHeader />
+          {children}
+          <Footer socialLinks={SOCIAL_LINKS} />
+        </CartProvider>
       </body>
     </html>
   );
