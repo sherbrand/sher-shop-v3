@@ -6,12 +6,16 @@ import { ProductPanel } from "@/components/C-ProductPanel";
 import type { Crumb } from "@/components/Breadcrumb";
 import type { SizeOption } from "@/components/SizeSelector";
 import type { MediaItem } from "@/components/MediaGallery";
+import { Sizing } from "@/components/C-Sizing";
+import { Shipping } from "@/components/C-Shipping";
 import { useCart } from "@/components/CartProvider";
+import { SHIPPING_SECTIONS } from "@/lib/content";
 
-/* Route-private client glue for the product panel (B-005) + cart wiring (B-007).
-   Holds the selected size and quantity, resolves the chosen size to a variant
-   id, and drives Add to Cart / Buy Now through the cart context. It renders only
-   C-ProductPanel. The size-chart / shipping drawers (B-006) stay unwired. */
+/* Route-private client glue for the product panel (B-005) + cart wiring (B-007)
+   + the size-chart / shipping drawers (B-006). Holds the selected size and
+   quantity, resolves the size to a variant id, and drives Add to Cart / Buy Now
+   through the cart context. Also owns the two drawer open states. It renders
+   only design components (C-ProductPanel, C-Sizing, C-Shipping). */
 
 export type VariantOption = { id: string; size: string; available: boolean };
 
@@ -36,6 +40,8 @@ export function ProductDetail(props: ProductDetailProps): ReactElement {
   const [size, setSize] = useState<string | null>(firstInStock);
   const [quantity, setQuantity] = useState(1);
   const [pending, setPending] = useState(false);
+  const [sizeChartOpen, setSizeChartOpen] = useState(false);
+  const [shippingOpen, setShippingOpen] = useState(false);
 
   // The variant for the chosen size (prefer an available one), else any variant.
   const resolveVariantId = (): string | null => {
@@ -56,24 +62,41 @@ export function ProductDetail(props: ProductDetailProps): ReactElement {
   };
 
   return (
-    <ProductPanel
-      breadcrumb={props.breadcrumb}
-      name={props.name}
-      price={props.price}
-      compareAt={props.compareAt}
-      currency={props.currency}
-      description={props.description}
-      attributeLabel={props.attributeLabel}
-      attributeValue={props.attributeValue}
-      media={props.media}
-      sizes={props.sizes}
-      size={size}
-      onSize={setSize}
-      quantity={quantity}
-      onQuantity={setQuantity}
-      onAddToCart={() => run(addItem)}
-      onBuyNow={() => run(buyNow)}
-      preorderHref={props.preorderHref}
-    />
+    <>
+      <ProductPanel
+        breadcrumb={props.breadcrumb}
+        name={props.name}
+        price={props.price}
+        compareAt={props.compareAt}
+        currency={props.currency}
+        description={props.description}
+        attributeLabel={props.attributeLabel}
+        attributeValue={props.attributeValue}
+        media={props.media}
+        sizes={props.sizes}
+        size={size}
+        onSize={setSize}
+        quantity={quantity}
+        onQuantity={setQuantity}
+        onAddToCart={() => run(addItem)}
+        onBuyNow={() => run(buyNow)}
+        onSizeChart={() => setSizeChartOpen(true)}
+        onShipping={() => setShippingOpen(true)}
+        preorderHref={props.preorderHref}
+      />
+
+      {/* Empty chart until D-005 Product Data exists — no invented measurements. */}
+      <Sizing
+        open={sizeChartOpen}
+        onClose={() => setSizeChartOpen(false)}
+        productName={props.name}
+        chart={{ measures: [], rows: [] }}
+      />
+      <Shipping
+        open={shippingOpen}
+        onClose={() => setShippingOpen(false)}
+        sections={SHIPPING_SECTIONS}
+      />
+    </>
   );
 }
