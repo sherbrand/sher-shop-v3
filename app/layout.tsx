@@ -2,6 +2,9 @@ import type { Metadata } from "next";
 import type { ReactElement, ReactNode } from "react";
 import { Cormorant_Infant, Cardo } from "next/font/google";
 import "@/app/globals.css";
+import { SiteHeader } from "@/components/SiteHeader";
+import { Footer } from "@/components/C-Footer";
+import { SOCIAL_LINKS } from "@/lib/site";
 
 /* Brand faces (see DESIGN.md and tokens.css):
    Cormorant Infant = display (headings, nav, buttons), Cardo = body/editorial.
@@ -32,8 +35,9 @@ export const metadata: Metadata = {
     "Modern womenswear by SHER: structured corset tops, matching sets, and cocktail dresses.",
 };
 
-// Root layout is a Server Component: it ships no JavaScript.
-// Global chrome (header, menu, footer) is wired in build step B-003.
+// Root layout is a Server Component: it ships no JavaScript of its own.
+// SiteHeader is the only client island (scroll + menu state); the footer stays
+// server-rendered for SEO.
 export default function RootLayout({
   children,
 }: {
@@ -41,7 +45,11 @@ export default function RootLayout({
 }): ReactElement {
   return (
     <html lang="en">
-      <body className={`${cormorant.variable} ${cardo.variable}`}>{children}</body>
+      <body className={`${cormorant.variable} ${cardo.variable}`}>
+        <SiteHeader />
+        {children}
+        <Footer socialLinks={SOCIAL_LINKS} />
+      </body>
     </html>
   );
 }
