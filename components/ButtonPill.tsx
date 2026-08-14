@@ -1,6 +1,11 @@
 "use client";
 
-import type { ReactElement, ReactNode, ButtonHTMLAttributes } from "react";
+import type {
+  ReactElement,
+  ReactNode,
+  ButtonHTMLAttributes,
+  AnchorHTMLAttributes,
+} from "react";
 
 /* SHER pill button — the rounded filter / category control used by the attribute
    filter and the Shop category links. Active pills invert to the dark fill. */
@@ -25,7 +30,6 @@ export function ButtonPill({
   className = "",
   ...rest
 }: ButtonPillProps): ReactElement {
-  const Tag = as;
   const tone = active
     ? "border-[var(--surface-inverse)] bg-[var(--surface-inverse)] text-[var(--text-on-inverse)]"
     : "border-[var(--border-strong)] bg-transparent text-[var(--text-strong)] hover:bg-[var(--surface-raised)]";
@@ -39,14 +43,22 @@ export function ButtonPill({
     className,
   ].join(" ");
 
+  // Render the real element per `as`, so button-only props never land on an anchor.
+  if (as === "a") {
+    return (
+      <a
+        className={cls}
+        href={href}
+        {...(rest as AnchorHTMLAttributes<HTMLAnchorElement>)}
+      >
+        {children}
+      </a>
+    );
+  }
+
   return (
-    <Tag
-      className={cls}
-      href={as === "a" ? href : undefined}
-      aria-pressed={as === "button" ? active : undefined}
-      {...rest}
-    >
+    <button className={cls} aria-pressed={active} {...rest}>
       {children}
-    </Tag>
+    </button>
   );
 }

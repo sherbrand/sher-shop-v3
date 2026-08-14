@@ -1,0 +1,8 @@
+/* Tailwind CSS v4 entry.
+   Order matters (rule Tokens): the design tokens load first so their custom
+   properties exist before anything else, then Tailwind, then the base element
+   defaults (kept in @layer base so utilities still win). tokens.css and
+   base.css are the ported design system: never hand-edit them. */
+@import "./tokens.css";
+@import "tailwindcss";
+@import "./base.css";

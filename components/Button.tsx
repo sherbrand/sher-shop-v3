@@ -1,6 +1,11 @@
 "use client";
 
-import type { ReactElement, ReactNode, ButtonHTMLAttributes } from "react";
+import type {
+  ReactElement,
+  ReactNode,
+  ButtonHTMLAttributes,
+  AnchorHTMLAttributes,
+} from "react";
 
 /* SHER button — Cormorant Infant, UPPERCASE, tracked.
    primary   : dark fill, light text (strong CTA — Add to Cart, Checkout)
@@ -58,7 +63,6 @@ export function Button({
   className = "",
   ...rest
 }: ButtonProps): ReactElement {
-  const Tag = as;
   const cls = [
     "inline-flex items-center justify-center gap-[var(--space-2)] border leading-none no-underline",
     "font-[family-name:var(--font-button)] font-medium uppercase tracking-[var(--tracking-label)]",
@@ -70,15 +74,28 @@ export function Button({
     className,
   ].join(" ");
 
+  // Render the real element per `as`, so button-only props never land on an anchor.
+  if (as === "a") {
+    return (
+      <a
+        className={cls}
+        href={href}
+        aria-disabled={disabled || undefined}
+        {...(rest as AnchorHTMLAttributes<HTMLAnchorElement>)}
+      >
+        {children}
+      </a>
+    );
+  }
+
   return (
-    <Tag
+    <button
       className={cls}
-      href={as === "a" ? href : undefined}
-      disabled={as === "button" ? disabled : undefined}
+      disabled={disabled}
       aria-disabled={disabled || undefined}
       {...rest}
     >
       {children}
-    </Tag>
+    </button>
   );
 }
