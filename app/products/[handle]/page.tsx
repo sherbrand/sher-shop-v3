@@ -80,6 +80,11 @@ export default async function ProductPage({
         breadcrumb={breadcrumb}
         media={toMedia(product)}
         sizes={toSizes(product)}
+        variants={product.variants.map((v) => ({
+          id: v.id,
+          size: v.selectedOptions.find((o) => o.name.toLowerCase() === "size")?.value ?? "",
+          available: v.availableForSale,
+        }))}
         attributeValue={product.typeAttribute ?? undefined}
         preorderHref="/contact"
       />
