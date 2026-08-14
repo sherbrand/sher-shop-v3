@@ -43,15 +43,12 @@ export function ProductDetail(props: ProductDetailProps): ReactElement {
   const [sizeChartOpen, setSizeChartOpen] = useState(false);
   const [shippingOpen, setShippingOpen] = useState(false);
 
-  // The variant for the chosen size (prefer an available one), else any variant.
+  // The available variant that matches the chosen size, or null. Strict: never
+  // fall back to a sold-out or different-size variant — that would add the wrong
+  // item (SizeSelector already blocks picking a sold-out size).
   const resolveVariantId = (): string | null => {
-    const forSize = props.variants.filter((v) => v.size === size);
-    const pick =
-      forSize.find((v) => v.available) ??
-      forSize[0] ??
-      props.variants.find((v) => v.available) ??
-      props.variants[0];
-    return pick?.id ?? null;
+    const match = props.variants.find((v) => v.size === size && v.available);
+    return match?.id ?? null;
   };
 
   const run = (action: (variantId: string, quantity: number) => Promise<void>): void => {

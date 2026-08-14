@@ -48,11 +48,16 @@ export default function RootLayout({
 }: {
   children: ReactNode;
 }): ReactElement {
+  // Shopify hosted customer accounts live on the store domain (server-only env);
+  // the header opens this as an external link (C-Menu Login/Account, §7).
+  const storeDomain = process.env.SHOPIFY_STORE_DOMAIN;
+  const accountHref = storeDomain ? `https://${storeDomain}/account` : "/account";
+
   return (
     <html lang="en">
       <body className={`${cormorant.variable} ${cardo.variable}`}>
         <CartProvider>
-          <SiteHeader />
+          <SiteHeader accountHref={accountHref} />
           {children}
           <Footer socialLinks={SOCIAL_LINKS} />
         </CartProvider>

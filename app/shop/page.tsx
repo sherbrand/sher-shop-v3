@@ -3,7 +3,7 @@ import type { ReactElement } from "react";
 import { getProducts } from "@/lib/shopify/fetchers";
 import { toGridProduct } from "@/lib/listing";
 import { ShopTitle } from "@/components/C-ShopTitle";
-import { ProductGrid } from "@/components/C-ProductGrid";
+import { ShopGrid } from "@/components/ShopGrid";
 import { ShopEditorial } from "@/components/C-ShopEditorial";
 import { Button } from "@/components/Button";
 import { JsonLd } from "@/components/JsonLd";
@@ -20,7 +20,7 @@ export const metadata: Metadata = pageMetadata({
 });
 
 export default async function ShopPage(): Promise<ReactElement> {
-  const products = await getProducts(50);
+  const products = await getProducts();
 
   return (
     <main className="mx-auto flex max-w-[var(--container)] flex-col gap-[var(--space-9)] px-[var(--gutter)] py-[var(--space-7)]">
@@ -36,7 +36,7 @@ export default async function ShopPage(): Promise<ReactElement> {
           { label: "Cocktail Dresses", href: "/cocktail-dresses" },
         ]}
       />
-      <ProductGrid products={products.map(toGridProduct)} columns="1/1/2" pageSize={12} endMark="mark" />
+      <ShopGrid products={products.map(toGridProduct)} />
 
       {/* Editorial images (s-002.3/4/5) still missing (MVP) — media left empty. */}
       <ShopEditorial

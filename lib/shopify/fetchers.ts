@@ -82,29 +82,41 @@ export async function getProduct(handle: string): Promise<Product | null> {
   return data.product ? reshapeProduct(data.product) : null;
 }
 
-export async function getProducts(first = 100): Promise<Product[]> {
+// One Storefront fetch returns at most 250 nodes (F-001): cap the request there
+// and log if a result comes back full, since it may be truncated.
+const MAX_FETCH = 250;
+
+export async function getProducts(first = MAX_FETCH): Promise<Product[]> {
+  const capped = Math.min(first, MAX_FETCH);
   const data = await shopifyFetch<{ products: { nodes: RawProduct[] } }>({
     query: PRODUCTS_QUERY,
-    variables: { first },
+    variables: { first: capped },
     tags: ["products"],
   });
+  if (data.products.nodes.length >= MAX_FETCH) {
+    console.warn(`[shopify] getProducts hit the ${MAX_FETCH} cap — results may be truncated.`);
+  }
   return data.products.nodes.map(reshapeProduct);
 }
 
 // --- Collections ---
 export async function getCollection(
   handle: string,
-  first = 100,
+  first = MAX_FETCH,
 ): Promise<CollectionWithProducts | null> {
+  const capped = Math.min(first, MAX_FETCH);
   const data = await shopifyFetch<{
     collection: (RawCollection & { products: { nodes: RawProduct[] } }) | null;
   }>({
     query: COLLECTION_QUERY,
-    variables: { handle, first },
+    variables: { handle, first: capped },
     tags: ["collections", "products"],
   });
   const c = data.collection;
   if (!c) return null;
+  if (c.products.nodes.length >= MAX_FETCH) {
+    console.warn(`[shopify] collection "${handle}" hit the ${MAX_FETCH} cap — results may be truncated.`);
+  }
   return {
     id: c.id,
     handle: c.handle,

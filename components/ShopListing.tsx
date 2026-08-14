@@ -34,6 +34,9 @@ export function ShopListing({
   filterValues,
 }: ShopListingProps): ReactElement {
   const [active, setActive] = useState<string>(ALL);
+  // F-003: the view toggle (inside C-ProductGrid) reports comfortable/compact;
+  // map it to the grid's column string so the grid actually re-columns.
+  const [view, setView] = useState<string>("comfortable");
 
   const shown = active === ALL ? items : items.filter((it) => it.typeAttribute === active);
 
@@ -55,9 +58,10 @@ export function ShopListing({
       />
       <ProductGrid
         products={shown.map((it) => it.product)}
-        columns="1/1/2"
+        columns={view === "compact" ? "2/2/3" : "1/1/2"}
         pageSize={12}
         endMark="mark"
+        onView={setView}
       />
     </>
   );

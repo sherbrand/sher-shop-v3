@@ -4,6 +4,7 @@ import type { ReactElement, ReactNode } from "react";
 import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import { Cart } from "@/components/C-Cart";
 import type { CartItem } from "@/components/C-Cart";
+import { Icon } from "@/components/Icon";
 import type { Cart as CartData } from "@/lib/shopify/types";
 import { getCart, addToCart, updateCartLine, removeCartLine } from "@/lib/shopify/cart";
 
@@ -42,6 +43,9 @@ function toItems(cart: CartData | null): CartItem[] {
 export function CartProvider({ children }: { children: ReactNode }): ReactElement {
   const [cart, setCart] = useState<CartData | null>(null);
   const [open, setOpen] = useState(false);
+  // A short user-visible error when a cart action fails (F-004 / F-005), shown
+  // as a dismissible toast below. Cart actions never reject to the caller.
+  const [error, setError] = useState<string | null>(null);
 
   // Hydrate the cart from the cart-id cookie on first mount.
   useEffect(() => {
@@ -51,24 +55,44 @@ export function CartProvider({ children }: { children: ReactNode }): ReactElemen
   }, []);
 
   const addItem = useCallback(async (variantId: string, quantity = 1): Promise<void> => {
-    const next = await addToCart(variantId, quantity);
-    setCart(next);
-    setOpen(true); // opening the drawer after an add (F-004)
+    try {
+      const next = await addToCart(variantId, quantity);
+      setCart(next);
+      setError(null);
+      setOpen(true); // opening the drawer after an add (F-004)
+    } catch {
+      setError("Sorry — we couldn't add that to your cart. Please try again.");
+    }
   }, []);
 
   const buyNow = useCallback(async (variantId: string, quantity = 1): Promise<void> => {
-    const next = await addToCart(variantId, quantity);
-    setCart(next);
-    if (next.checkoutUrl) window.location.href = next.checkoutUrl; // straight to checkout (F-006)
+    try {
+      const next = await addToCart(variantId, quantity);
+      setCart(next);
+      setError(null);
+      if (next.checkoutUrl) window.location.href = next.checkoutUrl; // straight to checkout (F-006)
+    } catch {
+      setError("Sorry — we couldn't start checkout. Please try again.");
+    }
   }, []);
 
   const changeQty = useCallback(async (lineId: string, quantity: number): Promise<void> => {
-    const next = quantity <= 0 ? await removeCartLine(lineId) : await updateCartLine(lineId, quantity);
-    setCart(next);
+    try {
+      const next = quantity <= 0 ? await removeCartLine(lineId) : await updateCartLine(lineId, quantity);
+      setCart(next);
+      setError(null);
+    } catch {
+      setError("Sorry — we couldn't update your cart. Please try again.");
+    }
   }, []);
 
   const remove = useCallback(async (lineId: string): Promise<void> => {
-    setCart(await removeCartLine(lineId));
+    try {
+      setCart(await removeCartLine(lineId));
+      setError(null);
+    } catch {
+      setError("Sorry — we couldn't remove that item. Please try again.");
+    }
   }, []);
 
   const checkout = useCallback((): void => {
@@ -94,6 +118,24 @@ export function CartProvider({ children }: { children: ReactNode }): ReactElemen
         onRemove={remove}
         onCheckout={checkout}
       />
+      {error && (
+        <div
+          role="alert"
+          className="fixed bottom-[var(--space-5)] left-1/2 z-[calc(var(--z-drawer)+1)] flex max-w-[min(92vw,420px)] -translate-x-1/2 items-start gap-[var(--space-3)] border border-[var(--border-strong)] bg-[var(--surface-page)] px-[var(--space-4)] py-[var(--space-3)] shadow-[var(--shadow-drawer)] rounded-[var(--radius-sm)]"
+        >
+          <span className="font-[family-name:var(--font-body)] text-[length:var(--size-sm)] text-[var(--text-strong)]">
+            {error}
+          </span>
+          <button
+            type="button"
+            aria-label="Dismiss"
+            onClick={() => setError(null)}
+            className="shrink-0 cursor-pointer border-none bg-transparent p-0 text-[var(--text-meta)]"
+          >
+            <Icon name="close" size={16} />
+          </button>
+        </div>
+      )}
     </CartContext.Provider>
   );
 }
