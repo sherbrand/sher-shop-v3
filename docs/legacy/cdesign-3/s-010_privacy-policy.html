@@ -1,0 +1,203 @@
+<!-- @dsCard group="7. Pages" viewport="1280x900" name="S-010 — Privacy Policy" subtitle="Policy page · data collected, use, sharing, security, cookies, rights" -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Privacy Policy</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  html,body{margin:0;height:100%;background:#c9c6bf;font-family:var(--font-body)}
+  #stage{position:fixed;inset:0;display:flex;overflow:auto;padding:20px;
+    justify-content:safe center;align-items:safe center}
+  .frame{position:relative;flex:none;background:var(--surface-page);
+    box-shadow:0 10px 60px rgba(51,50,49,.28);overflow:hidden;
+    container:sherframe / size;transform:translateZ(0)}
+  .frame[data-device="mobile"]{width:390px;height:844px}
+  .frame[data-device="tablet"]{width:834px;height:1112px}
+  .frame[data-device="desktop"]{width:100%;max-width:1440px;height:100%}
+  .frame[data-device="wide"]{width:100%;min-width:1440px;max-width:1920px;height:100%}
+  .scroll{position:absolute;inset:0;overflow-y:auto;overflow-x:hidden}
+
+  #root{--fs-hero:var(--size-hero-sm);--fs-section:var(--size-section-sm);--fs-body:var(--size-body-sm);--fs-item:var(--size-item-sm);--announce-h:2rem;--fs-display:var(--size-display-sm)}
+  .sec{padding:var(--space-7) var(--gutter)}
+  .wrap{max-width:var(--container);margin:0 auto}
+  .center{text-align:center}
+
+  .head{display:flex;flex-direction:column;gap:var(--space-4);align-items:center;text-align:center}
+  .head h1{margin:0;font-size:var(--fs-hero);max-width:20ch}
+  .head p{margin:0;color:var(--text-default);font-size:var(--fs-body);max-width:56ch}
+  .pills{display:flex;flex-wrap:wrap;gap:var(--space-3);justify-content:center}
+
+  .toolbar{display:flex;align-items:center;justify-content:space-between;gap:var(--space-4);
+    margin-bottom:var(--space-5);border-bottom:1px solid var(--border-default);padding-bottom:var(--space-4)}
+  .toolbar .count{font-family:var(--font-body);font-size:var(--size-xs);letter-spacing:var(--tracking-label);
+    text-transform:uppercase;color:var(--text-meta)}
+
+  .pgrid{display:grid;gap:var(--space-4)}
+  .pgrid.comfortable{grid-template-columns:1fr}
+  .pgrid.compact{grid-template-columns:1fr 1fr}
+  .empty{padding:var(--space-8) 0;text-align:center;color:var(--text-meta);font-size:var(--fs-body)}
+
+  .editorial{display:grid;grid-template-columns:1fr;gap:var(--space-6);align-items:center}
+  .editorial .media{position:relative;aspect-ratio:4/5;border-radius:var(--radius-sm);overflow:hidden;background:var(--surface-raised)}
+  .editorial h2{margin:0 0 var(--space-4);font-size:var(--fs-section)}
+  .editorial p{margin:0 0 var(--space-6);color:var(--text-default);line-height:var(--leading-normal)}
+
+  @container sherframe (min-width:640px){
+    #root{--fs-hero:var(--size-hero-md);--fs-section:var(--size-section-md);--fs-body:var(--size-body-md);--fs-item:var(--size-item-md);--gutter:var(--space-5);--announce-h:2.25rem;--fs-display:var(--size-display-md)}
+    .sec{padding:var(--space-8) var(--gutter)}
+    .pgrid{gap:var(--space-5)}
+  }
+  @container sherframe (min-width:768px){
+    .pgrid.comfortable{grid-template-columns:1fr 1fr}
+    .editorial{grid-template-columns:1fr 1fr;gap:var(--space-8)}
+  }
+  @container sherframe (min-width:1024px){
+    #root{--fs-hero:var(--size-hero-lg);--fs-section:var(--size-section-lg);--gutter:var(--space-6);--fs-display:var(--size-display-lg);--fs-body:var(--size-body-lg);--fs-item:var(--size-item-lg)}
+    .sec{padding:var(--space-9) var(--gutter)}
+    .pgrid.compact{grid-template-columns:1fr 1fr 1fr}
+    .pgrid.comfortable{grid-template-columns:1fr 1fr}
+  }
+
+  .stg-contact{display:grid;grid-template-columns:1fr;gap:var(--space-7);align-items:start}
+  .stg-contact .txt{display:flex;flex-direction:column;gap:var(--space-4);align-items:flex-start}
+  @container sherframe (min-width:768px){ .stg-contact{grid-template-columns:1fr 1fr;gap:var(--space-8)} }
+
+  /* staging alt direction */
+  .stg-about{position:relative;min-height:360px;display:grid;grid-template-columns:1fr}
+  .stg-about .media{position:relative;min-height:280px}
+  .stg-about .txt{display:flex;flex-direction:column;justify-content:center;gap:var(--space-3);
+    padding:var(--space-8) var(--gutter);background:var(--surface-raised)}
+  .stg-about h2{margin:0;font-size:var(--fs-section)}
+  @container sherframe (min-width:768px){ .stg-about{grid-template-columns:1fr 1fr} }
+
+  #sw{position:fixed;z-index:2000;display:flex;gap:6px;padding:6px;border-radius:var(--radius-md);
+    background:var(--surface-inverse);box-shadow:0 6px 24px rgba(51,50,49,.35)}
+  #sw.c0{top:14px;left:14px}#sw.c1{top:14px;right:14px}#sw.c2{bottom:14px;right:14px}#sw.c3{bottom:14px;left:14px}
+  #sw button{width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;
+    border:none;border-radius:var(--radius-sm);background:transparent;color:#cfcac2;cursor:pointer;padding:0}
+  #sw button:hover{color:#fff}#sw button.act{background:rgba(250,249,246,.16);color:#fff}
+  #sw .sep{width:1px;background:rgba(250,249,246,.2);margin:2px 2px}
+  #sw svg{width:17px;height:17px;display:block}
+</style>
+</head>
+<body>
+<div id="sw" class="c1"></div>
+<div id="stage"><div class="frame" id="frame" data-device="desktop"><div class="scroll" id="scroll"><div id="root"></div></div></div></div>
+
+<script src="image-slot.js"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="_ds_bundle.js"></script>
+
+<script>
+(function(){
+  var ICON={
+    mobile:'<rect x="7" y="3" width="10" height="18" rx="2"/><line x1="11" y1="18" x2="13" y2="18"/>',
+    tablet:'<rect x="5" y="3" width="14" height="18" rx="2"/><line x1="11" y1="18" x2="13" y2="18"/>',
+    desktop:'<rect x="3" y="4" width="18" height="12" rx="2"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="16" x2="12" y2="20"/>',
+    wide:'<rect x="1" y="6" width="22" height="10" rx="2"/><line x1="8" y1="20" x2="16" y2="20"/><line x1="12" y1="16" x2="12" y2="20"/>',
+    main:'<circle cx="12" cy="12" r="8"/>',
+    staging:'<circle cx="12" cy="12" r="8" stroke-dasharray="3 3"/>',
+    rotate:'<path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/>'
+  };
+  function svg(p){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">'+p+'</svg>';}
+  var state={device:'desktop',mode:'main',corner:1};
+  var sw=document.getElementById('sw'), frame=document.getElementById('frame');
+  function btn(icon,title,on){var b=document.createElement('button');b.innerHTML=svg(ICON[icon]);b.title=title;b.setAttribute('aria-label',title);b.onclick=on;return b;}
+  function render(){
+    sw.className='c'+state.corner; sw.innerHTML='';
+    [['mobile','Mobile'],['tablet','Tablet'],['desktop','Desktop'],['wide','Wide']].forEach(function(d){
+      var b=btn(d[0],d[1]+' view',function(){state.device=d[0];apply();});
+      if(state.device===d[0])b.classList.add('act');sw.appendChild(b);});
+    var s1=document.createElement('div');s1.className='sep';sw.appendChild(s1);
+    var mb=btn(state.mode==='main'?'main':'staging',state.mode==='main'?'Main direction':'Staging direction',function(){state.mode=(state.mode==='main'?'staging':'main');apply();});
+    mb.classList.add('act');sw.appendChild(mb);
+    var s2=document.createElement('div');s2.className='sep';sw.appendChild(s2);
+    sw.appendChild(btn('rotate','Move panel',function(){state.corner=(state.corner+1)%4;render();}));
+  }
+  function apply(){frame.setAttribute('data-device',state.device);render();if(window.__renderApp)window.__renderApp(state.mode);}
+  window.__swInit=apply; render();
+})();
+</script>
+
+<script type="text/babel">
+const NS = window.SHERDesignSystem_84f0d7;
+const { Sticky, Menu, Cart, Footer, Breadcrumb, Button, HeroTitle, ContentProse } = NS;
+
+const SECTIONS = [
+  { heading: "Information We Collect",
+    paragraph: "We collect the details you give us when you shop. That means your name, email, shipping address, and phone number. When you pay, our checkout partner handles your card details, and we never see your full card number. We also collect basic data about how you use the site, like the pages you view and the device you are on." },
+  { heading: "How We Use Your Data",
+    paragraph: "We use your data to run your order and support you. That covers taking payment, shipping your items, and sending order updates by email. We also use it to answer your questions and to improve the site. If you opt in, we send you news and offers, and you can stop these at any time." },
+  { heading: "Sharing with Third Parties",
+    paragraph: "We share your data only with the partners who help us run the shop. That includes our store platform, our payment partner, and the carriers who deliver your order. Each one may use your data only to do its job for us. We do not sell your data to anyone." },
+  { heading: "Security",
+    paragraph: "We protect your data with care. Payments run through a secure, encrypted checkout. We limit who on our team can see your details, and we keep them only as long as we need. No system is perfect, so we also ask you to keep your own account and password safe." },
+  { heading: "Cookies",
+    paragraph: "We use cookies to make the site work and to remember your cart. Some cookies are needed for the site to run. Others help us see how the site is used, so we can make it better. You can turn off non-essential cookies in your browser or in our cookie banner." },
+  { heading: "Your Rights",
+    paragraph: "You have rights over the data we hold, and these depend on the laws where you live. In most places you can ask to see your data, fix it, or have it deleted. You can also opt out of marketing at any time. To make a request, email us at hello@sherbrand.co." },
+];
+
+function MainPage() {
+  return (
+    <>
+      {/* S-010.1 — breadcrumb, H1, subtitle */}
+      <HeroTitle headingLevel={1}
+        breadcrumb={[{ label: "Home", href: "/" }, { label: "Privacy Policy" }]}
+        heading="Privacy Policy" description="What we collect when you shop with SHER, how we use it, and the choices you have." />
+
+      {/* S-010.2 onward — policy sections at prose width */}
+      <ContentProse items={SECTIONS} paddingTop={0} />
+    </>
+  );
+}
+
+/* Staging — alternate direction: left-aligned title on a tinted band, then the
+   sections in a wider measure with a closing CTA. */
+function StagingPage() {
+  return (
+    <>
+      <section className="sec" style={{ background: "var(--surface-raised)" }}>
+        <div className="wrap" style={{ display: "flex", flexDirection: "column",
+          gap: "var(--space-4)", alignItems: "flex-start" }}>
+          <Breadcrumb items={[{ label: "Home", href: "/" }, { label: "Privacy Policy" }]} />
+          <h1 style={{ margin: 0, fontSize: "var(--fs-hero)", maxWidth: "18ch" }}>Privacy Policy</h1>
+          <p className="stg-lead" style={{ margin: 0, color: "var(--text-default)", maxWidth: "60ch" }}>What we collect when you shop with SHER, how we use it, and the choices you have.</p>
+        </div>
+      </section>
+
+      <ContentProse items={SECTIONS}>
+        <Button as="a" href="/contact" variant="secondary">Contact Us</Button>
+      </ContentProse>
+    </>
+  );
+}
+
+function App() {
+  const [mode, setMode] = React.useState("main");
+  const [menuOpen, setMenuOpen] = React.useState(false);
+  const [cartOpen, setCartOpen] = React.useState(false);
+  React.useEffect(() => {
+    window.__renderApp = (m) => setMode(m);
+    if (window.__swInit) window.__swInit();
+  }, []);
+  const openMenu = () => setMenuOpen(true), openCart = () => setCartOpen(true);
+  return (
+    <>
+      <Sticky cartCount={0} onMenu={openMenu} onCart={openCart}
+        key={mode} announcementTone={mode === "main" ? "light" : "accent"} />
+      {mode === "main" ? <MainPage /> : <StagingPage />}
+      <Footer year={2026} />
+      <Menu open={menuOpen} onClose={() => setMenuOpen(false)} />
+      <Cart open={cartOpen} onClose={() => setCartOpen(false)} items={[]} />
+    </>
+  );
+}
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>

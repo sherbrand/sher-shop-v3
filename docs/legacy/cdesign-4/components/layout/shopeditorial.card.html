@@ -1,0 +1,43 @@
+<!-- @dsCard group="6. Layout Components" viewport="900x2200" name="Shop Editorial" subtitle="Media beside eyebrow + heading + paragraph (gap / ratio = stepped by default | headingFont = display, body | mirror = true, false | mobileFirst = media, text | mobileAlign = left, right | background = transparent, surface, tint | headingLevel = 1–4)" -->
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<script src="../../image-slot.js"></script>
+<style>body{margin:0;padding:28px;background:var(--surface-page)}.lbl{font-family:var(--font-body);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-meta);margin:0 0 12px}</style></head><body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<script type="text/babel">
+const { ShopEditorial } = window.SHERDesignSystem_84f0d7;
+const slot=(id,ph)=>(<image-slot id={id} shape="rect" placeholder={ph} style={{position:"absolute",inset:0,width:"100%",height:"100%"}} />);
+ReactDOM.createRoot(document.getElementById("root")).render(<div>
+  <p className="lbl">mirror=false (default) · media left</p>
+  <ShopEditorial eyebrow="What is a Corset Top?" heading="Structured Boning That Commands the Silhouette"
+    paragraph="A corset top is a fitted top built on corsetry. Thin bones run through the fabric to shape the waist and support the bust."
+    media={slot("card-se-1","Corset top on a model")} />
+  <p className="lbl" style={{margin:"32px 0 12px"}}>mirror=true · text left</p>
+  <ShopEditorial mirror eyebrow="How is SHER different?" heading="Each Bone Set by Hand, Not by Machine"
+    paragraph="Most brands lay the boning flat with a machine. We do it by hand, one bone at a time on a mannequin."
+    media={slot("card-se-2","Hand-set boning channels")} />
+  <p className="lbl" style={{margin:"32px 0 12px"}}>mobileFirst="text" · copy leads when stacked</p>
+  <ShopEditorial mobileFirst="text" eyebrow="About our Product" heading="More about our Corset Tops"
+    paragraph="We build every corset top by hand. Each bone is set one at a time on a mannequin, so the shape holds to the body."
+    media={slot("card-se-3","Satin lining and bust cups")} />
+  <p className="lbl" style={{margin:"32px 0 12px"}}>mobileAlign="right" · stacked text to the right edge</p>
+  <ShopEditorial mobileFirst="text" mobileAlign="right" eyebrow="What is a Cocktail Dress?"
+    heading="The Dress You Wear to Be Remembered"
+    paragraph="A cocktail dress is a dressy short-to-mid dress made for evening events, right for parties, dinners, and occasions that ask you to dress up."
+    media={slot("card-se-8","Cocktail dress on a model")} />
+  <p className="lbl" style={{margin:"32px 0 12px"}}>headingFont="body" · Cardo, title case, untracked</p>
+  <ShopEditorial mirror headingFont="body" eyebrow="What is a Corset Top?"
+    heading="Structured Boning That Commands the Silhouette"
+    paragraph="A corset top is a fitted top built on corsetry. Thin bones run through the fabric to shape the waist and support the bust."
+    media={slot("card-se-5","Corset top on a model")} />
+  <p className="lbl" style={{margin:"32px 0 12px"}}>gap / ratio · overriding the stepped defaults</p>
+  <div style={{"--editorial-gap":"var(--space-9)"}}>
+    <ShopEditorial eyebrow="Quality from Inside Out" heading="Built with High Quality Fabrics and Craft"
+      paragraph="The care shows on the inside. A satin lining sits against the skin, so the top feels smooth and holds its shape."
+      media={slot("card-se-6","Satin lining detail")} />
+  </div>
+</div>);
+</script></body></html>

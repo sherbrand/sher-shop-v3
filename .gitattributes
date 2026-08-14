@@ -1,0 +1,3 @@
+# Normalize line endings. The design handover is authored on macOS (LF); this
+# keeps the repo LF everywhere so diffs stay clean across Windows and Vercel.
+* text=auto eol=lf

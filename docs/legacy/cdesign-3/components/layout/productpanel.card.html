@@ -1,0 +1,38 @@
+<!-- @dsCard group="6. Layout Components" viewport="1100x900" name="C-ProductPanel" subtitle="Product main band · gallery + purchase column (sizes all soldOut = Preorder swap | stacked = true, false)" -->
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<script src="../../image-slot.js"></script>
+<style>html,body{height:100%}body{margin:0;padding:28px;background:var(--surface-page);overflow-y:auto}.lbl{font-family:var(--font-body);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--text-meta);margin:0 0 14px}</style></head><body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<script type="text/babel">
+const { ProductPanel } = window.SHERDesignSystem_84f0d7;
+const slot=(id,ph)=>(<image-slot id={id} shape="rect" placeholder={ph} style={{position:"absolute",inset:0,width:"100%",height:"100%"}} />);
+const MEDIA=[
+  {type:"video",node:slot("card-pp-v","Product video")},
+  {type:"image",node:slot("card-pp-1","Front view")},
+  {type:"image",node:slot("card-pp-2","Back lacing")},
+];
+const CRUMB=[{label:"Shop",href:"/shop"},{label:"Corset Tops",href:"/corset-tops"},{label:"Silk Lace Corset Top"}];
+function Demo(){
+  const [size,setSize]=React.useState("S");
+  const [qty,setQty]=React.useState(1);
+  return (<div>
+    <p className="lbl">In stock · Add to Cart + Buy Now</p>
+    <ProductPanel breadcrumb={CRUMB} name="Silk Lace Corset Top" price={240}
+      description="A corset top built on real corsetry, with each bone set by hand so the shape holds to the body."
+      attributeLabel="Closure Type" attributeValue="Lace Closure"
+      sizes={[{label:"XS"},{label:"S"},{label:"M",soldOut:true},{label:"L"}]}
+      size={size} onSize={setSize} quantity={qty} onQuantity={setQty} media={MEDIA} />
+    <p className="lbl" style={{margin:"40px 0 14px"}}>Every size sold out · Preorder swap</p>
+    <ProductPanel breadcrumb={CRUMB} name="Odile Zip Corset" price={210}
+      description="Sold out in every size, so the buy buttons swap to a single Preorder link."
+      attributeLabel="Closure Type" attributeValue="Zip Closure"
+      sizes={[{label:"XS",soldOut:true},{label:"S",soldOut:true},{label:"M",soldOut:true}]}
+      media={MEDIA} />
+  </div>);
+}
+ReactDOM.createRoot(document.getElementById("root")).render(<Demo/>);
+</script></body></html>

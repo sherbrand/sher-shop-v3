@@ -1,28 +1,25 @@
 import type { Metadata } from "next";
-import { Cormorant_Infant, Cardo, Manrope } from "next/font/google";
+import type { ReactElement, ReactNode } from "react";
+import { Cormorant_Infant, Cardo } from "next/font/google";
 import "@/app/globals.css";
-import { Header } from "@/components/Header";
-import { Footer } from "@/components/Footer";
 
-// Three typefaces from DESIGN.md, each a fixed role. Exposed as CSS variables
-// that globals.css maps to --font-display / --font-body / --font-ui.
+/* Brand faces (see DESIGN.md and tokens.css):
+   Cormorant Infant = display (headings, nav, buttons), Cardo = body/editorial.
+   Loaded through next/font and bound to the --font-display and --font-body
+   tokens the components read. The variable classes go on <body> so the loaded
+   faces win over the token fallback for all page content by proximity,
+   independent of stylesheet order. */
 const cormorant = Cormorant_Infant({
   subsets: ["latin"],
   weight: ["400", "500"],
-  variable: "--font-cormorant",
+  variable: "--font-display",
   display: "swap",
 });
 const cardo = Cardo({
   subsets: ["latin"],
   weight: ["400", "700"],
   style: ["normal", "italic"],
-  variable: "--font-cardo",
-  display: "swap",
-});
-const manrope = Manrope({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-manrope",
+  variable: "--font-body",
   display: "swap",
 });
 
@@ -32,26 +29,19 @@ export const metadata: Metadata = {
     template: "%s · SHER",
   },
   description:
-    "Modern womenswear by SHER: structured corset tops, matching sets, and cocktail dresses. Hand-built, sensual, and made to be seen.",
+    "Modern womenswear by SHER: structured corset tops, matching sets, and cocktail dresses.",
 };
 
-// Root layout is a Server Component (no 'use client'): it ships zero JS.
+// Root layout is a Server Component: it ships no JavaScript.
+// Global chrome (header, menu, footer) is wired in build step B-003.
 export default function RootLayout({
   children,
 }: {
-  children: React.ReactNode;
-}): React.ReactElement {
+  children: ReactNode;
+}): ReactElement {
   return (
-    <html
-      lang="en"
-      className={`${cormorant.variable} ${cardo.variable} ${manrope.variable}`}
-    >
-      <body>
-        {/* Global chrome (B-003): transparent/sticky header + slide-in menu, footer. */}
-        <Header />
-        {children}
-        <Footer />
-      </body>
+    <html lang="en">
+      <body className={`${cormorant.variable} ${cardo.variable}`}>{children}</body>
     </html>
   );
 }

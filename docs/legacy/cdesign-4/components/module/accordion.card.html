@@ -1,0 +1,17 @@
+<!-- @dsCard group="5. Module Components" viewport="700x460" name="Accordion" subtitle="FAQ disclosure rows (single = true, false | defaultOpen)" -->
+<!doctype html><html><head><meta charset="utf-8"><link rel="stylesheet" href="../../styles.css">
+<style>body{margin:0;padding:28px;background:var(--surface-page)}</style></head><body>
+<div id="root"></div>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<script type="text/babel">
+const { Accordion } = window.SHERDesignSystem_84f0d7;
+const faqs=[
+  {q:"How do I measure for a corset top?",a:"Measure your bust, waist, hip, and length. Bust matters most on a corset top, so get that one right. Keep the tape level and snug, not tight."},
+  {q:"How should a corset top fit?",a:"It should feel firm but never painful. The top edge sits flat against your chest with no gap, and the waist holds close with no space to pinch."},
+  {q:"What if I am between sizes?",a:"Size up. A corset top can be taken in but not let out, so the larger size gives you room to adjust."},
+];
+ReactDOM.createRoot(document.getElementById("root")).render(<Accordion items={faqs} defaultOpen={0} />);
+</script></body></html>

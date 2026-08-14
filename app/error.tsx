@@ -1,26 +1,21 @@
-"use client"; // error boundaries must be Client Components
+"use client";
 
-import { useEffect } from "react";
+import type { ReactElement } from "react";
 
-// Catches render/data errors for this route segment and offers a retry.
+/* Root error boundary. Client Component by requirement. */
 export default function Error({
-  error,
   reset,
 }: {
   error: Error & { digest?: string };
   reset: () => void;
-}): React.ReactElement {
-  useEffect(() => {
-    // Debug log so failures are visible in dev + Vercel logs.
-    console.error("[route error]", error);
-  }, [error]);
-
+}): ReactElement {
   return (
-    <main className="mx-auto max-w-3xl px-6 py-24">
-      <h1 className="text-2xl font-bold">Something went wrong.</h1>
+    <main className="flex min-h-screen flex-col items-center justify-center gap-[var(--space-4)] px-[var(--gutter)] text-center">
+      <h1 className="text-[length:var(--size-section)]">Something went wrong</h1>
       <button
+        type="button"
         onClick={reset}
-        className="mt-4 rounded-full bg-neutral-900 px-5 py-2 text-sm font-semibold text-white"
+        className="inline-flex items-center justify-center rounded-[var(--radius-sm)] border border-[var(--text-strong)] px-[var(--pad-btn-md)] py-[var(--space-3)] font-[family-name:var(--font-button)] text-[length:var(--size-sm)] uppercase tracking-[var(--tracking-label)] text-[var(--text-strong)] transition-colors duration-[var(--dur-fast)] hover:bg-[var(--surface-inverse)] hover:text-[var(--text-on-inverse)]"
       >
         Try again
       </button>

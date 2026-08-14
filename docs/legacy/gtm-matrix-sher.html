@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SHER — GTM Method Matrix</title>
+<style>
+  :root {
+    color-scheme: light;
+    --surface-1:      #fcfcfb;
+    --page:           #f9f9f7;
+    --text-primary:   #0b0b0b;
+    --text-secondary: #52514e;
+    --muted:          #898781;
+    --grid:           #e1e0d9;
+    --axis:           #c3c2b7;
+    --border:         rgba(11,11,11,0.10);
+    --inbound:         #2a78d6;
+    --outbound:       #eb6834;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:where(:not([data-theme="light"])) {
+      color-scheme: dark;
+      --surface-1:      #1a1a19;
+      --page:           #0d0d0d;
+      --text-primary:   #ffffff;
+      --text-secondary: #c3c2b7;
+      --muted:          #898781;
+      --grid:           #2c2c2a;
+      --axis:           #383835;
+      --border:         rgba(255,255,255,0.10);
+      --inbound:         #3987e5;
+      --outbound:       #d95926;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --surface-1:      #1a1a19;
+    --page:           #0d0d0d;
+    --text-primary:   #ffffff;
+    --text-secondary: #c3c2b7;
+    --muted:          #898781;
+    --grid:           #2c2c2a;
+    --axis:           #383835;
+    --border:         rgba(255,255,255,0.10);
+    --inbound:         #3987e5;
+    --outbound:       #d95926;
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 32px 20px 80px;
+    background: var(--page);
+    color: var(--text-primary);
+    font: 15px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  .wrap { max-width: 900px; margin: 0 auto; }
+  h1 { font-size: 26px; line-height: 1.2; margin: 0 0 6px; letter-spacing: -0.01em; }
+  h2 { font-size: 18px; margin: 0 0 4px; letter-spacing: -0.01em; }
+  h3 { font-size: 14px; margin: 24px 0 8px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-secondary); }
+  p  { margin: 0 0 12px; color: var(--text-secondary); max-width: 68ch; }
+  .lede { color: var(--text-secondary); margin-bottom: 28px; }
+
+  .card {
+    background: var(--surface-1);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 20px;
+    margin: 0 0 28px;
+  }
+  .card > p { margin-bottom: 16px; }
+
+  .defs { display: grid; gap: 16px 22px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+  .def { border-left: 2px solid var(--axis); padding-left: 12px; }
+  .def b { display: block; font-size: 13px; margin-bottom: 2px; }
+  .def span { font-size: 13px; color: var(--text-secondary); }
+
+  .plot-scroll { overflow-x: auto; margin: 0 -8px; padding: 0 8px; }
+  svg { display: block; width: 100%; height: auto; min-width: 620px; }
+  .dot { stroke: var(--surface-1); stroke-width: 2; }
+  .ring { fill: none; stroke: var(--text-primary); stroke-width: 1.5; }
+  .hit { fill: transparent; cursor: pointer; }
+  .lbl { font-size: 10px; fill: var(--muted); pointer-events: none; font-variant-numeric: tabular-nums; }
+  .axtitle { font-size: 12px; fill: var(--text-primary); font-weight: 600; }
+  .axend { font-size: 11px; fill: var(--muted); }
+  .quadname { font-size: 11px; fill: var(--muted); font-weight: 600; letter-spacing: 0.04em; opacity: .75; }
+  .gridline { stroke: var(--grid); stroke-width: 1; }
+  .midline { stroke: var(--axis); stroke-width: 1; }
+
+  .keylist {
+    display: grid; gap: 3px 20px; margin: 16px 0 0; padding: 0; list-style: none;
+    grid-template-columns: repeat(auto-fit, minmax(215px, 1fr));
+    font-size: 12.5px; color: var(--text-secondary);
+  }
+  .keylist li { display: flex; align-items: baseline; gap: 7px; margin: 0; }
+  .keylist .kn { color: var(--muted); font-variant-numeric: tabular-nums; min-width: 17px; text-align: right; }
+  .keylist .kd { width: 8px; height: 8px; border-radius: 50%; flex: none; transform: translateY(-1px); }
+  .ringed { outline: 1.5px solid var(--text-primary); outline-offset: 2px; }
+  .keylist li.picked span:last-child { color: var(--text-primary); font-weight: 600; }
+  .legend .swatch.ringed { background: var(--muted); }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 18px; align-items: center; margin: 14px 0 0; font-size: 13px; color: var(--text-secondary); }
+  .key { display: inline-flex; align-items: center; gap: 7px; }
+  .swatch { width: 11px; height: 11px; border-radius: 50%; display: inline-block; }
+  .sizekey { display: inline-flex; align-items: flex-end; gap: 5px; }
+  .sizekey i { display: inline-block; border-radius: 50%; background: var(--muted); }
+
+  .tip {
+    position: fixed; z-index: 20; pointer-events: none; opacity: 0;
+    transition: opacity .1s; max-width: 260px;
+    background: var(--surface-1); color: var(--text-primary);
+    border: 1px solid var(--border); border-radius: 8px;
+    padding: 9px 11px; font-size: 12.5px; line-height: 1.45;
+    box-shadow: 0 6px 22px rgba(0,0,0,0.16);
+  }
+  .tip b { display: block; margin-bottom: 3px; font-size: 13px; }
+  .tip .meta { color: var(--text-secondary); }
+
+  table { border-collapse: collapse; width: 100%; font-size: 13px; }
+  caption { text-align: left; font-size: 13px; color: var(--text-secondary); padding-bottom: 10px; }
+  th, td { text-align: left; padding: 7px 10px 7px 0; border-bottom: 1px solid var(--grid); vertical-align: top; }
+  th { color: var(--muted); font-weight: 600; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; padding-right: 14px; }
+  .tag { display: inline-block; font-size: 11px; padding: 1px 7px; border-radius: 20px; border: 1px solid var(--axis); color: var(--text-secondary); white-space: nowrap; }
+  .table-scroll { overflow-x: auto; }
+
+  ul { margin: 0 0 12px; padding-left: 20px; color: var(--text-secondary); max-width: 68ch; }
+  li { margin-bottom: 7px; }
+  li b, p b { color: var(--text-primary); }
+  .tray li { margin-bottom: 9px; }
+  .note { font-size: 13px; color: var(--muted); max-width: 68ch; }
+  .src { font-size: 12px; color: var(--muted); font-weight: 400; letter-spacing: 0.02em; }
+  hr { border: 0; border-top: 1px solid var(--grid); margin: 40px 0 32px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>SHER — GTM method matrix</h1>
+  <p class="lede">A coverage map of the ways to win a first-time customer, not a recommendation. Positions are judgement calls, not measurements. Argue with any of them.</p>
+
+  <div class="card">
+    <h2>Shortlisted markets <span class="src">&mdash; From you</span></h2>
+    <p>Ranked as you gave them. Every score on the board assumes you are selling into these from Thailand, with no local company, bank account or warehouse in any of them.</p>
+    <ol>
+      <li><b>EN markets.</b> East and Southeast Asian diaspora in the US, UK, AU and CA.</li>
+      <li><b>AS markets.</b> PH, HK, TW, SG. Marketplace-dominant everywhere except HK.</li>
+      <li><b>CN markets.</b> Mainland China, plus Chinese speakers in HK, TW, SG and worldwide.</li>
+      <li><b>TH market.</b> Out of scope for this analysis.</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h2>Shortlisted GTM <span class="src">&mdash; From you</span></h2>
+    <p>Five strategies, and the dots they translate to. Ringed on the board.</p>
+    <ul>
+      <li><b>1. KOL partnership, their photos as paid ad creative.</b> Two dots: <b>KOL and creator partnerships</b> plus <b>paid social ads</b>. One play, two costs. You pay a licence fee for the image, then you pay again for every person who sees it. On the board that is a mid dot at mid commitment married to the biggest dot on the whole board.</li>
+      <li><b>2. Get people to tag @sherbrand.</b> <b>Customer content.</b> Low commitment, low CAC, sits in "comparing brands". A tag needs a reason: either the piece is distinctive enough to be worth posting, or you give her one by reposting and featuring. That is the branding question you asked, and the answer is that the garment has to be recognisable in a photo taken by someone else.</li>
+      <li><b>3. Organic TikTok and Reels.</b> <b>Organic social.</b> Note what it does not include: <b>atelier footage</b> and <b>founder story</b> are what goes <em>in</em> the videos. Organic social is the shelf, not the product. Both sit low-commitment and low-CAC, unringed for now.</li>
+      <li><b>4. SEO and GEO.</b> <b>SEO and AI search</b>, which already covers answer engines. <b>Content marketing</b> is what SEO ranks, so the two run together. Sits in "wants the category", the thinnest and cheapest band on the board.</li>
+      <li><b>5. Sell to Chinese-speaking markets.</b> Was not a dot. Now two. <b>Xiaohongshu</b> is ringed: cheap to start and it reaches HK, TW, SG and MY as well as the mainland. <b>CN mainland set</b> is unringed and sits low, which is the argument: mainland commerce is a market you enter, not a channel you add.</li>
+    </ul>
+    <p class="note">Four of your five sit in the cold and middle bands. Nothing on your list reaches "ready to buy", which is the cheapest band on the board and the one nobody is standing in.</p>
+  </div>
+
+  <div class="card">
+    <h2>Scorecard <span class="src">&mdash; Table view</span></h2>
+    <ul>
+      <li><b>Market</b> &mdash; which shortlisted market it serves. All means it works anywhere without a local entity.</li>
+      <li><b>Start</b> &mdash; who starts it. She comes to you, or you go to her uninvited.</li>
+      <li><b>Commit</b> &mdash; what you sink, in money <em>and</em> founder weeks, before you learn whether it works.</li>
+      <li><b>CAC</b> &mdash; what one new customer costs through that method.</li>
+      <li><b>Interest</b> &mdash; how warm she is when the method reaches her. Placed by center of gravity, so a method can sit between two bands.</li>
+    </ul>
+
+  <div class="table-scroll">
+    <table>
+      <caption>Sorted by commitment, lowest first. 0 to 100 scales. Commitment and CAC: 100 = highest. On the plot, dots that would sit on top of each other are nudged apart by up to 20px, so read exact values here.</caption>
+      <thead>
+        <tr>
+          <th class="num">#</th><th>Method</th><th>Market</th><th>Start</th>
+          <th class="num">Commit</th><th class="num">CAC</th>
+          <th>Interest</th>
+          <th>Note</th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+  </div>
+
+  <div class="card">
+    <h2>Matrix <span class="src">&mdash; Commitment &times; Interest</span></h2>
+    <div class="plot-scroll"><svg id="m3" viewBox="0 0 760 620" role="img" aria-label="Scatter of go-to-market methods by commitment and level of interest, sized by CAC, colored by inbound or outbound"></svg></div>
+    <div class="legend">
+      <span class="key"><i class="swatch" style="background:var(--inbound)"></i> Inbound &mdash; she comes to you</span>
+      <span class="key"><i class="swatch" style="background:var(--outbound)"></i> Outbound &mdash; you go to her</span>
+      <span class="sizekey">
+        <i style="width:7px;height:7px"></i><i style="width:14px;height:14px"></i><i style="width:21px;height:21px"></i>
+        &nbsp;CAC: low &rarr; high
+      </span>
+      <span class="key"><i class="swatch ringed"></i> On your shortlist</span>
+    </div>
+    <ul class="keylist" id="key3"></ul>
+  </div>
+
+  <div class="card">
+    <h2>Findings report <span class="src">&mdash; From the analysis</span></h2>
+
+    <h3>From the matrix</h3>
+    <ul>
+      <li><b>Half the board does not care which market you pick.</b> 20 of 42 are marked All: they run from one account, off your own site, and need no local entity anywhere. That is a sharper dividing line than either axis.</li>
+      <li><b>All eight of the cheapest methods are in that half.</b> Atelier footage, founder story, customer content, review platforms, IG/FB Shop, waitlist and drops, owned list to first order, founder broadcast. Low commitment, low CAC, and none of them needs the geography question settled first.</li>
+      <li><b>CAC falls as interest rises, and it falls a long way.</b> 59 not looking, 44 wants the category, 42 comparing, 28 ready to buy. Reaching a cold stranger abroad costs about two and a half times what it costs to convert someone already warm.</li>
+      <li><b>Nothing outbound reaches "ready to buy". Not one method out of nine.</b> You cannot push a person into being ready. She arrives that way, and all you can do is be there. That is the board's strongest argument for building assets over buying reach.</li>
+      <li><b>"Ready to buy" is the cheapest band and entirely unbuilt.</b> Nine methods, average CAC 28. IG/FB Shop, owned list to first order, waitlist and drops, referral, fit calculator, own site, TikTok Shop abroad, Shopee and Lazada, Xiaohongshu Shop.</li>
+      <li><b>"Wants the category" is the thinnest band: 7 of 42, one of which is a trade show.</b> Six real doors to a woman who already wants a corset top and has never heard of SHER: paid search, SEO, content marketing, borrowed audiences, partnerships, Xiaohongshu. Demand that already exists is the cheapest demand there is.</li>
+      <li><b>Big dots sit high, small dots sit low.</b> What takes little to commit to is mostly dear per customer, and what takes a lot up front tends to be cheap per customer after. Paid social is the biggest dot at the top: lowest to commit, dearest to sustain.</li>
+      <li><b>Orange owns the cold end 10 to 2, blue owns everything warmer 21 to 9, and orange costs about double: 60 average CAC against 31.</b> Getting found the first time is something you go out and do. After that she comes to you. Outbound is the entry fee, not the plan.</li>
+      <li><b>EN has the most methods, and that is not the same as the best economics.</b> 12 dedicated plus the 20 shared, against 4 for AS and 3 for CN, with 3 more shared across a pair. English markets are reachable through content and search; AS and CN are gated behind marketplaces wanting a local entity. Channel count favours EN. Shipping distance, duties and return cost do not.</li>
+      <li><b>Both in-app shops sit low, and for the same reason.</b> TikTok Shop and Xiaohongshu Shop want per-country registration, a local entity or agent, a local bank account and local fulfilment. They are two dots rather than one only because the markets differ. Xiaohongshu's content side is the exception, and it stays cheap.</li>
+    </ul>
+    <p class="note">Three items sit awkwardly on the interest axis: trade shows, wholesale buy-in and consignment act on a business buyer first, not a shopper, so they are placed by where their effect eventually lands. The China figures come from agency guides rather than first-party documentation, and platform rules change.</p>
+
+    <h3>From competitors</h3>
+    <p class="note">Meta Ad Library and site teardowns for the four closest brands in brand-sher.md, read 11 August 2026. Read as evidence about channels, not as brand profiles.</p>
+    <ul>
+      <li><b>Creator-led paid social is proven, and it is your item 1.</b> Stolen Stores has one ad running since 8 January 2026, still live after seven months. The surviving creative is a named creator tagged by handle with every piece listed underneath. An ad that lives seven months is a profitable ad. You already have the screenshot: ss-mooniquelarsen.jpg in your own research folder.</li>
+      <li><b>Two opposite creative theories are both alive on that same channel.</b> Stolen Stores runs 19-second creator video. Bupbes runs about 100 ads at five to seven seconds with three to five words of copy and no offer at all. Nothing says you must pick one, and nothing says either is the answer.</li>
+      <li><b>Paid social is not the price of entry.</b> Cherie Attire, the brand your own file calls the closest aspirational match, runs no Meta ads at all and is hiring a social media manager for Instagram and TikTok. Organic social carries a premium brand in this category without paid support.</li>
+      <li><b>Affiliate is empty ground.</b> Not one of the four has an affiliate or ambassador program. Cherie has a refer-a-friend, which is referral. Either the category does not reward it or nobody has tried, and the difference is worth one afternoon of checking before you rule it in or out.</li>
+      <li><b>Physical try-on is proven at home, not abroad.</b> Stolen Stores runs a Bangkok showroom, spends money advertising it, and sells made-to-measure. The pop-up dot works, in the market you are ignoring.</li>
+      <li><b>Physical retail abroad splits in two, and only one half is open to you.</b> Fanci Club carries a stockists page, so the wholesale route works in this category. But wholesale means a foreign buyer bets cash on an unknown brand. Consignment asks them for shelf space instead, which is why it is the door an unknown brand actually gets through. The board now carries both, 25 commitment points apart.</li>
+      <li><b>Not checked, so not concluded:</b> nobody in this set was tested for SEO, Xiaohongshu presence, or marketplace listings. Those dots stay unevidenced rather than empty.</li>
+      <li><b>All four are Southeast Asian exporters.</b> Stolen Stores and Cherie are both Bangkok, Cherie at Sukhumvit 101/1. Bupbes and Fanci Club are both Vietnamese. brand-sher.md notes only the first. They carry your duties, your distance and your credibility gap, which is what makes their channel choices worth copying rather than admiring.</li>
+    </ul>
+
+    <h3>My suggestion</h3>
+    <p class="note">Opinion, not evidence. Weigh it against the two sections above.</p>
+    <ul>
+      <li><b>Start the eight market-agnostic methods now, before settling geography.</b> They cost little, they compound, and none of them is wasted whichever market you pick. Waiting on the geography decision to start them is the one clear mistake available to you.</li>
+      <li><b>Reconsider HK at the top of your market list.</b> A free port, so no duty surprise. Days from your warehouse rather than weeks. English and Chinese both work. Instagram-native and Xiaohongshu-active, so two of your six shortlisted methods point straight at it. And you flagged it yourself as the one AS market that is not marketplace-dominant, which means no local entity to sell there.</li>
+      <li><b>Set refunds and first market together.</b> They are one decision. Exchange and store credit is what all four competitors run and it survives in HK, TW and SG where the parcel is days away. In EN markets the same policy is a gate, not a drag.</li>
+      <li><b>Switch duties to DDP.</b> Today the buyer meets a customs bill she did not agree to, and refusing the parcel means no refund. A surprise charge at the door is the most common cause of refused parcels and chargebacks. It costs margin instead of costing the customer.</li>
+      <li><b>Buy the shipping speed back rather than explaining it.</b> Stolen Stores gives free worldwide express over $299 and lets the threshold pay for it. Nine to seventeen days stated plainly on the product page is the cheaper alternative, and the weaker one.</li>
+      <li><b>Whatever you settle on for payment, assume card is not enough.</b> Add Apple Pay, Google Pay and PayPal for EN, and the local options for AS before you sell there.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h2>Run report <span class="src">&mdash; From the analysis</span></h2>
+    <p>The calls made without asking. Overturn any of them.</p>
+
+    <h3>Dropped channels</h3>
+    <ul>
+      <li><b>Post-purchase lifecycle</b> &mdash; reaches only someone who has already bought. In <b>My suggestion</b>.</li>
+      <li><b>VIP and clienteling</b> &mdash; same. In <b>My suggestion</b>.</li>
+      <li><b>Product-led growth</b> &mdash; a corset top has no free tier, trial or sample that sells the paid thing.</li>
+      <li><b>Cloud marketplaces</b> &mdash; nothing here to list on them.</li>
+      <li><b>Returns terms, duty handling, payment methods</b> &mdash; conditions on every channel rather than channels. All three in <b>My suggestion</b>.</li>
+    </ul>
+
+    <h3>Added from research</h3>
+    <ul>
+      <li><b>None.</b> The teardowns priced and proved channels already on the board. Not one surfaced a channel the list had missed.</li>
+    </ul>
+
+    <h3>Merges and splits left alone</h3>
+    <ul>
+      <li><b>In-app shops abroad</b> &mdash; split into TikTok Shop abroad and Xiaohongshu Shop. Same roadblock and success factor, different markets.</li>
+      <li><b>Retargeting, and waitlist and drops</b> &mdash; both straddle new and repeat. Scored as new, because there is no customer base yet to retarget or alert. Revisit after the first few hundred orders.</li>
+      <li><b>Own site</b> &mdash; both a route to market and the place every other channel lands. Left as one dot; its CAC of 10 is order processing, not acquisition.</li>
+    </ul>
+
+    <h3>Scored on judgement alone</h3>
+    <ul>
+      <li><b>SEO, Xiaohongshu and every marketplace listing</b> &mdash; no competitor was checked for any of them. Unevidenced, not empty.</li>
+      <li><b>Every CAC figure</b> &mdash; no cost data exists anywhere in the inputs. These are relative rankings wearing numbers.</li>
+      <li><b>The China entries</b> &mdash; from agency guides, not first-party platform documentation. Verify before committing money.</li>
+      <li><b>All of it, in one respect</b> &mdash; the price point is unknown, so no CAC was checked against the margin it has to fit inside.</li>
+    </ul>
+
+    <h3>Placeholders treated as undecided</h3>
+    <ul>
+      <li><b>Refund policy</b> &mdash; bracketed in knowledge-sher.md. Treated as unset, not as refunds-only-if-faulty.</li>
+      <li><b>Exchange window</b> &mdash; bracketed. Treated as unset.</li>
+      <li><b>Payment methods</b> &mdash; bracketed. Treated as unset, so the board assumes nothing about what checkout accepts.</li>
+    </ul>
+  </div>
+
+
+
+</div>
+
+<div class="tip" id="tip" role="status" aria-live="polite"></div>
+
+<script>
+const DATA = [
+  {n:"Paid social ads",            mkt:"All",   start:"out",up:15, ong:95, fun:10, pick:1, job:"m", note:"Runs into any market from one account. Western CPMs are the highest you will pay, and a cold first order from an unknown overseas brand converts badly."},
+  {n:"Paid search (SEM)",          mkt:"EN",    start:"in", up:15, ong:90, fun:45, job:"m", note:"Only pays where people already search the category, which in practice means English. You bid against established Western brands."},
+  {n:"Retargeting",                mkt:"All",   start:"out",up:15, ong:70, fun:62, job:"m", note:"Needs traffic first. Not a source of it."},
+  {n:"SEO and AI search",          mkt:"EN",    start:"in", up:65, ong:15, fun:48, pick:1, job:"m", note:"English is where the search volume is. Months before signal, and corset-story ran this hard and still died."},
+  {n:"Content marketing",          mkt:"EN",    start:"in", up:60, ong:25, fun:40, job:"m", note:"What SEO ranks. Your content folder is already part-built, and already in English."},
+  {n:"Atelier and craft footage",  mkt:"All",   start:"in", up:25, ong:20, fun:55, job:"m", note:"Hand-set boning is unusually filmable and it needs no translation. Best ratio on the board."},
+  {n:"Founder story on camera",    mkt:"All",   start:"in", up:25, ong:15, fun:22, job:"m", note:"Sherilyn is your cheapest proof asset. Abroad she has to carry it in English or with subtitles."},
+  {n:"Organic social",             mkt:"All",   start:"in", up:35, ong:30, fun:15, pick:1, job:"m", note:"IG and TikTok reach any market from one account. The work is making content that reads to a foreign eye, not the posting."},
+  {n:"KOL and creator partnerships", mkt:"All", start:"out",up:40, ong:80, fun:12, pick:1, job:"m", note:"Paid creator work. US and UK rates are multiples of Thai rates, and you also ship samples abroad before anything posts."},
+  {n:"Affiliate and performance creators", mkt:"EN", start:"out",up:35, ong:55, fun:55, job:"m", note:"Pay on result, so commitment stays low. The networks are English-market first."},
+  {n:"Referral and viral loop",    mkt:"All",   start:"in", up:40, ong:25, fun:78, job:"m", note:"Needs a reason to tell someone. Works the same in any language."},
+  {n:"Customer content (UGC)",     mkt:"All",   start:"in", up:20, ong:15, fun:58, pick:1, job:"m", note:"Real bodies, and abroad it does double duty: proof that women in her market wear this, not only women in yours."},
+  {n:"Cold email to bought lists", mkt:"EN",    start:"out",up:25, ong:75, fun:5,  job:"m", note:"Consent law is stricter in every market on your list than at home: GDPR in the UK, CAN-SPAM in the US, PDPA in Singapore. Low response, and it can burn your sending domain."},
+  {n:"Owned list to first order",  mkt:"All",   start:"in", up:20, ong:10, fun:78, job:"m", note:"Popup capture, welcome flow, abandoned cart. Runs off your own site in any market, no local anything."},
+  {n:"Founder broadcast channel",  mkt:"All",   start:"in", up:15, ong:10, fun:60, job:"m", note:"IG broadcast. Free, one-way, and it reaches followers who have not bought yet."},
+  {n:"Owned community",            mkt:"All",   start:"in", up:55, ong:30, fun:70, job:"m", note:"A group where members talk to each other. Slow to start, hard to copy, and it needs a language you can moderate in."},
+  {n:"PR and earned media",        mkt:"EN",    start:"out",up:50, ong:45, fun:12, job:"m", note:"Foreign press without local contacts is a cold pitch. A Thai atelier setting bones by hand is the angle you have."},
+  {n:"Unconventional PR / stunts", mkt:"EN",    start:"out",up:55, ong:55, fun:8,  job:"m", note:"High variance, and abroad you are staging it in a city you do not live in."},
+  {n:"Offline ads",                mkt:"EN",    start:"out",up:85, ong:90, fun:8,  job:"m", note:"Print, outdoor, radio, in a foreign market. Wrong scale for you by a wide margin."},
+  {n:"Brand collabs",              mkt:"All",   start:"out",up:55, ong:45, fun:15, job:"m", note:"Borrows another brand's audience and standing in a market where you have neither."},
+  {n:"Speaking and expert appearances", mkt:"EN", start:"out",up:40, ong:40, fun:18, job:"m", note:"Podcasts travel for free. Conference stages mean flights."},
+  {n:"Borrowed audiences",         mkt:"EN",    start:"out",up:30, ong:55, fun:25, job:"m", note:"Newsletters, podcasts, specialist publishers. The cheapest way to borrow a foreign audience from someone who already has it."},
+  {n:"Direct outreach / DM selling", mkt:"All", start:"out",up:15, ong:95, fun:10, job:"m", note:"Pure founder hours, now across time zones. Zero leverage."},
+  {n:"Review platforms",           mkt:"All",   start:"in", up:20, ong:10, fun:65, job:"m", note:"Proof that keeps working, and abroad it stands in for a brand nobody has heard of."},
+  {n:"Own site (DTC)",             mkt:"All",   start:"in", up:60, ong:10, fun:85, job:"p", note:"SherShop. The only route to market that needs no local entity in any country. Full margin, full burden of getting found."},
+  {n:"TikTok Shop abroad",         mkt:"AS",    start:"in", up:70, ong:55, fun:76, job:"p", note:"Outside your home market: per-country seller registration, a local entity or agent, a local bank account and local fulfilment. One registration does not open the next country."},
+  {n:"Xiaohongshu Shop",           mkt:"CN",    start:"in", up:80, ong:55, fun:76, job:"p", note:"Selling on the app, not just posting. The same registration burden plus a bonded warehouse: ship direct from Thailand and the platform demotes you in search."},
+  {n:"Shopee and Lazada",          mkt:"AS",    start:"in", up:70, ong:55, fun:75, job:"p", note:"Dominant in PH, TW and SG, and each country wants a local bank account or a local company. One registration does not open all of them."},
+  {n:"Instagram / Facebook Shop",  mkt:"All",   start:"in", up:15, ong:25, fun:82, job:"p", note:"Product tagging that links back to your own site. No local entity in any market, which makes it the cheapest presence you can gain. Currently unused."},
+  {n:"Luxury marketplaces",        mkt:"EN",    start:"in", up:60, ong:60, fun:68, job:"p", note:"Revolve, Farfetch, Ounass. Gatekept and high commission, and they solve foreign credibility in a single move."},
+  {n:"Wholesale buy-in",           mkt:"EN/AS", start:"out",up:80, ong:55, fun:55, job:"p", note:"The store buys your stock up front at about half of retail. Cash now and no inventory risk for you, but a foreign buyer has to bet money on an unknown brand, which is the hard part."},
+  {n:"Consignment in multi-brand stores", mkt:"EN/AS", start:"out",up:55, ong:60, fun:68, job:"p", note:"Faak khai. The shop takes your pieces on commission and sends back what does not sell, so it risks only shelf space. Far easier to open than wholesale for a brand nobody knows. You fund the stock sitting abroad, and because the goods stay yours, customs and importer-of-record get awkward. It also puts the piece somewhere she can try it on."},
+  {n:"Pop-up shop",                mkt:"AS",    start:"in", up:90, ong:60, fun:70, job:"p", note:"Solves fit risk completely, for one foreign city, briefly. Cheapest in HK or SG: a flight, not a relocation."},
+  {n:"Trade shows",                mkt:"EN/AS", start:"out",up:90, ong:50, fun:40, job:"p", note:"Route to foreign stockists, not to shoppers. Booth, flights, samples, and a follow-up you run from another country."},
+  {n:"Own offline events",         mkt:"AS",    start:"out",up:80, ong:65, fun:50, job:"m", note:"Deep with few people, in a city you flew to. Does not scale."},
+  {n:"Fit and size calculator",    mkt:"All",   start:"in", up:45, ong:5,  fun:88, job:"p", note:"Engineering as marketing, and abroad it attacks your single biggest friction: a stranger buying a fitted garment she cannot try on and cannot cheaply return."},
+  {n:"Partnerships / shared distribution", mkt:"All", start:"out",up:45, ong:40, fun:40, job:"p", note:"Access to someone else's customer base in a market where you have none of your own."},
+  {n:"Waitlist and drops",         mkt:"All",   start:"in", up:20, ong:10, fun:80, job:"m", note:"Scarcity and timing. Native to fashion, cheap, and it builds an owned list before you have a market."},
+  {n:"Ecosystem-led growth",       mkt:"All",   start:"out",up:60, ong:35, fun:55, job:"p", note:"Stylists, boutiques, rental and resale, event planners, all of them foreign. Slow to assemble, hard to copy."},
+  {n:"Xiaohongshu",                mkt:"CN",    start:"in", up:35, ong:30, fun:38, pick:1, job:"m", note:"Discovery for Chinese-speaking women, and not only mainland: real reach in HK, TW, SG and the wider diaspora. Posting and creator seeding are both cheap. Selling on it is the in-app shops line."},
+  {n:"CN mainland set",            mkt:"CN",    start:"in", up:80, ong:45, fun:55, job:"p", note:"Douyin, WeChat store, Tmall Global. One decision, not three: all of them want a mainland entity or agency, verification, deposits and annual fees. A market entry, not a channel."},
+  {n:"Stylist and press seeding",  mkt:"EN",    start:"out",up:45, ong:40, fun:12, job:"m", note:"Gift, do not pay. Abroad you ship samples internationally to people who owe you nothing, and it is still how fashion credibility gets built."}
+];
+
+const STAGES = ["Not looking", "Wants the category", "Comparing brands", "Ready to buy"];
+const BAND = 100 / STAGES.length;
+const stageOf = v => STAGES[Math.min(STAGES.length - 1, Math.floor(v / BAND))];
+
+// Inbound/outbound is a slider in the data; color needs a cut. 50 is the line.
+const sideOf = d => d.start;
+const COL = { in: "var(--inbound)", out: "var(--outbound)" };
+const tip = document.getElementById("tip");
+
+DATA.forEach((d, i) => d.id = i + 1);
+
+// Y is always commitment, inverted: 0 (low) at the top, 100 (high) at the bottom.
+function plot({svg: svgId, key: keyId, xKey, xLeft, xRight, xTitle, bands, quads}) {
+  const svg = document.getElementById(svgId);
+  const L = 84, R = 690, T = 42, B = 548;          // plot box
+  const W = R - L, H = B - T;
+  const ns = "http://www.w3.org/2000/svg";
+  const el = (t, a) => { const e = document.createElementNS(ns, t); for (const k in a) e.setAttribute(k, a[k]); return e; };
+  const frag = document.createDocumentFragment();
+
+  // horizontal grid at quarters (the shared cost axis)
+  for (let i = 1; i < 4; i++) {
+    frag.appendChild(el("line", {class:"gridline", x1:L, y1:T+H*i/4, x2:R, y2:T+H*i/4}));
+  }
+  // vertical divisions: one per band, or quarters
+  const cuts = bands
+    ? bands.slice(1).map((_, i) => (i + 1) * 100 / bands.length)
+    : [25, 50, 75];
+  cuts.forEach(c => frag.appendChild(el("line", {class:"gridline", x1:L+W*c/100, y1:T, x2:L+W*c/100, y2:B})));
+
+  // frame + midlines
+  frag.appendChild(el("rect", {x:L, y:T, width:W, height:H, fill:"none", stroke:"var(--axis)", "stroke-width":1}));
+  frag.appendChild(el("line", {class:"midline", x1:L, y1:T+H/2, x2:R, y2:T+H/2}));
+  if (!bands) frag.appendChild(el("line", {class:"midline", x1:L+W/2, y1:T, x2:L+W/2, y2:B}));
+
+  // quadrant names: [TL, TR, BL, BR]
+  const qpos = [[L+14, T+22, "start"], [R-14, T+22, "end"], [L+14, B-14, "start"], [R-14, B-14, "end"]];
+  (quads || []).forEach((q, i) => {
+    if (!q) return;
+    const t = el("text", {class:"quadname", x:qpos[i][0], y:qpos[i][1], "text-anchor":qpos[i][2]});
+    t.textContent = q; frag.appendChild(t);
+  });
+
+  // x axis
+  const xt = el("text", {class:"axtitle", x:L+W/2, y:B+48, "text-anchor":"middle"}); xt.textContent = xTitle;
+  frag.appendChild(xt);
+  if (bands) {
+    bands.forEach((label, i) => {
+      const t = el("text", {class:"axend", x:L + W * (i + 0.5) / bands.length, y:B+26, "text-anchor":"middle"});
+      t.textContent = label; frag.appendChild(t);
+    });
+  } else {
+    const xl = el("text", {class:"axend", x:L, y:B+26, "text-anchor":"start"}); xl.textContent = "◀ " + xLeft;
+    const xr = el("text", {class:"axend", x:R, y:B+26, "text-anchor":"end"}); xr.textContent = xRight + " ▶";
+    frag.append(xl, xr);
+  }
+
+  // y axis — same on every matrix, cheap at the top
+  const yt = el("text", {class:"axtitle", x:22, y:T+H/2, "text-anchor":"middle", transform:`rotate(-90 22 ${T+H/2})`});
+  yt.textContent = "Commitment";
+  const yhi = el("text", {class:"axend", x:46, y:T+40, "text-anchor":"end", transform:`rotate(-90 46 ${T+40})`}); yhi.textContent = "Low ▶";
+  const ylo = el("text", {class:"axend", x:46, y:B-40, "text-anchor":"start", transform:`rotate(-90 46 ${B-40})`}); ylo.textContent = "◀ High";
+  frag.append(yt, yhi, ylo);
+
+  // points — y inverted so low cost sits at the top
+  const pts = DATA.map(d => ({
+    d,
+    x0: L + (d[xKey] / 100) * W,
+    y0: T + (d.up / 100) * H,
+    r: 3.5 + (d.ong / 100) * 7,
+    pad: d.pick ? 4.5 : 0            // keep the shortlist ring clear of neighbours
+  }));
+  // seed on a small spiral so exactly-coincident dots don't start degenerate
+  pts.forEach((p, i) => {
+    const a = i * 2.399963;                      // golden angle
+    p.x = p.x0 + Math.cos(a) * 1.2;
+    p.y = p.y0 + Math.sin(a) * 1.2;
+  });
+
+  // relax overlaps so no dot is fully hidden; capped so a dot never drifts far from its value
+  const CAP = 20;
+  for (let pass = 0; pass < 90; pass++) {
+    let moved = false;
+    for (let i = 0; i < pts.length; i++) for (let j = i + 1; j < pts.length; j++) {
+      const a = pts[i], b = pts[j];
+      const need = a.r + b.r + a.pad + b.pad + 3.5;
+      let dx = b.x - a.x, dy = b.y - a.y;
+      let dist = Math.hypot(dx, dy);
+      if (dist >= need) continue;
+      if (dist < 0.01) { dx = (i % 2 ? 1 : -1) * 0.7; dy = 0.7; dist = 1; }
+      const push = (need - dist) / 2 / dist;
+      a.x -= dx * push; a.y -= dy * push; b.x += dx * push; b.y += dy * push;
+      moved = true;
+    }
+    // clamp: stay inside the box and within CAP px of the true position
+    pts.forEach(p => {
+      let dx = p.x - p.x0, dy = p.y - p.y0, d = Math.hypot(dx, dy);
+      if (d > CAP) { p.x = p.x0 + dx / d * CAP; p.y = p.y0 + dy / d * CAP; }
+      p.x = Math.min(R - p.r - 1, Math.max(L + p.r + 1, p.x));
+      p.y = Math.min(B - p.r - 1, Math.max(T + p.r + 1, p.y));
+    });
+    if (!moved) break;
+  }
+
+  pts.forEach(p => {
+    frag.appendChild(el("circle", {class:"dot", cx:p.x, cy:p.y, r:p.r, fill:COL[sideOf(p.d)]}));
+    // shortlisted: a second ring outside the surface gap, so the dot reads double-bordered
+    if (p.d.pick) frag.appendChild(el("circle", {class:"ring", cx:p.x, cy:p.y, r:p.r + 3.5}));
+    const right = p.x < R - 26;
+    const t = el("text", {class:"lbl", x: p.x + (right ? p.r + 3.5 : -(p.r + 3.5)), y: p.y - p.r - 1.5,
+      "text-anchor": right ? "start" : "end"});
+    t.textContent = p.d.id;
+    frag.appendChild(t);
+
+    const hit = el("circle", {class:"hit", cx:p.x, cy:p.y, r:Math.max(13, p.r + 7), tabindex:"0"});
+    const show = ev => {
+      tip.innerHTML = `<b>${p.d.id}. ${p.d.n}</b><span class="meta">${p.d.mkt} &middot; ${sideOf(p.d) === "in" ? "Inbound" : "Outbound"}
+        &middot; ${stageOf(p.d.fun).toLowerCase()}<br>commitment ${p.d.up} &middot; CAC ${p.d.ong}
+</span><br>${p.d.note}`;
+      tip.style.opacity = 1;
+      const b = (ev.target).getBoundingClientRect();
+      const x = Math.min(b.left + b.width / 2 + 12, window.innerWidth - 280);
+      tip.style.left = Math.max(8, x) + "px";
+      tip.style.top = Math.max(8, b.top - 12) + "px";
+    };
+    hit.addEventListener("mouseenter", show);
+    hit.addEventListener("focus", show);
+    hit.addEventListener("mouseleave", () => tip.style.opacity = 0);
+    hit.addEventListener("blur", () => tip.style.opacity = 0);
+    frag.appendChild(hit);
+  });
+
+  svg.appendChild(frag);
+
+  const kl = document.getElementById(keyId);
+  DATA.forEach(d => {
+    const li = document.createElement("li");
+    li.innerHTML = `<span class="kn">${d.id}</span>
+      <i class="kd${d.pick ? " ringed" : ""}" style="background:${COL[sideOf(d)]}"></i><span>${d.n}</span>`;
+    if (d.pick) li.classList.add("picked");
+    kl.appendChild(li);
+  });
+}
+
+plot({svg:"m3", key:"key3", xKey:"fun", xTitle:"Level of interest", bands:STAGES});
+
+// table view
+const tb = document.getElementById("tbody");
+DATA.slice().sort((a, b) => a.up - b.up || a.ong - b.ong).forEach(d => {
+  const tr = document.createElement("tr");
+  tr.innerHTML = `<td class="num">${d.id}</td><td>${d.pick ? "<b>" + d.n + "</b>" : d.n}</td>
+    <td><span class="tag">${d.mkt}</span></td>
+    <td><span class="tag">${sideOf(d) === "in" ? "Inbound" : "Outbound"}</span></td>
+    <td class="num">${d.up}</td><td class="num">${d.ong}</td>
+    <td>${stageOf(d.fun)}</td>
+    <td>${d.note}</td>`;
+  tb.appendChild(tr);
+});
+</script>
+</body>
+</html>
