@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import type { ReactElement } from "react";
 import { notFound } from "next/navigation";
 import { getCollection } from "@/lib/shopify/fetchers";
@@ -5,8 +6,18 @@ import { toListingItem, uniqueTypeValues } from "@/lib/listing";
 import { ShopListing } from "@/components/ShopListing";
 import { ShopEditorial } from "@/components/C-ShopEditorial";
 import { ShopFaq } from "@/components/C-ShopFaq";
+import { JsonLd } from "@/components/JsonLd";
+import { breadcrumbLd, pageMetadata } from "@/lib/seo";
+import type { Crumb } from "@/components/Breadcrumb";
 
-// Per-page SEO metadata (title/description/canonical) is build step B-010.
+const BREADCRUMB: Crumb[] = [{ label: "Shop", href: "/shop" }, { label: "Corset Tops" }];
+
+export const metadata: Metadata = pageMetadata({
+  title: "Corset Tops",
+  description:
+    "Shop corset tops built on real corsetry, in two closures. Pick Lace Closure for an adjustable fit, or Zip Closure for the easiest way in and out.",
+  path: "/corset-tops",
+});
 
 export default async function CorsetTopsPage(): Promise<ReactElement> {
   const collection = await getCollection("corset-tops");
@@ -14,8 +25,9 @@ export default async function CorsetTopsPage(): Promise<ReactElement> {
 
   return (
     <main className="mx-auto flex max-w-[var(--container)] flex-col gap-[var(--space-9)] px-[var(--gutter)] py-[var(--space-7)]">
+      <JsonLd data={breadcrumbLd(BREADCRUMB, "/corset-tops")} />
       <ShopListing
-        breadcrumb={[{ label: "Shop", href: "/shop" }, { label: "Corset Tops" }]}
+        breadcrumb={BREADCRUMB}
         heading="Shop Corset Tops"
         description="Shop corset tops built on real corsetry, in two closures. Pick Lace Closure for an adjustable fit, or Zip Closure for the easiest way in and out."
         items={collection.products.map(toListingItem)}

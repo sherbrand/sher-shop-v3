@@ -1,14 +1,26 @@
+import type { Metadata } from "next";
 import type { ReactElement } from "react";
 import { HeroTitle } from "@/components/C-HeroTitle";
 import { EditorialSplit } from "@/components/C-EditorialSplit";
+import { JsonLd } from "@/components/JsonLd";
+import { breadcrumbLd, pageMetadata } from "@/lib/seo";
+import type { Crumb } from "@/components/Breadcrumb";
 
-// Per-page SEO metadata (title/description/canonical) is build step B-010.
+const BREADCRUMB: Crumb[] = [{ label: "Home", href: "/" }, { label: "About Us" }];
+
+export const metadata: Metadata = pageMetadata({
+  title: "About Us",
+  description:
+    "The SHER brand makes sensual, refined womenswear, built by hand on real corsetry. Meet the brand and its founder, Sherilyn.",
+  path: "/about",
+});
 
 export default function AboutPage(): ReactElement {
   return (
     <main className="mx-auto flex max-w-[var(--container)] flex-col gap-[var(--space-9)] px-[var(--gutter)] py-[var(--space-7)]">
+      <JsonLd data={breadcrumbLd(BREADCRUMB, "/about")} />
       <HeroTitle
-        breadcrumb={[{ label: "Home", href: "/" }, { label: "About Us" }]}
+        breadcrumb={BREADCRUMB}
         headingLevel={1}
         measure="72ch"
         heading="Our SHER Brand"

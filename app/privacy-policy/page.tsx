@@ -1,14 +1,26 @@
+import type { Metadata } from "next";
 import type { ReactElement } from "react";
 import { HeroTitle } from "@/components/C-HeroTitle";
 import { ContentProse } from "@/components/C-ContentProse";
+import { JsonLd } from "@/components/JsonLd";
+import { breadcrumbLd, pageMetadata } from "@/lib/seo";
+import type { Crumb } from "@/components/Breadcrumb";
 
-// Per-page SEO metadata (title/description/canonical) is build step B-010.
+const BREADCRUMB: Crumb[] = [{ label: "Home", href: "/" }, { label: "Privacy Policy" }];
+
+export const metadata: Metadata = pageMetadata({
+  title: "Privacy Policy",
+  description:
+    "What SHER collects when you shop, how we use it, and the choices you have over your data.",
+  path: "/privacy-policy",
+});
 
 export default function PrivacyPolicyPage(): ReactElement {
   return (
     <main className="mx-auto flex max-w-[var(--container)] flex-col gap-[var(--space-8)] px-[var(--gutter)] py-[var(--space-7)]">
+      <JsonLd data={breadcrumbLd(BREADCRUMB, "/privacy-policy")} />
       <HeroTitle
-        breadcrumb={[{ label: "Home", href: "/" }, { label: "Privacy Policy" }]}
+        breadcrumb={BREADCRUMB}
         headingLevel={1}
         heading="Privacy Policy"
         description="What we collect when you shop with SHER, how we use it, and the choices you have."

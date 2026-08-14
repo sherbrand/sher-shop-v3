@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import type { ReactElement } from "react";
 import { getProducts } from "@/lib/shopify/fetchers";
 import { toGridProduct } from "@/lib/listing";
@@ -5,17 +6,28 @@ import { ShopTitle } from "@/components/C-ShopTitle";
 import { ProductGrid } from "@/components/C-ProductGrid";
 import { ShopEditorial } from "@/components/C-ShopEditorial";
 import { Button } from "@/components/Button";
+import { JsonLd } from "@/components/JsonLd";
+import { breadcrumbLd, pageMetadata } from "@/lib/seo";
+import type { Crumb } from "@/components/Breadcrumb";
 
-// Per-page SEO metadata (title/description/canonical) is build step B-010.
+const BREADCRUMB: Crumb[] = [{ label: "Home", href: "/" }, { label: "Shop" }];
+
+export const metadata: Metadata = pageMetadata({
+  title: "All Products",
+  description:
+    "Every SHER piece in one place — corset tops, matching sets, and cocktail dresses. Three categories, one standard.",
+  path: "/shop",
+});
 
 export default async function ShopPage(): Promise<ReactElement> {
   const products = await getProducts(50);
 
   return (
     <main className="mx-auto flex max-w-[var(--container)] flex-col gap-[var(--space-9)] px-[var(--gutter)] py-[var(--space-7)]">
+      <JsonLd data={breadcrumbLd(BREADCRUMB, "/shop")} />
       {/* Pills link to the three categories; they do not filter this grid (S-002). */}
       <ShopTitle
-        breadcrumb={[{ label: "Home", href: "/" }, { label: "Shop" }]}
+        breadcrumb={BREADCRUMB}
         heading="Shop Modern Womenswear"
         description="Every SHER piece in one place. Corset tops with structure you can feel. Matching sets that land as one look. Cocktail dresses in satin that catches the light. Three categories, one standard."
         filters={[

@@ -1,14 +1,26 @@
+import type { Metadata } from "next";
 import type { ReactElement } from "react";
 import { HeroTitle } from "@/components/C-HeroTitle";
 import { ContentProse } from "@/components/C-ContentProse";
+import { JsonLd } from "@/components/JsonLd";
+import { breadcrumbLd, pageMetadata } from "@/lib/seo";
+import type { Crumb } from "@/components/Breadcrumb";
 
-// Per-page SEO metadata (title/description/canonical) is build step B-010.
+const BREADCRUMB: Crumb[] = [{ label: "Home", href: "/" }, { label: "Terms of Service" }];
+
+export const metadata: Metadata = pageMetadata({
+  title: "Terms of Service",
+  description:
+    "The rules for using the SHER site and placing an order, including payment, IP, and governing law.",
+  path: "/terms-of-service",
+});
 
 export default function TermsOfServicePage(): ReactElement {
   return (
     <main className="mx-auto flex max-w-[var(--container)] flex-col gap-[var(--space-8)] px-[var(--gutter)] py-[var(--space-7)]">
+      <JsonLd data={breadcrumbLd(BREADCRUMB, "/terms-of-service")} />
       <HeroTitle
-        breadcrumb={[{ label: "Home", href: "/" }, { label: "Terms of Service" }]}
+        breadcrumb={BREADCRUMB}
         headingLevel={1}
         heading="Terms of Service"
         description="The rules for using the SHER site and placing an order."

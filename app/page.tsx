@@ -1,4 +1,15 @@
+import type { Metadata } from "next";
 import type { ReactElement } from "react";
+import { pageMetadata } from "@/lib/seo";
+
+// Home keeps the brand default title (no "%s · SHER" template) and a canonical
+// at the site root (B-010, S-001 seo_role=Pillar).
+export const metadata: Metadata = pageMetadata({
+  title: { absolute: "Modern Womenswear by SHER" },
+  description:
+    "Modern womenswear by SHER: hand-built corset tops, matching sets, and cocktail dresses that shape the body and read elegant.",
+  path: "/",
+});
 
 /* Placeholder home. The real Home page (S-001: hero carousel, category tiles,
    featured products) is build step B-008; this minimal page just keeps the app

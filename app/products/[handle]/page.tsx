@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import type { ReactElement } from "react";
 import Image from "next/image";
 import { notFound } from "next/navigation";
@@ -8,6 +9,8 @@ import type { GridProduct } from "@/components/C-ProductGrid";
 import type { Crumb } from "@/components/Breadcrumb";
 import type { SizeOption } from "@/components/SizeSelector";
 import type { MediaItem } from "@/components/MediaGallery";
+import { JsonLd } from "@/components/JsonLd";
+import { breadcrumbLd, pageMetadata, productLd } from "@/lib/seo";
 import { ProductDetail } from "./product-detail";
 
 // A size is sold out when every variant carrying it is unavailable (F-011).
@@ -40,6 +43,26 @@ function toMedia(product: Product): MediaItem[] {
   return [...videos, ...images];
 }
 
+// Product metadata is dynamic (F-009): title, description, canonical, and the
+// featured image for Open Graph. A missing product returns a minimal title;
+// the page itself renders the 404 (notFound below). getProduct is fetched here
+// and in the page — Next dedupes the identical request within one render.
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ handle: string }>;
+}): Promise<Metadata> {
+  const { handle } = await params;
+  const product = await getProduct(handle);
+  if (!product) return { title: "Product Not Found" };
+  return pageMetadata({
+    title: product.title,
+    description: product.description,
+    path: `/products/${handle}`,
+    image: product.featuredImage?.url ?? null,
+  });
+}
+
 export default async function ProductPage({
   params,
 }: {
@@ -50,6 +73,7 @@ export default async function ProductPage({
   if (!product) notFound();
 
   const breadcrumb: Crumb[] = [{ label: "Shop", href: "/shop" }, { label: product.title }];
+  const path = `/products/${handle}`;
 
   // "You May Also Like": up to 2 products that are not this one (F-001).
   const others = (await getProducts(12)).filter((p) => p.handle !== product.handle);
@@ -72,6 +96,18 @@ export default async function ProductPage({
 
   return (
     <main className="mx-auto flex max-w-[var(--container)] flex-col gap-[var(--space-9)] px-[var(--gutter)] py-[var(--space-7)]">
+      <JsonLd
+        data={productLd({
+          name: product.title,
+          description: product.description,
+          image: product.featuredImage?.url ?? null,
+          path,
+          price: Number(product.minPrice.amount),
+          currency: product.minPrice.currencyCode,
+          available: product.availableForSale,
+        })}
+      />
+      <JsonLd data={breadcrumbLd(breadcrumb, path)} />
       <ProductDetail
         name={product.title}
         price={Number(product.minPrice.amount)}
