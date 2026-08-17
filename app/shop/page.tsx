@@ -63,6 +63,10 @@ export default async function ShopPage(): Promise<ReactElement> {
         </Button>
       </ShopEditorial>
       <ShopEditorial
+        media={
+          // eslint-disable-next-line @next/next/no-img-element -- local optimized asset
+          <img src="/assets/cocktail/shop-cocktail.webp" alt="A SHER cocktail dress worn on a model" className="h-full w-full object-cover" />
+        }
         mobileFirst="text"
         mobileAlign="right"
         eyebrow="About our Product"

@@ -34,8 +34,12 @@ export default async function CocktailDressesPage(): Promise<ReactElement> {
         filterValues={uniqueTypeValues(collection.products)}
       />
 
-      {/* Editorial images (s-005.3/4/5) still missing (MVP) — media left empty. */}
+      {/* Editorial images (s-005.3/4/5) — curated cocktail-dress shots. */}
       <ShopEditorial
+        media={
+          // eslint-disable-next-line @next/next/no-img-element -- local optimized asset
+          <img src="/assets/cocktail/ck-onmodel.webp" alt="A SHER cocktail dress worn on a model" className="h-full w-full object-cover" />
+        }
         mobileFirst="text"
         mobileAlign="right"
         eyebrow="What is a Cocktail Dress?"
@@ -43,6 +47,10 @@ export default async function CocktailDressesPage(): Promise<ReactElement> {
         paragraph="A cocktail dress is a dressy short-to-mid dress made for evening events. It sits between everyday wear and a formal gown, right for parties, dinners, and occasions that ask you to dress up. The cut is refined and made to flatter. You wear a cocktail dress when you want to look pulled together and be remembered."
       />
       <ShopEditorial
+        media={
+          // eslint-disable-next-line @next/next/no-img-element -- local optimized asset
+          <img src="/assets/cocktail/ck-lengths.webp" alt="A SHER cocktail dress showing its length on a model" className="h-full w-full object-cover" />
+        }
         mirror
         mobileFirst="text"
         mobileAlign="left"
@@ -51,6 +59,10 @@ export default async function CocktailDressesPage(): Promise<ReactElement> {
         paragraph="The Mini hits the thigh. It is short, striking, and made for a night out. The Midi falls between the knee and the ankle. It is the most versatile length, right for dinners, parties, and daytime events alike. The Maxi runs to the ankle or floor. It is long, commanding, and the dressiest of the three."
       />
       <ShopEditorial
+        media={
+          // eslint-disable-next-line @next/next/no-img-element -- local optimized asset
+          <img src="/assets/cocktail/ck-satin.webp" alt="Close satin detail of a SHER cocktail dress" className="h-full w-full object-cover" />
+        }
         mobileFirst="text"
         mobileAlign="right"
         eyebrow="Quality from Inside Out"
