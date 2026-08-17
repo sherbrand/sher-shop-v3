@@ -21,7 +21,10 @@ import type { CategoryItem } from "@/components/C-CategoryGrid";
 // placeholder — the transparent white header reads correctly over it. Add
 // { image, alt } slides (plus optional overlay eyebrow/heading/cta) as the hero
 // art arrives; the carousel starts sliding once there is more than one.
-export const HERO_SLIDES: HeroSlide[] = [{ bg: "var(--sher-dark)" }];
+export const HERO_SLIDES: HeroSlide[] = [
+  { bg: "var(--sher-dark)", image: "/assets/cocktail/hero.webp" },
+  { bg: "var(--sher-dark)", image: "/assets/cocktail/hero2.webp" },
+];
 
 // S-001.2 — intro title block (eyebrow / H1 / subtitle).
 export const HOME_INTRO = {
@@ -36,7 +39,12 @@ export const HOME_INTRO = {
 export const HOME_CATEGORIES: CategoryItem[] = [
   { label: "Shop Corset Tops", href: "/corset-tops", id: "cat-corsets" },
   { label: "Shop Matching Sets", href: "/matching-sets", id: "cat-sets" },
-  { label: "Shop Cocktail Dresses", href: "/cocktail-dresses", id: "cat-dresses" },
+  {
+    label: "Shop Cocktail Dresses",
+    href: "/cocktail-dresses",
+    id: "cat-dresses",
+    image: "/assets/cocktail/tile-cocktail.webp",
+  },
   { label: "Shop All Products", href: "/shop", id: "cat-all" },
 ];
 
