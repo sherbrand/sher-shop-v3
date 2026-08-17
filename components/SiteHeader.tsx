@@ -28,7 +28,6 @@ export function SiteHeader({ accountHref = "/account" }: { accountHref?: string 
   useEffect(() => {
     // Only Home hands off on scroll; other routes are sticky throughout.
     if (!isHome) {
-      console.debug("[SiteHeader] not Home, sticky on from the start");
       setStickyOn(true);
       return;
     }
@@ -37,7 +36,6 @@ export function SiteHeader({ accountHref = "/account" }: { accountHref?: string 
       // so the handoff lands at the same point on every screen size.
       const hero = document.querySelector("[data-hero]");
       if (!hero) {
-        console.debug("[SiteHeader] no [data-hero] on this page, sticky stays on");
         setStickyOn(true);
         return;
       }
