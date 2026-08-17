@@ -14,7 +14,7 @@ import { Logo } from "@/components/Logo";
 
 export interface StickyProps {
   announcement?: ReactNode;
-  /** Tone of the embedded announcement bar. Default "dark". */
+  /** Tone of the embedded announcement bar. Default "light". */
   announcementTone?: "dark" | "light" | "accent";
   onMenu?: () => void;
   onCart?: () => void;
@@ -29,7 +29,7 @@ export interface StickyProps {
 
 export function Sticky({
   announcement,
-  announcementTone = "dark",
+  announcementTone = "light",
   onMenu,
   onCart,
   cartCount = 0,
