@@ -1,9 +1,0 @@
-/* SHER Design System — global entry point.
-   Consumers link this one file. Import order: fonts, then tokens.
-   Keep this file @import-only — no rules inline. */
-@import "tokens/fonts.css";
-@import "tokens/colors.css";
-@import "tokens/typography.css";
-@import "tokens/spacing.css";
-@import "tokens/base.css";
-@import "tokens/components.css";
