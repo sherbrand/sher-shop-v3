@@ -40,6 +40,10 @@ export default async function ShopPage(): Promise<ReactElement> {
 
       {/* Editorial images (s-002.3/4/5) still missing (MVP) — media left empty. */}
       <ShopEditorial
+        media={
+          // eslint-disable-next-line @next/next/no-img-element -- local optimized asset
+          <img src="/assets/cocktail/hero.webp" alt="A SHER piece worn on a model" className="h-full w-full object-cover" />
+        }
         mobileFirst="text"
         mobileAlign="right"
         eyebrow="About our Product"
@@ -51,6 +55,10 @@ export default async function ShopPage(): Promise<ReactElement> {
         </Button>
       </ShopEditorial>
       <ShopEditorial
+        media={
+          // eslint-disable-next-line @next/next/no-img-element -- local optimized asset
+          <img src="/assets/cocktail/tile-cocktail.webp" alt="A SHER piece worn on a model" className="h-full w-full object-cover" />
+        }
         mirror
         mobileFirst="text"
         mobileAlign="left"

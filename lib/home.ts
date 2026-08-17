@@ -37,15 +37,30 @@ export const HOME_INTRO = {
 // S-001.3 — category tiles: labels and links from the content file. Tile images
 // are pending, so each tile shows its tone until then.
 export const HOME_CATEGORIES: CategoryItem[] = [
-  { label: "Shop Corset Tops", href: "/corset-tops", id: "cat-corsets" },
-  { label: "Shop Matching Sets", href: "/matching-sets", id: "cat-sets" },
+  {
+    label: "Shop Corset Tops",
+    href: "/corset-tops",
+    id: "cat-corsets",
+    image: "/assets/cocktail/ck-satin.webp",
+  },
+  {
+    label: "Shop Matching Sets",
+    href: "/matching-sets",
+    id: "cat-sets",
+    image: "/assets/cocktail/ck-lengths.webp",
+  },
   {
     label: "Shop Cocktail Dresses",
     href: "/cocktail-dresses",
     id: "cat-dresses",
     image: "/assets/cocktail/tile-cocktail.webp",
   },
-  { label: "Shop All Products", href: "/shop", id: "cat-all" },
+  {
+    label: "Shop All Products",
+    href: "/shop",
+    id: "cat-all",
+    image: "/assets/cocktail/shop-cocktail.webp",
+  },
 ];
 
 // S-001.4 — featured product handles (F-012). Empty until D-004 supplies real

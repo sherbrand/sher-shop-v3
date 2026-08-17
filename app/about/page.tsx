@@ -29,11 +29,19 @@ export default function AboutPage(): ReactElement {
 
       {/* Editorial images (s-007.2/3) still missing (MVP) — media left empty. */}
       <EditorialSplit
+        media={
+          // eslint-disable-next-line @next/next/no-img-element -- local optimized asset
+          <img src="/assets/cocktail/ck-onmodel.webp" alt="A SHER piece worn on a model" className="h-full w-full object-cover" />
+        }
         eyebrow="Our Philosophy"
         heading="Sensuality That Elevates"
         paragraph="Sensual does not have to mean cheap. That line sits at the center of everything we make. We design clothes that show off the body with control, not with excess. The cut hints instead of shouts. The fit flatters instead of clings. A SHER piece makes a woman feel bold and sure of herself, and it reads elegant to everyone else. That is sensuality that elevates."
       />
       <EditorialSplit
+        media={
+          // eslint-disable-next-line @next/next/no-img-element -- local optimized asset
+          <img src="/assets/cocktail/ck-lengths.webp" alt="Sherilyn, founder of SHER" className="h-full w-full object-cover" />
+        }
         mirror
         eyebrow="Meet the Founder"
         heading="The Woman Behind It, Sherilyn"
