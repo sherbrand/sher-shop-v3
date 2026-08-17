@@ -4,21 +4,27 @@
 
 ### How to work
 
+#### Before you touch a file
+
 - `Plan`: Before any edit, read the files it changes and the spec that governs them, then show a short plan. Do not change a file until I say go.
 - `Clarify`: If anything is missing or unclear, ask follow-ups until you're confident you know what to build. Do not guess.
-- `Push`: Push back when you disagree. Skip flattery.
-- `Track`: Track open threads. When any are live, end the turn with a short numbered list: an edit still to apply, or a decision still to make. Drop each once it is applied or decided.
-- `Check`: Raise an issue only when you can name what breaks and you are confident it is real. If you are unsure, raise it only when the damage would be bad, and say you are unsure. If it checks out, say nothing.
+
+#### When writing a file
+
 - `Simple`: Pick the simple option and write the least that does the job. Cut any clause that restates, caveats, or explains what the words already say. Don't add a guardrail, an exception, or what something isn't unless a real gap needs it. Say so when something looks over-built.
-- `Plain`: Write in plain language and short sentences at a grade-5 reading level, in everything: docs, specs, and comments. Use US English spelling. Use technical names only where they're the real ones.
+- `Plain`: Write in plain language and short sentences at a grade-5 reading level, in everything: docs, specs, and comments. Use US spelling for English. Use technical names only where they're the real ones.
 - `Own`: Each spec or skill describes its own job through the artifacts it reads and writes. It does not name other roles or skills. The connections live in each skill's Inputs and Output. Workflow PNG sketches the pipeline.
+- `Why`: Keep reasoning and "why" in chat. Never put them inside a spec or skill.
 - `Dash`: Never two em-dashes in the same phrase, in any file (internal included). Prefer a period or colon.
 - `Ref`: Reference another file's section by name, not number. Its numbering drifts as sections are added or reordered. A step number inside the same skill file is fine; it renumbers in place.
 - `Path`: Refer to a file by its Name in Files & Folders. Add (path in CLAUDE.md) where the reader needs the path.
 - `YAML`: Markdown frontmatter is YAML — quote free-text values (`title`, `description`, a skill's `description`); an unquoted colon breaks it.
-- `Ignore`: Never read `/docs/reference/` or `/docs/legacy/`, and never treat either as a source of truth. `/docs/reference/` is set-aside drafts and personal reference. `/docs/legacy/` is what a replacement or removal set aside; read a file there only when it's asked for by name.
-- `Replace`: Before replacing or removing a whole file, move the original to `/docs/legacy/`; on a replacement, say what changed. When a name in `/docs/legacy/` is taken, add a number to the end (`-2`, `-3`, …).
 - `Logs`: Add debug logs to logic and data code so it's easy to trace. Skip them in pure presentational components. Comment code for readability everywhere.
+
+#### When replying in chat
+
+- `Push`: Push back only when it matters. Say what breaks or what gets worse, and be confident it's real. If you're unsure, push back only when the damage would be bad, and say you're unsure. Skip flattery.
+- `Track`: Track open threads. When any are live, end the turn with a short numbered list: an edit still to apply, or a decision still to make. Drop each once it is applied or decided.
 - `Name`: Each rule opens with its one-word name in backticks. Cite the rule you applied as `(rule: Name)`, on the part of the output it produced.
 
 ### Coding
@@ -223,16 +229,10 @@ Each file or folder owns one job. Do not repeat its content in another. Where tw
 | Workflow PNG | `/docs/workflow.png` | The pipeline map: how the roles and their files connect. A sketch, not a source of truth; not every line is drawn |
 | Runbook C.Design | `/docs/runbook-cdesign.md` | How to run Claude Design to build the design system |
 | Runbook PRD | `/docs/runbook-prd.md` | How to run DraftPRD generation |
-| PO SKILL | `/.claude/skills/po/` | PO role: drafts the DraftPRD |
-| UI SKILL | `/.claude/skills/ui/` | UI role: harvests Layout Components (C-xxx) and primitives |
-| Writer SKILL | `/.claude/skills/writer/` | Writer role: writes content from outlines |
-| FE SKILL | `/.claude/skills/fe/` | FE role: wires Layout Components (C-xxx) to page sections |
 | components/ | `/components/` | The C-xxx Layout Components and Module primitives |
 | assets/ | `/public/assets/` | All live static assets the site serves (e.g. logos, images, video, fonts) |
 | content/ | `/docs/content/` | Final SEO content: Markdown pages with frontmatter, plus grid TSVs that source page families sharing an outline |
 | cdesign/ | `/docs/cdesign/` | The Claude Design export |
-| reference/ | `/docs/reference/` | Set-aside drafts and personal reference; ignored, not inputs |
-| legacy/ | `/docs/legacy/` | Files a replacement or removal set aside; read only when one is asked for by name |
 
 ### Conflict Rules
 
