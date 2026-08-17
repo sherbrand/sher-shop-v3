@@ -36,10 +36,6 @@ export default async function MatchingSetsPage(): Promise<ReactElement> {
 
       {/* Editorial images (s-004.3/4/5) still missing (MVP) — media left empty. */}
       <ShopEditorial
-        media={
-          // eslint-disable-next-line @next/next/no-img-element -- local optimized asset
-          <img src="/assets/cocktail/ck-lengths.webp" alt="A SHER piece worn on a model" className="h-full w-full object-cover" />
-        }
         mobileFirst="text"
         mobileAlign="right"
         eyebrow="What is a Matching Set?"
@@ -47,10 +43,6 @@ export default async function MatchingSetsPage(): Promise<ReactElement> {
         paragraph="A matching set is a top and a bottom made from the same fabric to be worn together. Some call it a co-ord or a two-piece set. The two pieces share the same color, cut, and finish, so they read as one outfit, not two separate items. You put on both and the look is complete, with nothing left to match."
       />
       <ShopEditorial
-        media={
-          // eslint-disable-next-line @next/next/no-img-element -- local optimized asset
-          <img src="/assets/cocktail/hero.webp" alt="A SHER piece worn on a model" className="h-full w-full object-cover" />
-        }
         mirror
         mobileFirst="text"
         mobileAlign="left"
@@ -59,10 +51,6 @@ export default async function MatchingSetsPage(): Promise<ReactElement> {
         paragraph="The Skirt Set pairs the top with a matching skirt. It gives a soft, feminine line that moves as you walk. Pick this one for a look that feels dressed up without effort, day or evening. The Trouser Set pairs the top with matching trousers. It gives a longer, sharper line and reads a little bolder. Pick this one when you want to look put together and ready for anything."
       />
       <ShopEditorial
-        media={
-          // eslint-disable-next-line @next/next/no-img-element -- local optimized asset
-          <img src="/assets/cocktail/shop-cocktail.webp" alt="A SHER piece worn on a model" className="h-full w-full object-cover" />
-        }
         mobileFirst="text"
         mobileAlign="right"
         eyebrow="Quality from Inside Out"

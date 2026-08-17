@@ -36,10 +36,6 @@ export default async function CorsetTopsPage(): Promise<ReactElement> {
 
       {/* Editorial images (s-003.3/4/5) are still missing (MVP) — media left empty. */}
       <ShopEditorial
-        media={
-          // eslint-disable-next-line @next/next/no-img-element -- local optimized asset
-          <img src="/assets/cocktail/ck-onmodel.webp" alt="A SHER piece worn on a model" className="h-full w-full object-cover" />
-        }
         mobileFirst="text"
         mobileAlign="right"
         eyebrow="What is a Corset Top?"
@@ -47,10 +43,6 @@ export default async function CorsetTopsPage(): Promise<ReactElement> {
         paragraph="A corset top is a fitted top built on corsetry. Thin bones run through the fabric to shape the waist and support the bust. Unlike a plain top, it holds its structure and stays put as you move. The look is firm but not stiff. SHER makes each corset top to be worn on its own, as the piece people notice first."
       />
       <ShopEditorial
-        media={
-          // eslint-disable-next-line @next/next/no-img-element -- local optimized asset
-          <img src="/assets/cocktail/hero2.webp" alt="A SHER piece worn on a model" className="h-full w-full object-cover" />
-        }
         mirror
         mobileFirst="text"
         mobileAlign="left"
@@ -59,10 +51,6 @@ export default async function CorsetTopsPage(): Promise<ReactElement> {
         paragraph="The Lace Closure laces up the back through metal eyelets. Pull the cord tighter or looser to set the fit yourself. Pick this one if you want control over how firm it feels. The Zip Closure uses a separating zip. Step in, zip up, and you are done. The fit is fixed, so there is nothing to adjust. Pick this one if you want the fastest way in and out with the same clean shape."
       />
       <ShopEditorial
-        media={
-          // eslint-disable-next-line @next/next/no-img-element -- local optimized asset
-          <img src="/assets/cocktail/ck-satin.webp" alt="A SHER piece worn on a model" className="h-full w-full object-cover" />
-        }
         mobileFirst="text"
         mobileAlign="right"
         eyebrow="Quality from Inside Out"
