@@ -49,8 +49,18 @@ export default async function HomePage(): Promise<ReactElement> {
   return (
     <main>
       {/* Hero band — also the transparent header's backdrop (see SiteHeader).
-          Shows the brand tone until D-004 delivers banner images (F-008). */}
-      {HERO_SLIDES.length > 0 && <HeroCarousel slides={HERO_SLIDES} />}
+          Shows the brand tone until D-004 delivers banner images (F-008).
+          data-hero is the handoff mark SiteHeader measures. The negative top
+          margin pulls the band back under the header, since the sticky slot
+          always holds its place in the flow. */}
+      {HERO_SLIDES.length > 0 && (
+        <div
+          data-hero
+          className="mt-[calc(-1*(var(--header-h)+var(--announce-h)))]"
+        >
+          <HeroCarousel slides={HERO_SLIDES} />
+        </div>
+      )}
 
       <HeroTitle
         eyebrow={HOME_INTRO.eyebrow}

@@ -18,7 +18,7 @@ import { Logo } from "@/components/Logo";
 export interface TransparentProps {
   /** Announcement bar copy. Defaults to the shipping line. */
   announcement?: ReactNode;
-  /** Announcement bar tone. */
+  /** Announcement bar tone. Default "accent". */
   announcementTone?: "dark" | "light" | "accent";
   /** Hamburger handler — open C-Menu. */
   onMenu?: () => void;
@@ -35,7 +35,7 @@ export interface TransparentProps {
 
 export function Transparent({
   announcement,
-  announcementTone,
+  announcementTone = "accent",
   onMenu,
   onCart,
   cartCount = 0,

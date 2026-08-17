@@ -16,29 +16,40 @@ import { ANNOUNCEMENT } from "@/lib/site";
    through the Next.js router for client-side navigation.
    The cart icon is present but inert here: the cart drawer is build step B-007. */
 
-// Fraction of the viewport height scrolled before the sticky header takes over.
-const HERO_TAKEOVER = 0.6;
-
 export function SiteHeader({ accountHref = "/account" }: { accountHref?: string }): ReactElement {
   const pathname = usePathname();
   const router = useRouter();
   const isHome = pathname === "/";
 
   const [menuOpen, setMenuOpen] = useState(false);
-  const [pastHero, setPastHero] = useState(false);
+  // Off Home the sticky header is on from the first paint, so it never slides in.
+  const [stickyOn, setStickyOn] = useState(!isHome);
 
   useEffect(() => {
-    // Only Home swaps on scroll; other routes are sticky from the start.
+    // Only Home hands off on scroll; other routes are sticky throughout.
     if (!isHome) {
-      setPastHero(false);
+      console.debug("[SiteHeader] not Home, sticky on from the start");
+      setStickyOn(true);
       return;
     }
-    const onScroll = (): void => {
-      setPastHero(window.scrollY > window.innerHeight * HERO_TAKEOVER);
+    const check = (): void => {
+      // Measured against the hero's real bottom edge, not a viewport fraction,
+      // so the handoff lands at the same point on every screen size.
+      const hero = document.querySelector("[data-hero]");
+      if (!hero) {
+        console.debug("[SiteHeader] no [data-hero] on this page, sticky stays on");
+        setStickyOn(true);
+        return;
+      }
+      setStickyOn(hero.getBoundingClientRect().bottom <= 0);
     };
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
+    check();
+    window.addEventListener("scroll", check, { passive: true });
+    window.addEventListener("resize", check);
+    return () => {
+      window.removeEventListener("scroll", check);
+      window.removeEventListener("resize", check);
+    };
   }, [isHome]);
 
   const openMenu = (): void => setMenuOpen(true);
@@ -63,25 +74,37 @@ export function SiteHeader({ accountHref = "/account" }: { accountHref?: string 
   // Cart drawer + item count come from the global CartProvider (B-007).
   const { count: cartCount, openCart } = useCart();
 
-  const transparent = isHome && !pastHero;
-
   return (
     <>
-      {transparent ? (
+      {/* Both headers stay mounted, so nothing enters or leaves the layout on
+          handoff and the page never jumps. Transparent is absolute (no space in
+          the flow); the sticky slot below always holds its 4.5rem + 2.25rem.
+          Transparent is first in the DOM on purpose: the two share --z-header,
+          so the later element wins and the sticky bar paints over it. */}
+      {isHome && (
         <Transparent
           announcement={ANNOUNCEMENT}
           onMenu={openMenu}
           onCart={openCart}
           cartCount={cartCount}
         />
-      ) : (
+      )}
+      <div
+        // Hidden means off-screen: keep it out of the tab order too.
+        inert={!stickyOn}
+        // Tailwind v4 moves the slide onto the standalone `translate` property,
+        // so that is what transitions here. Naming `transform` animates nothing.
+        className={`sticky top-0 z-[var(--z-header)] motion-safe:transition-[translate,opacity] motion-safe:duration-[var(--dur-slow)] motion-safe:ease-[var(--ease-out)] ${
+          stickyOn ? "translate-y-0 opacity-100" : "-translate-y-[115%] opacity-0"
+        }`}
+      >
         <Sticky
           announcement={ANNOUNCEMENT}
           onMenu={openMenu}
           onCart={openCart}
           cartCount={cartCount}
         />
-      )}
+      </div>
       <Menu
         open={menuOpen}
         onClose={closeMenu}
