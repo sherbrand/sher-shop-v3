@@ -8,8 +8,6 @@
 
 - `Plan`: Before any edit, read the files it changes and the spec that governs them, then show a short plan. Do not change a file until I say go.
 - `Clarify`: If anything is missing or unclear, ask follow-ups until you're confident you know what to build. Do not guess.
-- `Ignore`: Never read `/docs/reference/` or `/docs/legacy/`, and never treat either as a source of truth. `/docs/reference/` is set-aside drafts and personal reference. `/docs/legacy/` is what a replacement or removal set aside; read a file there only when it's asked for by name.
-- `Replace`: Before replacing or removing a whole file, move the original to `/docs/legacy/`; on a replacement, say what changed. When a name in `/docs/legacy/` is taken, add a number to the end (`-2`, `-3`, …).
 
 #### When writing a file
 
@@ -231,16 +229,10 @@ Each file or folder owns one job. Do not repeat its content in another. Where tw
 | Workflow PNG | `/docs/workflow.png` | The pipeline map: how the roles and their files connect. A sketch, not a source of truth; not every line is drawn |
 | Runbook C.Design | `/docs/runbook-cdesign.md` | How to run Claude Design to build the design system |
 | Runbook PRD | `/docs/runbook-prd.md` | How to run DraftPRD generation |
-| PO SKILL | `/.claude/skills/po/` | PO role: drafts the DraftPRD |
-| UI SKILL | `/.claude/skills/ui/` | UI role: harvests Layout Components (C-xxx) and primitives |
-| Writer SKILL | `/.claude/skills/writer/` | Writer role: writes content from outlines |
-| FE SKILL | `/.claude/skills/fe/` | FE role: wires Layout Components (C-xxx) to page sections |
 | components/ | `/components/` | The C-xxx Layout Components and Module primitives |
 | assets/ | `/public/assets/` | All live static assets the site serves (e.g. logos, images, video, fonts) |
 | content/ | `/docs/content/` | Final SEO content: Markdown pages with frontmatter, plus grid TSVs that source page families sharing an outline |
 | cdesign/ | `/docs/cdesign/` | The Claude Design export |
-| reference/ | `/docs/reference/` | Set-aside drafts and personal reference; ignored, not inputs |
-| legacy/ | `/docs/legacy/` | Files a replacement or removal set aside; read only when one is asked for by name |
 
 ### Conflict Rules
 
