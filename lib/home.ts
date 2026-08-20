@@ -1,62 +1,81 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
 import type { HeroSlide } from "@/components/C-HeroCarousel";
 import type { CategoryItem } from "@/components/C-CategoryGrid";
 
-/* D-004 Home Content — the repo file the Home page (S-001, B-008) renders from
-   (PRD §4 D-004, F-008 hero/tiles, F-012 featured). Copy comes from
-   docs/content/s-001_home.md.
+/* D-004 Home Content — the slot data behind the Home page (S-001, B-008):
+   hero banners (F-008), category tiles (F-008), and featured products (F-012).
 
-   Images are D-004 assets that have not been delivered yet: hero banners and
-   category-tile photos. Until they arrive the hero shows a tone band and the
-   tiles fall back to their tone — the same empty-slot MVP the other pages use.
-   The structure and copy are final; only the imagery is pending.
+   The data lives in a TSV so it can be edited in a spreadsheet without touching
+   code. Source: docs/content/d-004_home.tsv. This file only reads that TSV and
+   shapes it into the props the components take.
 
-   Featured products are named by Shopify product HANDLE (F-012); the content
-   file lists placeholder product names, not handles, so no slot resolves yet
-   and the Featured block is left out until real handles are provided. */
+   Page copy (the intro title and the closing CTA) is NOT here. It sits inline in
+   app/page.tsx, the same as every other page. D-004 holds slots, not prose. */
 
-// S-001.1 — hero banners. Home REQUIRES a hero band: the site header renders as
-// a transparent overlay over it and only hands off to the sticky header after
-// the hero scrolls past (see SiteHeader). No banner image has been delivered
-// yet (D-004), so the single banner shows the dark brand tone as a photo
-// placeholder — the transparent white header reads correctly over it. Add
-// { image, alt } slides (plus optional overlay eyebrow/heading/cta) as the hero
-// art arrives; the carousel starts sliding once there is more than one.
-export const HERO_SLIDES: HeroSlide[] = [
-  { bg: "var(--sher-dark)", image: "/assets/cocktail/hero.webp" },
-  { bg: "var(--sher-dark)", image: "/assets/cocktail/hero2.webp" },
-];
+const SOURCE = "docs/content/d-004_home.tsv";
 
-// S-001.2 — intro title block (eyebrow / H1 / subtitle).
-export const HOME_INTRO = {
-  eyebrow: "Refined Sensuality",
-  heading: "Modern Womenswear by SHER",
-  description:
-    "Every SHER piece is made by hand, down to the boning set one at a time. Sensual, refined, and never cheap.",
-};
+// Design fallback, not content: a hero slot with no image shows the brand tone,
+// so the transparent site header still reads over it.
+const HERO_FALLBACK_BG = "var(--sher-dark)";
 
-// S-001.3 — category tiles: labels and links from the content file. Tile images
-// are pending, so each tile shows its tone until then.
-export const HOME_CATEGORIES: CategoryItem[] = [
-  { label: "Shop Corset Tops", href: "/corset-tops", id: "cat-corsets" },
-  { label: "Shop Matching Sets", href: "/matching-sets", id: "cat-sets" },
-  {
-    label: "Shop Cocktail Dresses",
-    href: "/cocktail-dresses",
-    id: "cat-dresses",
-    image: "/assets/cocktail/tile-cocktail.webp",
-  },
-  { label: "Shop All Products", href: "/shop", id: "cat-all" },
-];
+type Row = Record<string, string>;
 
-// S-001.4 — featured product handles (F-012). Empty until D-004 supplies real
-// Shopify handles; an unmatched handle is left out, and with none set the whole
-// Featured block is omitted.
-export const FEATURED_HANDLES: string[] = [];
+/* Reads the TSV into rows keyed by column name. Note lines (#) and blank lines
+   are dropped, and the first line left is the header. */
+function readRows(): Row[] {
+  const path = join(process.cwd(), SOURCE);
+  const lines = readFileSync(path, "utf8")
+    .split("\n")
+    .filter((line) => line.trim() !== "" && !line.startsWith("#"));
 
-// S-001.5 — closing call-to-action band.
-export const HOME_CTA = {
-  heading: "Made to Be Seen",
-  description:
-    "The right piece turns heads before you say a word. Find yours and own the room.",
-  cta: { label: "Shop the Full Collection", href: "/shop" },
-};
+  const header = lines[0].split("\t").map((key) => key.trim());
+  const rows = lines.slice(1).map((line) => {
+    const cells = line.split("\t");
+    return Object.fromEntries(
+      header.map((key, i) => [key, (cells[i] ?? "").trim()]),
+    );
+  });
+
+  console.debug(`[D-004] read ${rows.length} slot rows from ${SOURCE}`);
+  return rows;
+}
+
+const ROWS = readRows();
+
+/* The rows of one type, in the order they appear in the file. */
+function ofType(type: string): Row[] {
+  return ROWS.filter((row) => row.type === type);
+}
+
+/* S-001.1 — hero banners. Home REQUIRES a hero band: the site header renders as
+   a transparent overlay over it and only hands off to the sticky header once the
+   hero scrolls past (see SiteHeader). The carousel slides once there is more
+   than one banner. Overlay text is optional per slot. */
+export const HERO_SLIDES: HeroSlide[] = ofType("hero").map((row) => ({
+  bg: HERO_FALLBACK_BG,
+  image: row.image || undefined,
+  eyebrow: row.eyebrow || undefined,
+  heading: row.heading || undefined,
+  cta: row.label && row.link ? { label: row.label, href: row.link } : undefined,
+}));
+
+/* S-001.3 — category tiles. A tile with no image falls back to its tone. The
+   slot name doubles as the React key, matching the design export's slot ids. */
+export const HOME_CATEGORIES: CategoryItem[] = ofType("tile").map((row) => ({
+  label: row.label,
+  href: row.link,
+  id: row.slot,
+  image: row.image || undefined,
+}));
+
+/* S-001.4 — featured products (F-012), hand-picked by Shopify handle. A row with
+   no handle is skipped, and with none set the Home page leaves the whole
+   Featured block out. */
+export const FEATURED_HANDLES: string[] = ofType("featured")
+  .map((row) => row.handle)
+  .filter((handle) => handle !== "");
+
+console.debug(
+  `[D-004] ${HERO_SLIDES.length} hero, ${HOME_CATEGORIES.length} tiles, ${FEATURED_HANDLES.length} featured`,
+);

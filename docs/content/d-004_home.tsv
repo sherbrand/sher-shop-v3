@@ -1,0 +1,9 @@
+type	slot	image	alt	eyebrow	heading	label	link	handle
+hero	hero-1	/assets/cocktail/hero.webp	a model in a yellow ribbed midi dress on a marble staircase in a grand hall					
+hero	hero-2	/assets/cocktail/hero2.webp	a model in a yellow ribbed midi dress walking down a sunlit marble staircase					
+tile	cat-corsets		a hand-boned corset top on a model, front view			Shop Corset Tops	/corset-tops	
+tile	cat-sets		a matching corset top and trousers on a model, full length			Shop Matching Sets	/matching-sets	
+tile	cat-dresses	/assets/cocktail/tile-cocktail.webp	a satin cocktail dress on a model, catching the light			Shop Cocktail Dresses	/cocktail-dresses	
+tile	cat-all		corset tops, sets, and dresses together on a rail			Shop All Products	/shop	
+featured	featured-1							
+featured	featured-2							

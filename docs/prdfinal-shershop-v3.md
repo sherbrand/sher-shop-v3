@@ -95,8 +95,8 @@
 | D-001 | Product | Shopify Storefront API | Title, slug, description, price, images, video, size variants, availability, and the type attribute (closure type, set type, or length), held as a Shopify product metafield exposed to the Storefront API. |
 | D-002 | Collection | Shopify Storefront API | The all-products collection and the three category collections, plus which products belong to each. Powers the listing grids. |
 | D-003 | Cart | Shopify Storefront API, with the cart ID in a browser cookie | Line items, quantities, subtotal, and the checkout URL. |
-| D-004 | Home Content | A file in the repo | Hero banners and category tiles, each slot giving placement, image, alt text, overlay text, and link. Featured products as slot placement and product handle only; the name, price, and image come from D-001. |
-| D-005 | Product Data | A file in the repo | Per-product data that is not in Shopify. One row per product, keyed by slug. Columns: which image to use as the grid thumbnail, and the cm measurements as one column per size (`bust_S`, `bust_M`, …). A product fills only the measurements it uses and leaves the rest blank. Inches are worked out from the cm values. |
+| D-004 | Home Content | A TSV file in the repo | Hero banners and category tiles, each slot giving placement, image, alt text, overlay text, and link. Featured products as slot placement and product handle only; the name, price, and image come from D-001. |
+| D-005 | Product Data | A TSV file in the repo | Per-product data that is not in Shopify. One row per product, keyed by slug. Columns: which image to use as the grid thumbnail, and the cm measurements as one column per size (`bust_S`, `bust_M`, …). A product fills only the measurements it uses and leaves the rest blank. Inches are worked out from the cm values. |
 
 ## 5. Screens
 
