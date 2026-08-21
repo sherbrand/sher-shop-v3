@@ -13,13 +13,12 @@
 
 - `Simple`: Pick the simple option and write the least that does the job. Cut any clause that restates, caveats, or explains what the words already say. Don't add a guardrail, an exception, or what something isn't unless a real gap needs it. Say so when something looks over-built.
 - `Plain`: Write in plain language and short sentences at a grade-5 reading level, in everything: docs, specs, and comments. Use US spelling for English. Use technical names only where they're the real ones.
-- `Own`: Each spec or skill describes its own job through the artifacts it reads and writes. It does not name other roles or skills. The connections live in each skill's Inputs and Output. Workflow PNG sketches the pipeline.
+- `Own`: Each spec or skill describes its own job through the artifacts it reads and writes. It does not name other roles or skills. The connections live in each skill's Inputs and Output.
 - `Why`: Keep reasoning and "why" in chat. Never put them inside a spec or skill.
 - `Dash`: Never two em-dashes in the same phrase, in any file (internal included). Prefer a period or colon.
 - `Ref`: Reference another file's section by name, not number. Its numbering drifts as sections are added or reordered. A step number inside the same skill file is fine; it renumbers in place.
 - `Path`: Refer to a file by its Name in Files & Folders. Add (path in CLAUDE.md) where the reader needs the path.
 - `YAML`: Markdown frontmatter is YAML — quote free-text values (`title`, `description`, a skill's `description`); an unquoted colon breaks it.
-- `Logs`: Add debug logs to logic and data code so it's easy to trace. Skip them in pure presentational components. Comment code for readability everywhere.
 
 #### When replying in chat
 
@@ -33,6 +32,8 @@
 - `Envs`: Write code that takes into account the different environments: dev, test, and prod.
 - `Scope`: Only make changes that are requested, or that are well understood and related to the change being requested.
 - `Fix`: When fixing a bug, do not introduce a new pattern or technology without first exhausting options with the existing implementation. If you do introduce a new approach, remove the old implementation so logic doesn't duplicate.
+- `Logs`: Add debug logs to logic and data code so it's easy to trace. Skip them in pure presentational components. Comment code for readability everywhere.
+- `Clean`: Before opening a PR, remove every debug log you added to chase the problem. Logs that belong in logic and data code stay.
 - `Scripts`: Avoid writing scripts in files if possible, especially if the script is likely to be run only once.
 - `Size`: Avoid code files over 200–300 lines. Refactor at that point.
 - `Mock`: Mocking data is only for tests. Never mock or stub data in dev or prod.
@@ -43,7 +44,7 @@
 - `Tiers`: Components come in two tiers: Module primitives like Button and Card, and Layout Components built from them like a feature row or category grid.
 - `Cxxx`: A C-xxx is the ID of a Layout Component: `C-` plus its role or shape name (C-Cart, C-HeroBanner). Each name is used once, never reused. Module primitives take no C-xxx.
 - `Spec`: `/app/tokens.css` owns the tokens. DESIGN.md describes them and documents every component (the Components section: each component and the tokens it uses). Component code lives in `/components/`; a Layout Component's C-xxx ties its doc entry to its code file.
-- `Pair`: The DESIGN.md component docs and the component code are generated together from the Claude Design export, so they stay in sync. Wiring a page section to a Layout Component references it by its C-xxx.
+- `Pair`: The DESIGN.md component docs and the component code stay in sync. Change both together. Wiring a page section to a Layout Component references it by its C-xxx.
 - `Heading`: When building a page, set each section heading's level from its Content MD section — the notation marks H1–H4, and the level sets the HTML tag only, not the style.
 - `Element`: Ask whether to update the design spec when introducing a new design system element: a color, typography level, spacing token, rounded value, or reusable component.
 - `Icons`: See the design spec for icon library and defaults. Do not write custom SVGs unless explicitly requested.
@@ -52,8 +53,7 @@
 
 ### Writing
 
-- `Voice`: Apply brand voice to any user-facing text: UI labels, microcopy, product descriptions, marketing copy, page content. Refer to the brand doc in Files & Folders.
-- `Prose`: For substantial prose (blog posts, information pages, collection pages, home copy), also refer to the writing rules in Files & Folders.
+- `Copy`: Take user-facing text from the Content MDs and the FinalPRD. Do not write new copy in the repo. Ask when a label is missing.
 
 ## Stack: Next.js + Shopify Headless
 
@@ -210,36 +210,21 @@ The SHER web store lives at `sherbrand.co`.
 
 ### Files & Folders
 
-Each file or folder owns one job. Do not repeat its content in another. Where two disagree, the owner wins.
+Each file or folder and the job it owns.
 
-| Name | File / Folder | Owns |
+| Name | Path | Owns |
 |------|------|------|
-| Claude Repo | `/CLAUDE.md` | Coding, design, writing, and stack rules, plus this index |
-| DraftPRD | `/docs/prddraft-shershop-v<n>.md` | Features, screens, data, design, and scope. Components, Assets, and Active Items not filled in yet. One file per version |
-| FinalPRD | `/docs/prdfinal-shershop-v<n>.md` | The DraftPRD with Components, Assets, and Active Items filled in. One file per version |
-| Planning TSV | `/docs/planning-shershop.tsv` | The plan of what to build: pages (URLs, titles, outline, SEO) and planned components and features, each tagged by version. Update it when the plan changes |
-| Brand MD | `/docs/brand-sher.md` | Brand voice, audience, product categories, selling points, key terms, competitor positioning, and words to avoid |
-| Knowledge MD | `/docs/knowledge-sher.md` | The facts for writing pages: company, contact, orders, and product. Product categories live in Brand MD |
-| Style MD | `/docs/style-sher.md` | The human style brief. Seeds Claude Design and Design MD (see Conflict Rules) |
-| Tokens CSS | `/app/tokens.css` | Every design token as a CSS custom property: colors, typography, spacing, radius, motion, breakpoints, containers, shadows, z-index |
-| Base CSS | `/app/base.css` | Document defaults inside `@layer base`: root font size, body, headings, paragraphs, links, focus ring, images |
-| Design MD | `/DESIGN.md` | Describes the design system in prose, with a Components section documenting each component. Token YAML on top, but Tokens CSS is what the components read |
-| Outline Notation | `/docs/outline-notation.md` | The layout grammar used in the plan's `outline` column and in Content MD layout lines |
-| Writing Rules | `/docs/writing-rules.md` | Content writing standards: voice, SEO, GEO, and banned phrases |
-| Workflow PNG | `/docs/workflow.png` | The pipeline map: how the roles and their files connect. A sketch, not a source of truth; not every line is drawn |
-| Runbook C.Design | `/docs/runbook-cdesign.md` | How to run Claude Design to build the design system |
-| Runbook PRD | `/docs/runbook-prd.md` | How to run DraftPRD generation |
-| components/ | `/components/` | The C-xxx Layout Components and Module primitives |
-| assets/ | `/public/assets/` | All live static assets the site serves (e.g. logos, images, video, fonts) |
-| content/ | `/docs/content/` | Final SEO content: Markdown pages with frontmatter, plus grid TSVs that source page families sharing an outline |
-| cdesign/ | `/docs/cdesign/` | The Claude Design export |
+| Claude Repo | `/CLAUDE.md` | The repo's rules and this index |
+| Design MD | `/DESIGN.md` | The design system, and what each component is |
+| Tokens CSS | `/app/tokens.css` | Every design token |
+| Base CSS | `/app/base.css` | The site's document defaults |
+| components/ | `/components/` | Every component the site uses |
+| assets/ | `/public/assets/` | Every asset the site serves |
+| content/ | `/docs/content/` | The final page content |
+| FinalPRD | `/docs/prdfinal-shershop-v<n>.md` | The build spec for one version, filled in |
+| Outline Notation | `/docs/outline-notation.md` | The layout grammar |
 
 ### Conflict Rules
 
-- Planning handoffs — a planning column or row seeds a downstream doc, then stops being the live source:
-  - `outline` → a content file in `/docs/content/`. Once that file exists, it owns the page's outline and copy; until then, the plan's outline is the source.
-  - `functionality` → a screen's Behavior in the DraftPRD. Once that entry exists, the DraftPRD owns the behavior; until then, the plan's functionality is the source.
-  - `C-`/`F-` rows → components and features in the DraftPRD. The plan seeds them (name, what's in it, behavior); once the DraftPRD is generated, the DraftPRD owns their spec.
-- The plan is forward-looking — it plans what's coming, by version. The FinalPRD is the historical source of truth and the ID authority (US/F/D maxes, the Active Items ledger); the plan's IDs may be incomplete.
-- Style handoff — Style MD seeds Claude Design and DESIGN.md, then stops being the live source. Once DESIGN.md exists, DESIGN.md owns the visual style.
+- FinalPRD is the authority for US, F, and D IDs, in its Active Items list.
 
