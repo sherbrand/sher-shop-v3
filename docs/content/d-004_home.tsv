@@ -1,9 +1,11 @@
 type	slot	image	alt	eyebrow	heading	label	link	handle
 hero	hero-1	/assets/cocktail/hero.webp	a model in a yellow ribbed midi dress on a marble staircase in a grand hall					
 hero	hero-2	/assets/cocktail/hero2.webp	a model in a yellow ribbed midi dress walking down a sunlit marble staircase					
-tile	cat-corsets		a hand-boned corset top on a model, front view			Shop Corset Tops	/corset-tops	
-tile	cat-sets		a matching corset top and trousers on a model, full length			Shop Matching Sets	/matching-sets	
+hero	hero-3	/assets/batch1/matching-set_panelled-hall_tall-mouldings.webp	a model in a watercolor-print halter top and wide-leg trousers, standing in a panelled hall with tall arched windows					
+hero	hero-4	/assets/batch1/matching-sets-camo2.webp	a model in a watercolor-print halter top and wide-leg trousers, walking past concrete architecture at golden hour					
+tile	cat-corsets	/assets/batch1/corset-tops-legacy.jpg	an ivory strapless corset top with structured bust seaming, against a terracotta wall			Shop Corset Tops	/corset-tops	
+tile	cat-sets	/assets/batch1/matching-sets-camo.webp	a model in a watercolor-print halter top and wide-leg trousers, walking beside a reflecting pool lined with statues			Shop Matching Sets	/matching-sets	
 tile	cat-dresses	/assets/cocktail/tile-cocktail.webp	a satin cocktail dress on a model, catching the light			Shop Cocktail Dresses	/cocktail-dresses	
 tile	cat-all		corset tops, sets, and dresses together on a rail			Shop All Products	/shop	
-featured	featured-1							
-featured	featured-2							
+featured	featured-1							silver-clara-set
+featured	featured-2							quartz-vivian-maxi-dress
