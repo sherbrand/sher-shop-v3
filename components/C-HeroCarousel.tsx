@@ -103,9 +103,14 @@ export function HeroCarousel({
                  with nothing to announce is worse than leaving it decorative. */
               role={slide.image && slide.alt ? "img" : undefined}
               aria-label={slide.image && slide.alt ? slide.alt : undefined}
+              /* backgroundColor, not the `background` shorthand. React writes an
+                 empty string for an undefined style value, and an empty
+                 `background` clears background-image with it. The server keeps the
+                 image because it skips undefined values, so the banner only goes
+                 blank once this client component hydrates. */
               style={{
                 backgroundImage: slide.image ? `url("${slide.image}")` : undefined,
-                background: slide.image ? undefined : slide.bg || "var(--surface-inverse)",
+                backgroundColor: slide.image ? undefined : slide.bg || "var(--surface-inverse)",
               }}
             />
             <div className="absolute inset-0 bg-[image:var(--overlay-hero)]" />

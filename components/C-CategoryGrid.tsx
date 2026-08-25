@@ -56,9 +56,13 @@ export function CategoryGrid({
             >
               <div
                 className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+                /* backgroundColor, not the `background` shorthand: an empty
+                   shorthand clears background-image with it. The tiles render on
+                   the server so nothing reapplies the style today, but the same
+                   line blanks the hero the moment its component hydrates. */
                 style={{
                   backgroundImage: item.image ? `url("${item.image}")` : undefined,
-                  background: item.image ? undefined : item.bg || "var(--surface-raised)",
+                  backgroundColor: item.image ? undefined : item.bg || "var(--surface-raised)",
                 }}
               >
                 {item.media}
