@@ -11,13 +11,7 @@ import { getProducts } from "@/lib/shopify/fetchers";
 import type { Product } from "@/lib/shopify/types";
 import { toGridProduct } from "@/lib/listing";
 import { pageMetadata } from "@/lib/seo";
-import {
-  FEATURED_HANDLES,
-  HERO_SLIDES,
-  HOME_CATEGORIES,
-  HOME_CTA,
-  HOME_INTRO,
-} from "@/lib/home";
+import { FEATURED_HANDLES, HERO_SLIDES, HOME_CATEGORIES } from "@/lib/home";
 
 // Home keeps the brand default title (no "%s · SHER" template) and a canonical
 // at the site root (B-010, S-001 seo_role=Pillar).
@@ -28,10 +22,12 @@ export const metadata: Metadata = pageMetadata({
   path: "/",
 });
 
-/* Home page (S-001, B-008). Composes the design components from the D-004 Home
-   Content (lib/home): the hero band (S-001.1), the intro title (S-001.2), the
-   category tiles (S-001.3), the Featured Products block (S-001.4), and the
-   closing CTA (S-001.5). Sections set their own width, so <main> is full-bleed. */
+/* Home page (S-001, B-008): the hero band (S-001.1), the intro title (S-001.2),
+   the category tiles (S-001.3), the Featured Products block (S-001.4), and the
+   closing CTA (S-001.5). Sections set their own width, so <main> is full-bleed.
+
+   Slot data (banners, tiles, featured handles) comes from D-004 via lib/home.
+   Page copy is written inline here, the same as every other page. */
 export default async function HomePage(): Promise<ReactElement> {
   // F-012: Featured products are hand-picked by Shopify handle from D-004; an
   // unmatched handle is left out. FEATURED_HANDLES is empty until real handles
@@ -62,11 +58,12 @@ export default async function HomePage(): Promise<ReactElement> {
         </div>
       )}
 
+      {/* S-001.2 — intro title. */}
       <HeroTitle
-        eyebrow={HOME_INTRO.eyebrow}
-        heading={HOME_INTRO.heading}
+        eyebrow="Refined Sensuality"
+        heading="Modern Womenswear by SHER"
         headingLevel={1}
-        description={HOME_INTRO.description}
+        description="Every SHER piece is made by hand, down to the boning set one at a time. Sensual, refined, and never cheap."
       />
 
       <div className="mx-auto mt-[var(--space-5)] max-w-[var(--container-media)]">
@@ -87,15 +84,16 @@ export default async function HomePage(): Promise<ReactElement> {
         </section>
       )}
 
+      {/* S-001.5 — closing call to action. */}
       <HeroTitle
         className="mt-[var(--space-9)]"
         headingLevel={2}
         background="var(--surface-raised)"
-        heading={HOME_CTA.heading}
-        description={HOME_CTA.description}
+        heading="Made to Be Seen"
+        description="The right piece turns heads before you say a word. Find yours and own the room."
       >
-        <Button as="a" href={HOME_CTA.cta.href} variant="accent" size="lg">
-          {HOME_CTA.cta.label}
+        <Button as="a" href="/shop" variant="accent" size="lg">
+          Shop the Full Collection
         </Button>
       </HeroTitle>
     </main>
