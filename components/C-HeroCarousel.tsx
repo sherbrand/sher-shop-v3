@@ -20,6 +20,9 @@ export interface HeroSlide {
   bg?: string;
   /** Background image URL (cover). Overrides bg. */
   image?: string;
+  /** What the banner image shows. The banner is a background, so this becomes
+   *  the layer's accessible name. Leave unset to treat the image as decorative. */
+  alt?: string;
   /** Optional overlay eyebrow. */
   eyebrow?: string;
   /** Optional overlay heading. */
@@ -95,6 +98,11 @@ export function HeroCarousel({
             <div
               /* Below 640 the crop shifts down so the subject sits lower in the narrow frame. */
               className="absolute inset-0 bg-cover bg-no-repeat bg-[position:center_40%] @min-[640px]:bg-center"
+              /* A background image carries no alt, so the layer takes the role and
+                 the name instead. Only when there is a name to give: role="img"
+                 with nothing to announce is worse than leaving it decorative. */
+              role={slide.image && slide.alt ? "img" : undefined}
+              aria-label={slide.image && slide.alt ? slide.alt : undefined}
               style={{
                 backgroundImage: slide.image ? `url("${slide.image}")` : undefined,
                 background: slide.image ? undefined : slide.bg || "var(--surface-inverse)",
