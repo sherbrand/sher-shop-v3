@@ -29,16 +29,18 @@ function readRows(): Row[] {
     .split("\n")
     .filter((line) => line.trim() !== "" && !line.startsWith("#"));
 
-  const header = lines[0].split("\t").map((key) => key.trim());
-  const rows = lines.slice(1).map((line) => {
+  // The file is edited in a spreadsheet, so it can come back empty. No header
+  // means no slots, which the page already handles.
+  const [headerLine, ...bodyLines] = lines;
+  if (!headerLine) return [];
+
+  const header = headerLine.split("\t").map((key) => key.trim());
+  return bodyLines.map((line) => {
     const cells = line.split("\t");
     return Object.fromEntries(
       header.map((key, i) => [key, (cells[i] ?? "").trim()]),
     );
   });
-
-  console.debug(`[D-004] read ${rows.length} slot rows from ${SOURCE}`);
-  return rows;
 }
 
 const ROWS = readRows();
@@ -55,13 +57,19 @@ function ofType(type: string): Row[] {
 export const HERO_SLIDES: HeroSlide[] = ofType("hero").map((row) => ({
   bg: HERO_FALLBACK_BG,
   image: row.image || undefined,
+  alt: row.alt || undefined,
   eyebrow: row.eyebrow || undefined,
   heading: row.heading || undefined,
   cta: row.label && row.link ? { label: row.label, href: row.link } : undefined,
 }));
 
 /* S-001.3 — category tiles. A tile with no image falls back to its tone. The
-   slot name doubles as the React key, matching the design export's slot ids. */
+   slot name doubles as the React key, matching the design export's slot ids.
+
+   The slot's alt is not read here on purpose. Each tile is a link that already
+   shows its label, so the label is the link's name. Adding the alt as well would
+   make a screen reader read the photo and then the label. The alt column stays in
+   the TSV as the note for whoever picks the photo. */
 export const HOME_CATEGORIES: CategoryItem[] = ofType("tile").map((row) => ({
   label: row.label,
   href: row.link,
@@ -75,7 +83,3 @@ export const HOME_CATEGORIES: CategoryItem[] = ofType("tile").map((row) => ({
 export const FEATURED_HANDLES: string[] = ofType("featured")
   .map((row) => row.handle)
   .filter((handle) => handle !== "");
-
-console.debug(
-  `[D-004] ${HERO_SLIDES.length} hero, ${HOME_CATEGORIES.length} tiles, ${FEATURED_HANDLES.length} featured`,
-);
