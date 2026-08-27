@@ -7,7 +7,7 @@ import { Transparent } from "@/components/C-Transparent";
 import { Sticky } from "@/components/C-Sticky";
 import { Menu } from "@/components/C-Menu";
 import { useCart } from "@/components/CartProvider";
-import { ANNOUNCEMENT } from "@/lib/site";
+import { ANNOUNCEMENT, SOCIAL_LINKS } from "@/lib/site";
 
 /* Global chrome orchestrator (build step B-003).
    Home shows the transparent header over the hero, then hands off to the sticky
@@ -62,13 +62,10 @@ export function SiteHeader({ accountHref = "/account" }: { accountHref?: string 
     router.push(href);
   };
 
-  // The menu's secondary links, with Login/Account pointing at Shopify hosted
-  // customer accounts (built from the store domain, passed down from layout).
-  const secondaryLinks = [
-    { label: "Our Story", href: "/about" },
-    { label: "Contact Us", href: "/contact" },
-    { label: "Login / Account", href: accountHref },
-  ];
+  // The drawer's account link points at Shopify hosted customer accounts (built
+  // from the store domain, passed down from layout). Its More Info group is the
+  // component's own default.
+  const accountLink = { label: "Login / Account", href: accountHref };
   // Cart drawer + item count come from the global CartProvider (B-007).
   const { count: cartCount, openCart } = useCart();
 
@@ -107,7 +104,8 @@ export function SiteHeader({ accountHref = "/account" }: { accountHref?: string 
         open={menuOpen}
         onClose={closeMenu}
         onNavigate={navigate}
-        secondaryLinks={secondaryLinks}
+        accountLink={accountLink}
+        socialLinks={SOCIAL_LINKS}
       />
     </>
   );

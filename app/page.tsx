@@ -18,7 +18,7 @@ import { FEATURED_HANDLES, HERO_SLIDES, HOME_CATEGORIES } from "@/lib/home";
 export const metadata: Metadata = pageMetadata({
   title: { absolute: "Modern Womenswear by SHER" },
   description:
-    "Modern womenswear by SHER: hand-built corset tops, matching sets, and cocktail dresses that shape the body and read elegant.",
+    "SHER makes modern womenswear that reads elegant, never cheap. Corset tops, matching sets, cocktail dresses, and beachwear, sensual and made to be seen.",
   path: "/",
 });
 
@@ -67,7 +67,10 @@ export default async function HomePage(): Promise<ReactElement> {
       />
 
       <div className="mx-auto mt-[var(--space-5)] max-w-[var(--container-media)]">
-        <CategoryGrid items={HOME_CATEGORIES} />
+        <CategoryGrid
+          items={HOME_CATEGORIES}
+          cta={{ label: "Shop all Products", href: "/shop" }}
+        />
       </div>
 
       {featured.length > 0 && (

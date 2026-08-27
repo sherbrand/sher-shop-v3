@@ -25,6 +25,12 @@ export interface ProductCardProps {
   className?: string;
 }
 
+// Stepped sizes, resolved against the enclosing band's width.
+const STEP_LABEL =
+  "text-[length:var(--size-label-sm)] @min-[640px]:text-[length:var(--size-label-md)] @min-[1024px]:text-[length:var(--size-label-lg)]";
+const STEP_ITEM =
+  "text-[length:var(--size-item-sm)] @min-[640px]:text-[length:var(--size-item-md)] @min-[1024px]:text-[length:var(--size-item-lg)]";
+
 export function ProductCard({
   title,
   price,
@@ -63,11 +69,11 @@ export function ProductCard({
       <div className="flex items-start justify-between gap-[var(--space-4)]">
         <span className="min-w-0">
           {category && (
-            <span className="mb-[var(--space-1)] block font-[family-name:var(--font-body)] text-[length:var(--size-xs)] uppercase tracking-[var(--tracking-label)] text-[var(--text-meta)]">
+            <span className={`mb-[var(--space-1)] block font-[family-name:var(--font-body)] ${STEP_LABEL} uppercase tracking-[var(--tracking-label)] text-[var(--text-meta)]`}>
               {category}
             </span>
           )}
-          <span className="block font-[family-name:var(--font-body)] text-[length:var(--fs-item,var(--size-item-lg))] text-[var(--text-strong)] underline-offset-[0.25em] group-hover:underline">
+          <span className={`block font-[family-name:var(--font-body)] ${STEP_ITEM} text-[var(--text-strong)] underline-offset-[0.25em] group-hover:underline`}>
             {title}
           </span>
         </span>

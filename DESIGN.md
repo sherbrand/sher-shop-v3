@@ -239,7 +239,7 @@ SHER is a modern womenswear storefront design system — warm editorial minimali
 
 ## Colors
 
-Raw palette (Tokens CSS): `background` #FAF9F6, `tint` #EFEBE7 (light primary), `surface` #E4E2DC, `text` #514F4E, `primary` #A99D94, `accent` #7C736B, `muted` #929291, `dark` #333231, `white` #FFFFFF, hairlines `border` #D8D5CE / `borderStrong` #C3BFB6, and `accentHover` #6B635B.
+Raw palette (`tokens/colors.css`): `background` #FAF9F6, `tint` #EFEBE7 (light primary), `surface` #E4E2DC, `text` #514F4E, `primary` #A99D94, `accent` #7C736B, `muted` #929291, `dark` #333231, `white` #FFFFFF, hairlines `border` #D8D5CE / `borderStrong` #C3BFB6, and `accentHover` #6B635B.
 
 Semantic aliases reference the raw palette: `surfacePage`/`surfaceTint`/`surfaceRaised`/`surfaceInverse`, `textDefault`/`textStrong`/`textMeta`/`textMuted`, `textOnInverse`, `textOnPrimary`, `accent` (→ Accent, the white-text fill), `borderDefault`, `borderFocus`. Reference tokens with `{colors.<name>}`.
 
@@ -255,7 +255,7 @@ Tracking has four roles, named to match the type scale — never invent a value 
 
 Styles: `display-1`, `h1`, `h2`, `h3`, `h4`, `body`, `eyebrow`, `button`.
 
-Layout components resolve every stepped size themselves, via container queries on their own width. Each one opens a container and carries its steps as classes: display, hero, section, title, item, and body each switch at 640 and 1024. Deliberate, controllable sizing without fluid `clamp` or viewport units, and no JS measurement.
+Layout components resolve every stepped size themselves, via CSS container queries on their own width (`tokens/components.css`) — the type-role classes `.t-display` / `.t-hero` / `.t-section` / `.t-title` / `.t-item` / `.t-body` inside a `.sher-band` container. Deliberate, controllable sizing without fluid `clamp` or viewport units, and no JS measurement.
 
 ## Layout
 
@@ -277,9 +277,9 @@ Small radii throughout: `rounded.none` 0, `rounded.sm` 2px (default controls), `
 
 ## Components
 
-**Module primitives** — each named for its code file (`Button.tsx`).
+**Module Components** (`components/module/`)
 - **Heading** — level-to-tag primitive; `level` sets h1–h4 for the outline without changing style. Props: `level`, `as`.
-- **Logo** — monogram mark or square lockup; black / white / dark. Props: `variant`, `color`, `size`, `href`, `alt`, `assetBase`.
+- **Logo** — monogram mark or square lockup; black / dark / text / meta / white. Props: `variant` ("mark"|"square"), `color` ("black"|"dark"|"text"|"meta"|"white"), `size`, `href`, `alt`.
 - **Icon** — Lucide line UI glyphs (1.5px stroke) + Simple Icons social marks. Props: `name`, `size`, `strokeWidth`.
 - **Button** — `surfaceInverse` fill, `textOnInverse`, `button` type, `rounded.sm`. Props: `variant` (primary/accent/surface/tonal/secondary/ghost), `size`, `fullWidth`, `disabled`, `as`, `href`, `target`, `rel`.
 - **ButtonPill** — filter/category control; `rounded.pill`, inverts to `surfaceInverse` when `active`. Props: `active`, `as`, `href`, `target`, `rel`.
@@ -289,39 +289,40 @@ Small radii throughout: `rounded.none` 0, `rounded.sm` 2px (default controls), `
 - **SizeSelector** — product size chips; sold-out sizes disabled and struck, selected chip inverted to `surfaceInverse`. Props: `sizes`, `value`/`defaultValue`, `onChange`, `label`.
 - **Divider** — section end mark closing a band or separating two; three treatments built from border tokens. Props: `variant` ("rule"|"mark"|"monogram"), `knockout`.
 - **Breadcrumb** — page trail (Home › Shop); `eyebrow` type, `textMeta` links. Props: `items`, `separator`.
-- **ViewToggle** — grid density control; segmented, active option on `surfaceInverse`. Props: `value`/`defaultValue`, `options`, `onChange`.
-- **ProductCard** — grid unit; media (3:4) over a `category` eyebrow + title on the left with the price right-aligned on the same row; `surfaceRaised`, `rounded.sm`. Props: `title`, `price`, `currency`, `compareAt`, `category`, `href`, `src`/`media`, `soldOut`.
-- **MediaGallery** — thumb strip beside a 3:4 stage; video first, autoplaying muted/looped/inline once loaded, static under `prefers-reduced-motion`. Props: `media`.
+- **ViewToggle** — F-003 grid density control; segmented, active option on `surfaceInverse`. Props: `value`/`defaultValue`, `options`, `onChange`.
+- **ProductCard** — F-001 grid unit; media (3:4) over a `category` eyebrow + title on the left with the price right-aligned on the same row; `surfaceRaised`, `rounded.sm`. Props: `title`, `price`, `currency`, `compareAt`, `category`, `href`, `src`/`media`, `soldOut`.
+- **MediaGallery**  — thumb strip beside a 3:4 stage; video first, autoplaying muted/looped/inline once loaded, static under `prefers-reduced-motion`. Props: `media`.
 - **Accordion** — FAQ disclosure rows; hairline rows, rotating chevron, one open at a time by default. Props: `items`, `headingLevel`, `single`, `defaultOpen`.
 - **AnnouncementBar** — `surfaceInverse`/`textOnInverse`, height 2.25rem. Props: `tone` ("dark"|"light"|"accent"), `children`.
 
-**Layout Components** — each named for its C-xxx and its code file (`C-Footer.tsx`). Every heading takes a `headingLevel` (h1–h4) prop that changes the tag only, not the style. Every component sets its own heading treatment inline (display face, uppercase, `tracking-display`, `leading-snug`, `textStrong`), so it renders correctly without a page loading Base CSS.
-- **C-HeroCarousel** — Home hero band; sliding peek carousel, 1 banner mobile / 2 at 50% tablet+desktop, portrait crops (2:3 → 4:5). Auto-advances by one with wrap; arrows + dots. Props: `slides`, `interval`, `autoPlay`.
-- **C-ShopTitle** — Shop / category page header; breadcrumb + `h1` heading + `lead` description + optional filter pills (link or button), `align` center or start. Props: `breadcrumb`, `heading`, `headingLevel`, `description`, `filters`, `activeFilter`, `onFilter`, `align`, `measure`.
-- **C-ProductGrid** — shop / category results band; count + ViewToggle toolbar over a responsive ProductCard grid. Columns come from one "mobile/tablet/desktop" string. A floating copy of the ViewToggle sticks to the scrollport bottom-left once the toolbar scrolls away. Props: `products`, `columns`, `heading`, `headingLevel`, `label`, `count`, `onView`, `showToolbar`, `floatingToggle`, `pageSize`, `loadMoreLabel`, `endMark` ("none"|"rule"|"mark"|"monogram"), `emptyMessage`.
-- **C-EditorialSplit** — two-up editorial band used on the About page; 4:5 media beside eyebrow + heading + paragraph, `mirror` swaps sides, stacks on mobile. Props: `eyebrow`, `heading`, `headingLevel`, `paragraph`, `media`, `mirror`, `mobileFirst` ("media"|"text"), `mediaRounded`, `background`, `children`.
-- **C-ShopEditorial** — the two-up editorial band used across the Shop and category pages; same shape as C-EditorialSplit. Props: `eyebrow`, `heading`, `headingLevel`, `headingFont` ("display"|"body"), `paragraph`, `media`, `mirror`, `mobileFirst` ("media"|"text"), `mobileAlign` ("left"|"right"), `gap`, `ratio`, `background`, `children`.
-- **C-ShopFaq** — FAQ band; heading beside its accordion at two-up, stacking on mobile. Heading size and column gap step off its own measured width. Props: `heading`, `headingLevel`, `items`, `itemHeadingLevel`, `defaultOpen`, `single`, `align` ("center"|"start").
-- **C-ProductPanel** — product page main band; media gallery beside the purchase column (breadcrumb, name, price, type attribute, size, quantity, buy buttons, drawer links). All sizes sold out swaps the buy pair for a Preorder link. Props: `breadcrumb`, `name`, `headingLevel`, `price`, `compareAt`, `currency`, `description`, `attributeLabel`, `attributeValue`, `sizes`, `size`, `onSize`, `quantity`, `onQuantity`, `media`, `onAddToCart`, `onBuyNow`, `onSizeChart`, `onShipping`, `preorderHref`, `stacked`.
-- **C-RelatedProducts** — "You May Also Like" band; heading + subtitle + back-to-category button over a small ProductCard grid. Props: `heading`, `headingLevel`, `subtitle`, `backLabel`, `backHref`, `products`, `columns`, `backVariant` ("primary"|"accent"|"surface"|"secondary"|"ghost"), `actionsLayout`, `actionsMeasure`, `children`.
-- **C-ContentProse** — full-width policy page band; centers heading + paragraph blocks at a readable measure (one or several paragraphs per heading), email addresses auto-linked. Owns its own band padding, content width, type sizes and block rhythm, stepped off its measured width. Props: `items`, `headingLevel`, `measure`, `contentWidth`, `background`, `paddingTop`, `children`.
-- **C-ContactMethods** — stacked contact rows; hairline-separated, each a heading over social marks, a mailto link, or an address block. Props: `items`, `headingLevel`.
-- **C-CategoryGrid** — full-bleed grid of category tiles; 1 col mobile / 2 tablet+desktop, portrait 4:5 crops, alternating bottom-left/right labels over a scrim. Props: `items`, `headingLevel`, `alternate`.
-- **C-HeroTitle** — editorial title band beneath the hero; optional breadcrumb + eyebrow + `display-1` heading + `lead` description + optional actions. Props: `breadcrumb`, `eyebrow`, `heading`, `headingLevel`, `description`, `align` ("center"|"start"), `measure`, `headingFont` ("display"|"body"), `headingMeasure`, `background`, `tone`, `children`.
-- **C-Transparent** — hero header, Home only; `white` text over imagery, height 4.5rem. Props: `onMenu`, `onCart`, `cartCount`, `announcement`, `announcementTone` ("dark"|"light"|"accent", default "accent"), `cartIcon` ("bag"|"tote"|"trolley"), `logoHref`.
-- **C-Sticky** — sticky header on every screen; `surfacePage`/`textStrong`, height 4.5rem. Props: `onMenu`, `onCart`, `cartCount`, `announcement`, `announcementTone` ("dark"|"light"|"accent", default "light"), `cartIcon` ("bag"|"tote"|"trolley"), `logoHref`, `showAnnouncement`.
-- **C-Menu** — left menu drawer; `surfacePage`, padding 1.5rem. Props: `open`, `onClose`, `headingLevel`, `shopLinks`, `secondaryLinks`, `onNavigate`, `logoHref`.
-- **C-Cart** — right cart drawer; `surfacePage`, `h3` title, padding 1.5rem. Props: `open`, `onClose`, `headingLevel`, `items`, `currency`, `onQuantityChange`, `onRemove`, `onCheckout`.
-- **C-Sizing** — right size-chart drawer; `surfacePage`, `textBody`, padding 1.5rem. Props: `open`, `onClose`, `headingLevel`, `productName`, `chart`.
-- **C-Shipping** — right shipping & returns drawer; `surfacePage`, `textBody`, padding 1.5rem. Props: `open`, `onClose`, `headingLevel`, `sections`, `children`.
-- **C-Footer** — dark footer band; `surfaceInverse`/`textOnInverse`, `eyebrow` column headings, padding 6rem. Responsive: logo row / shop+more / connect row on mobile/tablet, equal 4 columns on desktop. Props: `headingLevel`, `shopLinks`, `infoLinks`, `socialLinks`, `year`.
+**Layout Components** (`components/layout/`) — every heading takes a `headingLevel` (h1–h4) prop that changes the tag only, not the style. Every component sets its own heading treatment inline (display face, uppercase, `tracking-display`, `leading-snug`, `textStrong`), so it renders correctly without a page loading `tokens/base.css`.
+- **HeroCarousel** (C-HeroCarousel) — Home hero band (F-008); sliding peek carousel, 1 banner mobile / 2 at 50% tablet+desktop, portrait crops (2:3 → 4:5). Auto-advances by one with wrap; arrows + dots. Props: `slides`, `interval`, `autoPlay`.
+- **ShopTitle** (C-ShopTitle) — Shop / category page header; breadcrumb + `h1` heading + `lead` description + optional filter pills (link or button), `align` center or start. Props: `breadcrumb`, `heading`, `headingLevel`, `description`, `filters`, `activeFilter`, `onFilter`, `align`, `measure`.
+- **ProductGrid** (C-ProductGrid) — shop / category results band; count + ViewToggle toolbar over a responsive ProductCard grid. Columns come from one "mobile/tablet/desktop" string. A floating copy of the ViewToggle sticks to the scrollport bottom-left once the toolbar scrolls away. Props: `products`, `columns`, `heading`, `headingLevel`, `label`, `count`, `onView`, `showToolbar`, `floatingToggle`, `pageSize`, `loadMoreLabel`, `endMark` ("none"|"rule"|"mark"|"monogram"), `emptyMessage`.
+- **EditorialSplit** (C-EditorialSplit) — two-up editorial band used on the About page; 4:5 media beside eyebrow + heading + paragraph, `mirror` swaps sides, stacks on mobile. Props: `eyebrow`, `heading`, `headingLevel`, `paragraph`, `media`, `mirror`, `mobileFirst` ("media"|"text"), `mediaRounded`, `background`, `children`.
+- **ShopEditorial** (C-ShopEditorial) — the two-up editorial band used across the Shop and category pages; same shape as C-EditorialSplit. Props: `eyebrow`, `heading`, `headingLevel`, `headingFont` ("display"|"body"), `paragraph`, `media`, `mirror`, `mobileFirst` ("media"|"text"), `mobileAlign` ("left"|"right"), `fullBleed`, `gap`, `ratio`, `background`, `children`.
+- **ShopFaq** (C-ShopFaq) — FAQ band; heading beside its accordion at two-up, stacking on mobile. Heading size and column gap step off its own measured width. Props: `heading`, `headingLevel`, `items`, `itemHeadingLevel`, `defaultOpen`, `single`, `align` ("center"|"start").
+- **ProductPanel** (C-ProductPanel) — product page main band (S-006); media gallery beside the purchase column (breadcrumb, name, price, type attribute, size, quantity, buy buttons, drawer links). All sizes sold out swaps the buy pair for a Preorder link. Props: `breadcrumb`, `name`, `headingLevel`, `price`, `compareAt`, `currency`, `description`, `attributeLabel`, `attributeValue`, `sizes`, `size`, `onSize`, `quantity`, `onQuantity`, `media`, `onAddToCart`, `onBuyNow`, `onSizeChart`, `onShipping`, `preorderHref`, `stacked`.
+- **RelatedProducts** (C-RelatedProducts) — "You May Also Like" band; heading + subtitle + back-to-category button over a small ProductCard grid. Props: `heading`, `headingLevel`, `subtitle`, `backLabel`, `backHref`, `products`, `columns`, `backVariant` ("primary"|"accent"|"surface"|"secondary"|"ghost"), `actionsLayout`, `actionsMeasure`, `children`.
+- **ContentProse** (C-ContentProse) — full-width policy page band; centres heading + paragraph blocks at a readable measure (one or several paragraphs per heading), email addresses auto-linked. Owns its own band padding, content width, type sizes and block rhythm, stepped off its measured width. Props: `items`, `headingLevel`, `measure`, `contentWidth`, `background`, `paddingTop`, `children`.
+- **ContactMethods** (C-ContactMethods) — stacked contact rows; hairline-separated, each a heading over social marks, a mailto link, or an address block. Props: `items`, `headingLevel`.
+- **CategoryGrid** (C-CategoryGrid) — full-bleed grid of category tiles; 1 col mobile / 2 tablet+desktop, portrait 4:5 crops, alternating bottom-left/right labels over a scrim. Props: `items`, `headingLevel`, `alternate`, `cta`.
+- **HeroTitle** (C-HeroTitle) — editorial title band beneath the hero; optional breadcrumb + eyebrow + `display-1` heading + `lead` description + optional actions. Props: `breadcrumb`, `eyebrow`, `heading`, `headingLevel`, `description`, `align` ("center"|"start"), `measure`, `headingFont` ("display"|"body"), `headingMeasure`, `background`, `tone`, `children`.
+- **Transparent** (C-Transparent) — hero header, Home only; `white` text over imagery, height 4.5rem. Props: `onMenu`, `onCart`, `cartCount`, `announcement`, `announcementTone` ("dark"|"light"|"accent"), `cartIcon` ("bag"|"tote"|"trolley"), `logoHref`.
+- **Sticky** (C-Sticky) — sticky header on every screen; `surfacePage`/`textStrong`, height 4.5rem. Props: `onMenu`, `onCart`, `cartCount`, `announcement`, `announcementTone` ("dark"|"light"|"accent"), `cartIcon` ("bag"|"tote"|"trolley"), `logoHref`, `showAnnouncement`.
+- **Menu** (C-Menu) — left menu drawer; `surfacePage`, padding 1.5rem. Props: `open`, `onClose`, `headingLevel`, `nav` ("tabs"|"accordion"), `align` ("center"|"start"), `linkSize` ("item"|"title"), `accountSize` ("body"|"item"), `shopLinks`, `infoLinks`, `accountLink`, `socialLinks`, `onNavigate`, `logoHref`.
+- **Cart** (C-Cart) — right cart drawer; `surfacePage`, `h3` title, padding 1.5rem. Props: `open`, `onClose`, `headingLevel`, `items`, `currency`, `onQuantityChange`, `onRemove`, `onCheckout`.
+- **Sizing** (C-Sizing) — right size-chart drawer; `surfacePage`, `textBody`, padding 1.5rem. Props: `open`, `onClose`, `headingLevel`, `productName`, `chart`.
+- **Shipping** (C-Shipping) — right shipping & returns drawer; `surfacePage`, `textBody`, padding 1.5rem. Props: `open`, `onClose`, `headingLevel`, `sections`, `children`.
+- **Footer** (C-Footer) — dark footer band; `surfaceInverse`/`textOnInverse`, `eyebrow` column headings, padding 6rem. Responsive: logo row / shop+more / connect row on mobile/tablet, equal 4 columns on desktop. Props: `headingLevel`, `shopLinks`, `infoLinks`, `socialLinks`, `year`.
 
 ## Do's and Don'ts
 
-- **Do** stay inside the closed neutral palette; never introduce a color outside Tokens CSS.
+- **Do** stay inside the closed neutral palette; never introduce a color outside `tokens/colors.css`.
 - **Do** keep display/nav/button text uppercase in Cormorant Infant, and prose in Cardo.
 - **Do** derive separation from tone and hairline borders; keep cards flat.
 - **Do** lay out with flex/grid + `gap` on the spacing scale.
 - **Don't** use `primary` or `muted` for ANY text, including small-caps labels and eyebrows (fails AA) — they are for hairlines, borders, fills, and decorative chrome only; use `textMeta` for meta text.
 - **Don't** add gradients, heavy drop shadows on cards, or bounce/overshoot motion.
 - **Don't** use large radii, emoji, or hand-rolled decorative SVG icons.
+

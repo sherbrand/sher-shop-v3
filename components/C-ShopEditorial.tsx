@@ -33,6 +33,9 @@ export interface ShopEditorialProps {
   mobileFirst?: "media" | "text";
   /** Stacked (below 768px) only: push the text column to the right edge. Default "left". */
   mobileAlign?: "left" | "right";
+  /** Run the band edge to edge: no column gap, media at half width, and the text
+   *  column carrying its own gutter instead of a page wrapper. Default false. */
+  fullBleed?: boolean;
   /** Column gap override. Defaults to the band's own stepped rhythm — 24px below
    *  1024, 64px at/above — or set the `--editorial-gap` custom property. */
   gap?: string;
@@ -50,6 +53,8 @@ const STEP_SECTION =
   "text-[length:var(--size-section-sm)] @min-[640px]:text-[length:var(--size-section-md)] @min-[1024px]:text-[length:var(--size-section-lg)]";
 const STEP_BODY =
   "text-[length:var(--size-body-sm)] @min-[640px]:text-[length:var(--size-body-md)] @min-[1024px]:text-[length:var(--size-body-lg)]";
+const STEP_LABEL =
+  "text-[length:var(--size-label-sm)] @min-[640px]:text-[length:var(--size-label-md)] @min-[1024px]:text-[length:var(--size-label-lg)]";
 // Stepped media crop, used when no `ratio` is passed.
 const STEP_CROP =
   "aspect-[var(--ratio-4-3)] @min-[640px]:aspect-[var(--ratio-1-1)] @min-[1024px]:aspect-[var(--ratio-5-4)]";
@@ -64,6 +69,7 @@ export function ShopEditorial({
   mirror = false,
   mobileFirst = "media",
   mobileAlign = "left",
+  fullBleed = false,
   gap,
   ratio,
   background,
@@ -93,13 +99,19 @@ export function ShopEditorial({
   return (
     <div className={`@container ${className}`} style={{ background } as CSSProperties}>
       <div
-        className="grid grid-cols-1 items-center gap-[var(--editorial-gap,var(--space-5))] @min-[768px]:grid-cols-2 @min-[1024px]:gap-[var(--space-8)]"
+        className={`grid grid-cols-1 items-center @min-[768px]:grid-cols-2 ${
+          fullBleed
+            ? "gap-0"
+            : "gap-[var(--editorial-gap,var(--space-5))] @min-[1024px]:gap-[var(--space-8)]"
+        }`}
         style={gap ? ({ "--editorial-gap": gap } as CSSProperties) : undefined}
       >
         <div
           className={[
             "relative overflow-hidden bg-[var(--surface-raised)]",
             ratio ? "" : STEP_CROP,
+            // Two-up, a bleeding band gives the media a row to fill; stacked it keeps its crop.
+            fullBleed && !ratio ? "@min-[768px]:aspect-auto @min-[768px]:min-h-full" : "",
             mediaOrder,
           ].join(" ")}
           style={ratio ? ({ aspectRatio: ratio } as CSSProperties) : undefined}
@@ -110,12 +122,15 @@ export function ShopEditorial({
         <div
           className={[
             "flex flex-col justify-center gap-[var(--space-3)]",
+            fullBleed
+              ? "px-[var(--gutter)] py-[var(--space-8)] @min-[768px]:px-[var(--space-8)] @min-[768px]:py-[var(--space-9)]"
+              : "",
             textOrder,
             alignRight ? "@max-[767.98px]:items-end @max-[767.98px]:text-right" : "",
           ].join(" ")}
         >
           {eyebrow && (
-            <span className="font-[family-name:var(--font-body)] text-[length:var(--size-xs)] uppercase tracking-[var(--tracking-label)] text-[var(--text-meta)]">
+            <span className={`font-[family-name:var(--font-body)] ${STEP_LABEL} uppercase tracking-[var(--tracking-label)] text-[var(--text-meta)]`}>
               {eyebrow}
             </span>
           )}

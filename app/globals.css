@@ -6,3 +6,14 @@
 @import "./tokens.css";
 @import "tailwindcss";
 @import "./base.css";
+
+/* Page edge padding. DESIGN.md's Layout section specifies 1rem / 1.5rem / 3rem,
+   but the design system's own stepping is scoped to its preview frame, so it does
+   not port and the app owns it. Without this, --gutter stays at the flat 1.5rem
+   tokens.css declares and every band keeps tablet padding at every width.
+   The layout root has no container above it to query, so this is the one place a
+   viewport query is right. Unlayered and after the imports, so it wins over the
+   flat value tokens.css sets. */
+:root { --gutter: var(--space-4); }
+@media (min-width: 640px)  { :root { --gutter: var(--space-5); } }
+@media (min-width: 1024px) { :root { --gutter: var(--space-7); } }

@@ -1,4 +1,5 @@
 import type { ReactElement, ReactNode } from "react";
+import { Button } from "@/components/Button";
 import { Heading } from "@/components/Heading";
 import type { HeadingLevel } from "@/components/Heading";
 
@@ -7,7 +8,8 @@ import type { HeadingLevel } from "@/components/Heading";
    layer (image or a passed node) under a bottom gradient label. Labels alternate
    bottom-left / bottom-right per tile.
    The band's `borderDefault` background shows through the 2px grid gaps, which is
-   what draws the hairlines between tiles. */
+   what draws the hairlines between tiles.
+   An optional `cta` renders a centred accent button below the grid. */
 
 export interface CategoryItem {
   /** Tile label (rendered as the heading). */
@@ -30,6 +32,9 @@ export interface CategoryGridProps {
   headingLevel?: HeadingLevel;
   /** Alternate label alignment left/right per tile. Default true. */
   alternate?: boolean;
+  /** Optional call to action below the grid — a centred accent button at the
+   *  shared `--cta-min-w` width. Omit for no button. */
+  cta?: { label: string; href: string };
   className?: string;
 }
 
@@ -41,6 +46,7 @@ export function CategoryGrid({
   items = [],
   headingLevel = 2,
   alternate = true,
+  cta,
   className = "",
 }: CategoryGridProps): ReactElement {
   return (
@@ -62,7 +68,8 @@ export function CategoryGrid({
                    line blanks the hero the moment its component hydrates. */
                 style={{
                   backgroundImage: item.image ? `url("${item.image}")` : undefined,
-                  backgroundColor: item.image ? undefined : item.bg || "var(--surface-raised)",
+                  // Always painted, so a tile shows its tone while the image loads.
+                  backgroundColor: item.bg || "var(--surface-raised)",
                 }}
               >
                 {item.media}
@@ -90,6 +97,19 @@ export function CategoryGrid({
           );
         })}
       </div>
+      {cta?.label && (
+        <div className="flex justify-center bg-[var(--surface-page)] pt-[var(--space-7)]">
+          <Button
+            as="a"
+            href={cta.href}
+            variant="accent"
+            size="lg"
+            className="min-w-[var(--cta-min-w)]"
+          >
+            {cta.label}
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

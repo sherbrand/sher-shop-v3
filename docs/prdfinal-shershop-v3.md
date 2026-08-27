@@ -9,7 +9,7 @@
 
 ## 1. Main Goals
 1. Launch a store people can shop: browse the range, open a product, pick a size, add to cart, and pay through Shopify.
-2. Win the three category head terms with information-first pillar pages for corset tops, matching sets, and cocktail dresses.
+2. Win the four category head terms with information-first pillar pages for corset tops, matching sets, cocktail dresses, and beachwear.
 3. Ship the full site chrome, the browse and product pages, and the content and policy pages the store needs to open.
 
 ## 2. User Stories
@@ -31,17 +31,17 @@
 
 ### F-001 — Product Grid
 - **What it does:** Shows a grid of products from a Shopify collection. Each card uses the product's chosen grid thumbnail from D-005 Product Data, and falls back to the product's first image. Hovering a card on desktop, or holding a finger on it on tablet and mobile, swaps the thumbnail to the next image in the product's media order, skipping the video. It goes back when the pointer leaves or the finger lifts. Use `mouseenter` and `mouseleave` on desktop, and `touchstart` and `touchend` on tablet and mobile. A product with no next image does not swap. On the listing screens the grid fetches the whole collection server-side, shows 12, and a Load More button reveals the next 12. Load More keeps any active filter and column choice. A divider sits under the grid when nothing is left.
-- **When it appears:** On the listing screens (S-002, S-003, S-004, S-005) and in the "You May Also Like" block on S-006. Load More appears only on the listing screens, and only when the collection holds more than 12 products.
+- **When it appears:** On the listing screens (S-002, S-003, S-004, S-005, S-012) and in the "You May Also Like" block on S-006. Load More appears only on the listing screens, and only when the collection holds more than 12 products.
 - **If something goes wrong:** If products fail to load, show a skeleton, then an error and retry state, not a blank grid. An empty collection shows a short "nothing here yet" note. A collection over 250 products is more than one Storefront API fetch returns, so cap the query at 250 and log it.
 
 ### F-002 — Attribute Filter
-- **What it does:** Filters the category grid in place by one type attribute: closure type on corset tops, set type on matching sets, length on cocktail dresses. No page reload.
-- **When it appears:** On the three category pages (S-003, S-004, S-005), as Button Pills above the grid.
+- **What it does:** Filters the category grid in place by one type attribute: closure type on corset tops, set type on matching sets, length on cocktail dresses, swim type on beachwear. No page reload.
+- **When it appears:** On the four category pages (S-003, S-004, S-005, S-012), as Button Pills above the grid.
 - **If something goes wrong:** If a filter matches no products, show a short empty message and keep the pills so the customer can clear it.
 
 ### F-003 — Grid View Toggle
 - **What it does:** Switches how many columns the grid shows: 1 or 2 on mobile, 2 or 3 on desktop. The choice holds while the customer stays on the page, including through Load More. The toggle sticks to the bottom-left once it scrolls out of view.
-- **When it appears:** On the listing screens (S-002, S-003, S-004, S-005), next to the grid.
+- **When it appears:** On the listing screens (S-002, S-003, S-004, S-005, S-012), next to the grid.
 - **If something goes wrong:** If no choice is set, fall back to the default: 1 column on mobile, 2 on desktop.
 
 ### F-004 — Add to Cart
@@ -92,8 +92,8 @@
 ## 4. Data
 | ID | Data Item | Source | Details |
 |---|---|---|---|
-| D-001 | Product | Shopify Storefront API | Title, slug, description, price, images, video, size variants, availability, and the type attribute (closure type, set type, or length), held as a Shopify product metafield exposed to the Storefront API. |
-| D-002 | Collection | Shopify Storefront API | The all-products collection and the three category collections, plus which products belong to each. Powers the listing grids. |
+| D-001 | Product | Shopify Storefront API | Title, slug, description, price, images, video, size variants, availability, and the type attribute (closure type, set type, length, or swim type), held as a Shopify product metafield exposed to the Storefront API. |
+| D-002 | Collection | Shopify Storefront API | The all-products collection and the four category collections, plus which products belong to each. Powers the listing grids. |
 | D-003 | Cart | Shopify Storefront API, with the cart ID in a browser cookie | Line items, quantities, subtotal, and the checkout URL. |
 | D-004 | Home Content | A TSV file in the repo | Hero banners and category tiles, each slot giving placement, image, alt text, overlay text, and link. Featured products as slot placement and product handle only; the name, price, and image come from D-001. |
 | D-005 | Product Data | A TSV file in the repo | Per-product data that is not in Shopify. One row per product, keyed by slug. Columns: which image to use as the grid thumbnail, and the cm measurements as one column per size (`bust_S`, `bust_M`, …). A product fills only the measurements it uses and leaves the rest blank. Inches are worked out from the cm values. |
@@ -108,7 +108,7 @@
 - **Components:**
   - S-001.1 → C-HeroCarousel
   - S-001.2 → C-HeroTitle [headingLevel=1]
-  - S-001.3 → C-CategoryGrid
+  - S-001.3 → C-CategoryGrid [cta]
   - S-001.4 → C-ProductGrid [showToolbar=false, columns=1/2/2]
   - S-001.5 → C-HeroTitle [headingLevel=2]
 - **Assets:**
@@ -118,17 +118,19 @@
 - **Outline:** Refer to /docs/content/s-002_all-products.md
 - **Feature:** F-001 Product Grid, F-003 Grid View Toggle, F-009 Structured Data
 - **Behavior:**
-  - The button pills link to the three category pages. They do not filter this grid.
+  - The button pills link to the four category pages. They do not filter this grid.
 - **Components:**
   - S-002.1 → C-ShopTitle
   - S-002.2 → C-ProductGrid [columns=1/1/2, pageSize=12, endMark=mark]
-  - S-002.3 → C-ShopEditorial [mobileFirst=text, mobileAlign=right]
-  - S-002.4 → C-ShopEditorial [mirror, mobileFirst=text, mobileAlign=left]
-  - S-002.5 → C-ShopEditorial [mobileFirst=text, mobileAlign=right]
+  - S-002.3 → C-ShopEditorial [fullBleed, mobileFirst=media, mobileAlign=right]
+  - S-002.4 → C-ShopEditorial [fullBleed, mirror, mobileFirst=media, mobileAlign=left]
+  - S-002.5 → C-ShopEditorial [fullBleed, mobileFirst=media, mobileAlign=right]
+  - S-002.6 → C-ShopEditorial [fullBleed, mirror, mobileFirst=media, mobileAlign=left]
 - **Assets:**
   - S-002.3 → s-002.3-1-corset-top-boning-and-lacing.webp (MISSING)
   - S-002.4 → s-002.4-1-matching-set-with-trousers.webp (MISSING)
   - S-002.5 → s-002.5-1-satin-slip-cocktail-dress.webp (MISSING)
+  - S-002.6 → s-002.6-1-one-piece-at-the-water.webp (MISSING)
 
 ### S-003 — Corset Tops
 - **Outline:** Refer to /docs/content/s-003_corset-tops.md
@@ -139,9 +141,9 @@
 - **Components:**
   - S-003.1 → C-ShopTitle
   - S-003.2 → C-ProductGrid [columns=1/1/2, pageSize=12, endMark=mark]
-  - S-003.3 → C-ShopEditorial [mobileFirst=text, mobileAlign=right]
-  - S-003.4 → C-ShopEditorial [mirror, mobileFirst=text, mobileAlign=left]
-  - S-003.5 → C-ShopEditorial [mobileFirst=text, mobileAlign=right]
+  - S-003.3 → C-ShopEditorial [fullBleed, mobileFirst=media, mobileAlign=right]
+  - S-003.4 → C-ShopEditorial [fullBleed, mirror, mobileFirst=media, mobileAlign=left]
+  - S-003.5 → C-ShopEditorial [fullBleed, mobileFirst=media, mobileAlign=right]
   - S-003.6 → C-ShopFaq
 - **Assets:**
   - S-003.3 → s-003.3-1-corset-top-on-model.webp (MISSING)
@@ -157,9 +159,9 @@
 - **Components:**
   - S-004.1 → C-ShopTitle
   - S-004.2 → C-ProductGrid [columns=1/1/2, pageSize=12, endMark=mark]
-  - S-004.3 → C-ShopEditorial [mobileFirst=text, mobileAlign=right]
-  - S-004.4 → C-ShopEditorial [mirror, mobileFirst=text, mobileAlign=left]
-  - S-004.5 → C-ShopEditorial [mobileFirst=text, mobileAlign=right]
+  - S-004.3 → C-ShopEditorial [fullBleed, mobileFirst=media, mobileAlign=right]
+  - S-004.4 → C-ShopEditorial [fullBleed, mirror, mobileFirst=media, mobileAlign=left]
+  - S-004.5 → C-ShopEditorial [fullBleed, mobileFirst=media, mobileAlign=right]
   - S-004.6 → C-ShopFaq
 - **Assets:**
   - S-004.3 → s-004.3-1-matching-set-on-model.webp (MISSING)
@@ -175,21 +177,39 @@
 - **Components:**
   - S-005.1 → C-ShopTitle
   - S-005.2 → C-ProductGrid [columns=1/1/2, pageSize=12, endMark=mark]
-  - S-005.3 → C-ShopEditorial [mobileFirst=text, mobileAlign=right]
-  - S-005.4 → C-ShopEditorial [mirror, mobileFirst=text, mobileAlign=left]
-  - S-005.5 → C-ShopEditorial [mobileFirst=text, mobileAlign=right]
+  - S-005.3 → C-ShopEditorial [fullBleed, mobileFirst=media, mobileAlign=right]
+  - S-005.4 → C-ShopEditorial [fullBleed, mirror, mobileFirst=media, mobileAlign=left]
+  - S-005.5 → C-ShopEditorial [fullBleed, mobileFirst=media, mobileAlign=right]
   - S-005.6 → C-ShopFaq
 - **Assets:**
   - S-005.3 → s-005.3-1-cocktail-dress-on-model.webp (MISSING)
   - S-005.4 → s-005.4-1-mini-midi-maxi-lengths.webp (MISSING)
   - S-005.5 → s-005.5-1-cocktail-dress-satin-detail.webp (MISSING)
 
+### S-012 — Beachwear
+- **Outline:** Refer to /docs/content/s-012_beachwear.md
+- **Feature:** F-001 Product Grid, F-002 Attribute Filter, F-003 Grid View Toggle, F-009 Structured Data
+- **Behavior:**
+  - The filter narrows the grid in place by swim type.
+  - The FAQ accordion keeps one item open at a time.
+- **Components:**
+  - S-012.1 → C-ShopTitle
+  - S-012.2 → C-ProductGrid [columns=1/1/2, pageSize=12, endMark=mark]
+  - S-012.3 → C-ShopEditorial [fullBleed, mobileFirst=media, mobileAlign=right]
+  - S-012.4 → C-ShopEditorial [fullBleed, mirror, mobileFirst=media, mobileAlign=left]
+  - S-012.5 → C-ShopEditorial [fullBleed, mobileFirst=media, mobileAlign=right]
+  - S-012.6 → C-ShopFaq
+- **Assets:**
+  - S-012.3 → s-012.3-1-beachwear-on-model.webp (MISSING)
+  - S-012.4 → s-012.4-1-one-piece-and-bikini.webp (MISSING)
+  - S-012.5 → s-012.5-1-beachwear-lining-detail.webp (MISSING)
+
 ### S-006 — Product Detail
 - **Outline:** Refer to /docs/content/s-006_product-detail.md
 - **Feature:** F-001 Product Grid, F-004 Add to Cart, F-006 Checkout, F-007 Size Chart, F-009 Structured Data, F-010 Product Media Gallery, F-011 Size and Stock
 - **Behavior:**
   - The breadcrumb trims the product name with an ellipsis on small screens. The full name stays in the markup.
-  - The type attribute (closure type, set type, or length) is a Shopify product metafield read through the Storefront API.
+  - The type attribute (closure type, set type, length, or swim type) is a Shopify product metafield read through the Storefront API.
   - Add to Cart opens C-Cart. Buy Now goes straight to Shopify checkout.
   - The size chart link opens C-Sizing. The shipping link opens C-Shipping.
   - "You May Also Like" shows 2 random products from anywhere in the store, not just this product's category.
@@ -272,7 +292,7 @@
 ## 6. Layout Components
 
 ### C-Transparent — Transparent Header
-- **Outline:** `Announcement Bar ["Delivers Worldwide · Free Shipping over $250"] // Hamburger Icon <opens C-Menu> | White Square Logo <to /, oversized — overflows below the header> | Cart Icon <opens C-Cart> [Item Count]`
+- **Component:** Refer to /components/C-Transparent.tsx
 - **Feature:** F-005 Cart Management
 - **Behavior:**
   - Home only. It sits over the hero, stays see-through, and scrolls away with the page.
@@ -280,14 +300,14 @@
   - The item count shows how many items are in the cart. It is hidden when the cart is empty.
 
 ### C-Sticky — Sticky Header
-- **Outline:** `Announcement Bar ["Delivers Worldwide · Free Shipping over $250"] // Hamburger Icon <opens C-Menu> | Dark Symbol Logo <to /> | Cart Icon <opens C-Cart> [Item Count]`
+- **Component:** Refer to /components/C-Sticky.tsx
 - **Feature:** F-005 Cart Management
 - **Behavior:**
   - Sticks to the top of every screen. On Home it takes over once the hero scrolls out of view.
   - The item count shows how many items are in the cart. It is hidden when the cart is empty.
 
 ### C-Menu — Menu Drawer
-- **Outline:** `Dark Symbol Logo <to /> // "Shop Now" / "Link: Corset Tops" <to /corset-tops> / "Link: Matching Sets" <to /matching-sets> / "Link: Cocktail Dress" <to /cocktail-dresses> / "Link: Shop All" <to /shop> // "Link: Our Story" <to /about> / "Link: Contact Us" <to /contact> / Account "Link: Login/Account" <to Shopify account>`
+- **Component:** Refer to /components/C-Menu.tsx
 - **Feature:** None
 - **Behavior:**
   - Opens from the hamburger icon in the header. Picking a link closes the drawer and goes to the page.
@@ -295,7 +315,7 @@
   - Login/Account leaves the store for Shopify hosted customer accounts.
 
 ### C-Cart — Cart Drawer
-- **Outline:** `"Your Cart" // Line Items <image, name, options, qty stepper, price, remove> // Subtotal // "Btn: Checkout" / "Checkout securely in USD, powered by Shopify"`
+- **Component:** Refer to /components/C-Cart.tsx
 - **Feature:** F-005 Cart Management, F-006 Checkout
 - **Behavior:**
   - Opens from the header cart icon, and after an add to cart.
@@ -305,7 +325,7 @@
   - Shows an empty state when the cart holds nothing.
 
 ### C-Footer — Footer
-- **Outline:** `Logo <to /> // (("Shop & Learn" / "Link: Corset Tops" <to /corset-tops> / "Link: Matching Sets" <to /matching-sets> / "Link: Cocktail Dress" <to /cocktail-dresses> / "Link: Shop All" <to /shop>) | ("More Info" / "Link: Our Story" <to /about> / "Link: Contact Us" <to /contact> / "Link: Shipping & Returns" <to /shipping-returns>) | ("Connect with Us" / (Instagram Icon <to Instagram> + Facebook Icon <to Facebook> + TikTok Icon <to TikTok>))) // ("© SHER {year}" | ("Link: Privacy Policy" <to /privacy-policy> + "Link: Terms of Service" <to /terms-of-service>))`
+- **Component:** Refer to /components/C-Footer.tsx
 - **Feature:** None
 - **Behavior:**
   - Shows on every screen.
@@ -313,7 +333,7 @@
   - The copyright line shows the current year.
 
 ### C-Sizing — Size Chart Drawer
-- **Outline:** `"Size Chart" / Title <product name> / Paragraph <measurements-based; varies by style; each piece can be tailored; contact SHER if unsure> / Measurements <in cm> / Measurements <in inches>`
+- **Component:** Refer to /components/C-Sizing.tsx
 - **Feature:** F-007 Size Chart
 - **Behavior:**
   - Opens from the size chart link on the product page.
@@ -322,7 +342,7 @@
   - The cm values come from D-005 Product Data. The inches table is worked out from them.
 
 ### C-Shipping — Shipping & Returns Drawer
-- **Outline:** `(same as /shipping-returns)`
+- **Component:** Refer to /components/C-Shipping.tsx
 - **Feature:** None
 - **Behavior:**
   - Opens from the shipping link on the product page.
@@ -342,22 +362,31 @@ Menu Drawer (C-Menu)
  │    ├── Corset Tops → S-003 (/corset-tops)
  │    ├── Matching Sets → S-004 (/matching-sets)
  │    ├── Cocktail Dress → S-005 (/cocktail-dresses)
- │    └── Shop All → S-002 (/shop)
- ├── Our Story → S-007 (/about)
- ├── Contact Us → S-008 (/contact)
- └── Login/Account → Shopify hosted customer accounts
+ │    ├── Beachwear → S-012 (/beachwear)
+ │    └── View All Products → S-002 (/shop)
+ ├── More Info
+ │    ├── Our Story → S-007 (/about)
+ │    ├── Contact Us → S-008 (/contact)
+ │    └── Shipping & Returns → S-009 (/shipping-returns)
+ ├── Login / Account → Shopify hosted customer accounts
+ └── Connect with Us
+      ├── Instagram → external URL
+      ├── Facebook → external URL
+      └── TikTok → external URL
 
 Home tiles — S-001
  ├── Shop Corset Tops → S-003 (/corset-tops)
  ├── Shop Matching Sets → S-004 (/matching-sets)
  ├── Shop Cocktail Dresses → S-005 (/cocktail-dresses)
- ├── Shop All Products → S-002 (/shop)
+ ├── Shop Beachwear → S-012 (/beachwear)
+ ├── Shop All Products button → S-002 (/shop)
  └── Featured product → S-006 (/products/[product-slug])
 
 Shop button pills — S-002
  ├── Corset Tops → S-003 (/corset-tops)
  ├── Matching Sets → S-004 (/matching-sets)
- └── Cocktail Dresses → S-005 (/cocktail-dresses)
+ ├── Cocktail Dresses → S-005 (/cocktail-dresses)
+ └── Beachwear → S-012 (/beachwear)
 
 Product Detail — in page (S-006)
  ├── Size chart link → opens C-Sizing
@@ -365,7 +394,7 @@ Product Detail — in page (S-006)
  ├── Add to Cart → opens C-Cart
  ├── Buy Now → Shopify hosted checkout
  ├── Preorder (every size sold out) → S-008 (/contact)
- └── Back to {Category} → S-003, S-004, or S-005
+ └── Back to {Category} → S-003, S-004, S-005, or S-012
 
 Footer (C-Footer) — every screen
  ├── Logo → S-001 (/)
@@ -373,10 +402,11 @@ Footer (C-Footer) — every screen
  │    ├── Corset Tops → S-003 (/corset-tops)
  │    ├── Matching Sets → S-004 (/matching-sets)
  │    ├── Cocktail Dress → S-005 (/cocktail-dresses)
+ │    ├── Beachwear → S-012 (/beachwear)
  │    └── Shop All → S-002 (/shop)
  ├── More Info
  │    ├── Our Story → S-007 (/about)
- │    ├── Contact Us → S-008 (/contact)
+ │    ├── Contact → S-008 (/contact)
  │    └── Shipping & Returns → S-009 (/shipping-returns)
  ├── Connect with Us
  │    ├── Instagram → external URL
@@ -399,7 +429,7 @@ Footer (C-Footer) — every screen
 ### Phase 2 — Browse
 | Step | What to Build | References |
 |---|---|---|
-| B-004 | Build the product grid and the four listing pages, with the attribute filter, the view toggle, and the FAQ accordion. | S-002, S-003, S-004, S-005, F-001, F-002, F-003, D-002, D-005 |
+| B-004 | Build the product grid and the five listing pages, with the attribute filter, the view toggle, and the FAQ accordion. | S-002, S-003, S-004, S-005, S-012, F-001, F-002, F-003, D-002, D-005 |
 
 ### Phase 3 — Product Detail
 | Step | What to Build | References |
