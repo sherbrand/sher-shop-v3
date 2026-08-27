@@ -12,6 +12,7 @@ import type { MediaItem } from "@/components/MediaGallery";
 import { JsonLd } from "@/components/JsonLd";
 import { breadcrumbLd, pageMetadata, productLd } from "@/lib/seo";
 import { ProductDetail } from "./product-detail";
+import { proseSections } from "@/lib/slots";
 
 // A size is sold out when every variant carrying it is unavailable (F-011).
 // Colour and other options are ignored: the design panel selects size only.
@@ -95,6 +96,10 @@ export default async function ProductPage({
       />
       <JsonLd data={breadcrumbLd(breadcrumb, path)} />
       <ProductDetail
+        shippingSections={proseSections("s-009").map((section) => ({
+          title: section.heading,
+          body: section.paragraph,
+        }))}
         name={product.title}
         price={Number(product.minPrice.amount)}
         currency={product.minPrice.currencyCode}

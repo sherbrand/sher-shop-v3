@@ -64,10 +64,10 @@
 - **When it appears:** In the size chart drawer (C-Sizing), opened from the product page.
 - **If something goes wrong:** If a product has no chart data, hide the size chart link.
 
-### F-008 — Home Content
-- **What it does:** Fills the Home hero carousel and the category tiles from D-004 Home Content, each slot giving placement, image, alt text, overlay text, and link. The carousel slides through its banners.
-- **When it appears:** On the Home page (S-001).
-- **If something goes wrong:** If content is missing, show the first hero banner only and leave any empty slot out. With one banner, the carousel does not slide.
+### F-008 — Slot Content
+- **What it does:** Fills a screen's hand-placed slots from two TSV files in the repo. D-004 Media Slots gives a slot its image, its alt text, and an optional link. D-006 Slot Values gives a slot its text. The slot id is the key in both, so one slot can take its picture from one file and its words from the other.
+- **When it appears:** On Home (S-001) and the commerce screens (S-002, S-003, S-004, S-005, S-012).
+- **If something goes wrong:** A slot with no row is left out, not rendered empty. Where a slot needs both files and only one of them has it, the slot is left out and logged.
 
 ### F-009 — Structured Data
 - **What it does:** Adds JSON-LD in a script tag in the page's Server Component. Product data on each product page: name, description, image, price, currency, and availability. BreadcrumbList data that matches the visible trail.
@@ -85,7 +85,7 @@
 - **If something goes wrong:** If stock cannot be read, no size can be picked and the Preorder link shows instead.
 
 ### F-012 — Featured Products
-- **What it does:** Shows two hand-picked products on Home. D-004 Home Content names the slot and the product handle, and the name, price, and image come from D-001.
+- **What it does:** Shows two hand-picked products on Home. D-006 Slot Values names the slot and the product handle, and the name, price, and image come from D-001.
 - **When it appears:** In the Featured Products block on S-001.
 - **If something goes wrong:** If a handle no longer matches a live product, leave that slot out.
 
@@ -95,16 +95,17 @@
 | D-001 | Product | Shopify Storefront API | Title, slug, description, price, images, video, size variants, availability, and the type attribute (closure type, set type, length, or swim type), held as a Shopify product metafield exposed to the Storefront API. |
 | D-002 | Collection | Shopify Storefront API | The all-products collection and the four category collections, plus which products belong to each. Powers the listing grids. |
 | D-003 | Cart | Shopify Storefront API, with the cart ID in a browser cookie | Line items, quantities, subtotal, and the checkout URL. |
-| D-004 | Home Content | A TSV file in the repo | Hero banners and category tiles, each slot giving placement, image, alt text, overlay text, and link. Featured products as slot placement and product handle only; the name, price, and image come from D-001. |
+| D-004 | Media Slots | A TSV file in the repo | Every image the site places by hand, on any screen. One row per slot. Columns: `page`, `slot`, `image`, `alt`, `href`. `page` is the screen or surface the slot appears on, like `/shop` or `Footer`; it is a label for filtering and the code does not read it. `slot` is the key, and its name carries its role: slots rendering as hero banners are named `hero-N` and run in that order, category tiles are named `cat-<category>`. `href` is optional and makes that media a link. |
 | D-005 | Product Data | A TSV file in the repo | Per-product data that is not in Shopify. One row per product, keyed by slug. Columns: which image to use as the grid thumbnail, and the cm measurements as one column per size (`bust_S`, `bust_M`, …). A product fills only the measurements it uses and leaves the rest blank. Inches are worked out from the cm values. |
+| D-006 | Slot Values | A TSV file in the repo | Every value the site needs that is not an image and does not come from Shopify. One row per value. Columns: `page`, `slot`, `value`. `slot` is the key and the only column the code reads; `page` is the screen or surface the value appears on, like `/shop` or `Footer`, and is a label for filtering. |
 
 ## 5. Screens
 
 ### S-001 — Home
 - **Outline:** Refer to /docs/content/s-001_home.md
-- **Feature:** F-008 Home Content, F-012 Featured Products
+- **Feature:** F-008 Slot Content, F-012 Featured Products
 - **Behavior:**
-  - None
+  - The hero carousel slides through its banners. With one banner it does not slide.
 - **Components:**
   - S-001.1 → C-HeroCarousel
   - S-001.2 → C-HeroTitle [headingLevel=1]
@@ -116,7 +117,7 @@
 
 ### S-002 — All Products
 - **Outline:** Refer to /docs/content/s-002_all-products.md
-- **Feature:** F-001 Product Grid, F-003 Grid View Toggle, F-009 Structured Data
+- **Feature:** F-001 Product Grid, F-003 Grid View Toggle, F-008 Slot Content, F-009 Structured Data
 - **Behavior:**
   - The button pills link to the four category pages. They do not filter this grid.
 - **Components:**
@@ -134,7 +135,7 @@
 
 ### S-003 — Corset Tops
 - **Outline:** Refer to /docs/content/s-003_corset-tops.md
-- **Feature:** F-001 Product Grid, F-002 Attribute Filter, F-003 Grid View Toggle, F-009 Structured Data
+- **Feature:** F-001 Product Grid, F-002 Attribute Filter, F-003 Grid View Toggle, F-008 Slot Content, F-009 Structured Data
 - **Behavior:**
   - The filter narrows the grid in place by closure type.
   - The FAQ accordion keeps one item open at a time.
@@ -152,7 +153,7 @@
 
 ### S-004 — Matching Sets
 - **Outline:** Refer to /docs/content/s-004_matching-sets.md
-- **Feature:** F-001 Product Grid, F-002 Attribute Filter, F-003 Grid View Toggle, F-009 Structured Data
+- **Feature:** F-001 Product Grid, F-002 Attribute Filter, F-003 Grid View Toggle, F-008 Slot Content, F-009 Structured Data
 - **Behavior:**
   - The filter narrows the grid in place by set type.
   - The FAQ accordion keeps one item open at a time.
@@ -170,7 +171,7 @@
 
 ### S-005 — Cocktail Dresses
 - **Outline:** Refer to /docs/content/s-005_cocktail-dresses.md
-- **Feature:** F-001 Product Grid, F-002 Attribute Filter, F-003 Grid View Toggle, F-009 Structured Data
+- **Feature:** F-001 Product Grid, F-002 Attribute Filter, F-003 Grid View Toggle, F-008 Slot Content, F-009 Structured Data
 - **Behavior:**
   - The filter narrows the grid in place by length.
   - The FAQ accordion keeps one item open at a time.
@@ -188,7 +189,7 @@
 
 ### S-012 — Beachwear
 - **Outline:** Refer to /docs/content/s-012_beachwear.md
-- **Feature:** F-001 Product Grid, F-002 Attribute Filter, F-003 Grid View Toggle, F-009 Structured Data
+- **Feature:** F-001 Product Grid, F-002 Attribute Filter, F-003 Grid View Toggle, F-008 Slot Content, F-009 Structured Data
 - **Behavior:**
   - The filter narrows the grid in place by swim type.
   - The FAQ accordion keeps one item open at a time.
@@ -445,7 +446,7 @@ Footer (C-Footer) — every screen
 ### Phase 5 — Content & Launch
 | Step | What to Build | References |
 |---|---|---|
-| B-008 | Build the Home page: hero carousel, category tiles, and featured products from Home Content. | S-001, F-008, F-012, D-004 |
+| B-008 | Build the Home page: hero carousel, category tiles with the shop-all button, and featured products from the slot files. | S-001, F-008, F-012, D-004, D-006 |
 | B-009 | Build About, Contact, and the three policy pages as one static-content set. | S-007, S-008, S-009, S-010, S-011, /docs/knowledge-sher.md |
 | B-010 | Add the SEO layer: per-page metadata, canonical URLs, Product and BreadcrumbList structured data, the sitemap, and robots. | F-009, all screens, Planning TSV `seo_role` |
 | B-011 | Run the launch gate: hit the performance target, meet the accessibility bar, and run full QA. | Extra Details |
@@ -507,7 +508,7 @@ Every screen scores 90 or higher on Lighthouse for performance, accessibility, b
 | F-005 | Cart Management | Active |
 | F-006 | Checkout | Active |
 | F-007 | Size Chart | Active |
-| F-008 | Home Content | Active |
+| F-008 | Slot Content | Active |
 | F-009 | Structured Data | Active |
 | F-010 | Product Media Gallery | Active |
 | F-011 | Size and Stock | Active |
@@ -515,8 +516,9 @@ Every screen scores 90 or higher on Lighthouse for performance, accessibility, b
 | D-001 | Product | Active |
 | D-002 | Collection | Active |
 | D-003 | Cart | Active |
-| D-004 | Home Content | Active |
+| D-004 | Media Slots | Active |
 | D-005 | Product Data | Active |
+| D-006 | Slot Values | Active |
 | C-Transparent | Transparent Header | Active |
 | C-Sticky | Sticky Header | Active |
 | C-Menu | Menu Drawer | Active |

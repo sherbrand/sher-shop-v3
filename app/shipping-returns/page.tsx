@@ -2,18 +2,18 @@ import type { Metadata } from "next";
 import type { ReactElement } from "react";
 import { HeroTitle } from "@/components/C-HeroTitle";
 import { ContentProse } from "@/components/C-ContentProse";
-import { SHIPPING_SECTIONS } from "@/lib/content";
 import { JsonLd } from "@/components/JsonLd";
 import { breadcrumbLd, pageMetadata } from "@/lib/seo";
+import { metaCopy, proseSections, slotText } from "@/lib/slots";
 import type { Crumb } from "@/components/Breadcrumb";
 
-// The section copy is shared with the C-Shipping drawer via lib/content.
 const BREADCRUMB: Crumb[] = [{ label: "Home", href: "/" }, { label: "Shipping & Returns" }];
 
+const META = metaCopy("s-009");
+
 export const metadata: Metadata = pageMetadata({
-  title: "Shipping & Returns",
-  description:
-    "How long your SHER order takes, how customs and duties work, and how to start a return or exchange.",
+  title: META.title ? { absolute: META.title } : undefined,
+  description: META.description,
   path: "/shipping-returns",
 });
 
@@ -24,15 +24,10 @@ export default function ShippingReturnsPage(): ReactElement {
       <HeroTitle
         breadcrumb={BREADCRUMB}
         headingLevel={1}
-        heading="Shipping & Returns"
-        description="How long your order takes, how customs work, and how to send something back."
+        heading={slotText("s-009.1.heading")}
+        description={slotText("s-009.1.subtitle")}
       />
-      <ContentProse
-        items={SHIPPING_SECTIONS.map((section) => ({
-          heading: section.title,
-          paragraph: section.body,
-        }))}
-      />
+      <ContentProse items={proseSections("s-009")} />
     </main>
   );
 }

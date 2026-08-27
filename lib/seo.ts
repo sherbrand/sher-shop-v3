@@ -35,17 +35,29 @@ function clampDescription(text: string, max = 160): string {
 // passes an absolute title itself.
 export function pageMetadata(input: {
   title: Metadata["title"];
-  description: string;
+  description?: string;
   path: string;
   image?: string | null;
 }): Metadata {
-  const description = clampDescription(input.description);
+  // A description the slot files do not carry is left out, so the tag is absent
+  // rather than empty.
+  const description = input.description
+    ? clampDescription(input.description)
+    : undefined;
+  // Open Graph takes the plain text of the title in either form. An absolute
+  // title is still a title, so it must not fall through to undefined here.
+  const ogTitle =
+    typeof input.title === "string"
+      ? input.title
+      : input.title && typeof input.title === "object" && "absolute" in input.title
+        ? input.title.absolute
+        : undefined;
   return {
     title: input.title,
     description,
     alternates: { canonical: input.path },
     openGraph: {
-      title: typeof input.title === "string" ? input.title : undefined,
+      title: ogTitle,
       description,
       url: absoluteUrl(input.path),
       siteName: SITE_NAME,

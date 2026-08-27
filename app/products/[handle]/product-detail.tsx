@@ -9,7 +9,6 @@ import type { MediaItem } from "@/components/MediaGallery";
 import { Sizing } from "@/components/C-Sizing";
 import { Shipping } from "@/components/C-Shipping";
 import { useCart } from "@/components/CartProvider";
-import { SHIPPING_SECTIONS } from "@/lib/content";
 
 /* Route-private client glue for the product panel (B-005) + cart wiring (B-007)
    + the size-chart / shipping drawers (B-006). Holds the selected size and
@@ -20,6 +19,9 @@ import { SHIPPING_SECTIONS } from "@/lib/content";
 export type VariantOption = { id: string; size: string; available: boolean };
 
 export type ProductDetailProps = {
+  /** S-009 copy for the shipping drawer. The slot files are read on the server,
+   *  so the page passes it in rather than this client island reading D-006. */
+  shippingSections?: { title: string; body: string }[];
   name: string;
   price: number;
   compareAt?: number;
@@ -92,7 +94,7 @@ export function ProductDetail(props: ProductDetailProps): ReactElement {
       <Shipping
         open={shippingOpen}
         onClose={() => setShippingOpen(false)}
-        sections={SHIPPING_SECTIONS}
+        sections={props.shippingSections}
       />
     </>
   );

@@ -134,17 +134,21 @@ export function ShopEditorial({
               {eyebrow}
             </span>
           )}
-          <Heading
-            level={headingLevel}
-            className={[
-              "m-0 max-w-[24ch] font-normal leading-[var(--leading-snug)] text-[var(--text-strong)]",
-              headingFace,
-              STEP_SECTION,
-              alignRight ? "@max-[767.98px]:ml-auto" : "",
-            ].join(" ")}
-          >
-            {heading}
-          </Heading>
+          {/* Guarded like the eyebrow and the paragraph: a band with no heading
+              leaves the tag out rather than rendering an empty one. */}
+          {heading && (
+            <Heading
+              level={headingLevel}
+              className={[
+                "m-0 max-w-[24ch] font-normal leading-[var(--leading-snug)] text-[var(--text-strong)]",
+                headingFace,
+                STEP_SECTION,
+                alignRight ? "@max-[767.98px]:ml-auto" : "",
+              ].join(" ")}
+            >
+              {heading}
+            </Heading>
+          )}
           {paragraph && (
             <p
               className={`m-0 max-w-[62ch] leading-[var(--leading-normal)] text-[var(--text-default)] ${STEP_BODY}`}

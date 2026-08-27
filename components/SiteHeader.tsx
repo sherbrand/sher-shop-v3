@@ -7,7 +7,7 @@ import { Transparent } from "@/components/C-Transparent";
 import { Sticky } from "@/components/C-Sticky";
 import { Menu } from "@/components/C-Menu";
 import { useCart } from "@/components/CartProvider";
-import { ANNOUNCEMENT, SOCIAL_LINKS } from "@/lib/site";
+import { SOCIAL_LINKS } from "@/lib/site";
 
 /* Global chrome orchestrator (build step B-003).
    Home shows the transparent header over the hero, then hands off to the sticky
@@ -16,7 +16,15 @@ import { ANNOUNCEMENT, SOCIAL_LINKS } from "@/lib/site";
    through the Next.js router for client-side navigation.
    The cart icon is present but inert here: the cart drawer is build step B-007. */
 
-export function SiteHeader({ accountHref = "/account" }: { accountHref?: string }): ReactElement {
+export function SiteHeader({
+  accountHref = "/account",
+  announcement,
+}: {
+  accountHref?: string;
+  /** Promo strip above both headers. Its copy is a D-006 slot, and the slot
+   *  files are read on the server, so layout passes it in. Omit for no bar. */
+  announcement?: string;
+}): ReactElement {
   const pathname = usePathname();
   const router = useRouter();
   const isHome = pathname === "/";
@@ -78,7 +86,7 @@ export function SiteHeader({ accountHref = "/account" }: { accountHref?: string 
           so the later element wins and the sticky bar paints over it. */}
       {isHome && (
         <Transparent
-          announcement={ANNOUNCEMENT}
+          announcement={announcement}
           onMenu={openMenu}
           onCart={openCart}
           cartCount={cartCount}
@@ -94,7 +102,7 @@ export function SiteHeader({ accountHref = "/account" }: { accountHref?: string 
         }`}
       >
         <Sticky
-          announcement={ANNOUNCEMENT}
+          announcement={announcement}
           onMenu={openMenu}
           onCart={openCart}
           cartCount={cartCount}

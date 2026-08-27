@@ -12,13 +12,15 @@ import type { Product } from "@/lib/shopify/types";
 import { toGridProduct } from "@/lib/listing";
 import { pageMetadata } from "@/lib/seo";
 import { FEATURED_HANDLES, HERO_SLIDES, HOME_CATEGORIES } from "@/lib/home";
+import { metaCopy, slotText } from "@/lib/slots";
 
 // Home keeps the brand default title (no "%s · SHER" template) and a canonical
 // at the site root (B-010, S-001 seo_role=Pillar).
+const META = metaCopy("s-001");
+
 export const metadata: Metadata = pageMetadata({
-  title: { absolute: "Modern Womenswear by SHER" },
-  description:
-    "SHER makes modern womenswear that reads elegant, never cheap. Corset tops, matching sets, cocktail dresses, and beachwear, sensual and made to be seen.",
+  title: META.title ? { absolute: META.title } : undefined,
+  description: META.description,
   path: "/",
 });
 
@@ -26,10 +28,10 @@ export const metadata: Metadata = pageMetadata({
    the category tiles (S-001.3), the Featured Products block (S-001.4), and the
    closing CTA (S-001.5). Sections set their own width, so <main> is full-bleed.
 
-   Slot data (banners, tiles, featured handles) comes from D-004 via lib/home.
-   Page copy is written inline here, the same as every other page. */
+   Every slot on this page comes from the slot files via lib/slots: banners and
+   tile pictures from D-004, and all copy plus the featured handles from D-006. */
 export default async function HomePage(): Promise<ReactElement> {
-  // F-012: Featured products are hand-picked by Shopify handle from D-004; an
+  // F-012: Featured products are hand-picked by Shopify handle from D-006; an
   // unmatched handle is left out. FEATURED_HANDLES is empty until real handles
   // are supplied, so the block below is skipped entirely.
   let featured: GridProduct[] = [];
@@ -60,10 +62,10 @@ export default async function HomePage(): Promise<ReactElement> {
 
       {/* S-001.2 — intro title. */}
       <HeroTitle
-        eyebrow="Refined Sensuality"
-        heading="Modern Womenswear by SHER"
+        eyebrow={slotText("s-001.2.eyebrow")}
+        heading={slotText("s-001.2.heading")}
         headingLevel={1}
-        description="Every SHER piece is made by hand, down to the boning set one at a time. Sensual, refined, and never cheap."
+        description={slotText("s-001.2.subtitle")}
       />
 
       <div className="mx-auto mt-[var(--space-5)] max-w-[var(--container-media)]">
@@ -77,7 +79,7 @@ export default async function HomePage(): Promise<ReactElement> {
         <section className="mx-auto mt-[var(--space-9)] max-w-[var(--container)] px-[var(--gutter)]">
           <Divider variant="mark" className="mb-[var(--space-8)]" />
           <ProductGrid
-            heading="Featured Products"
+            heading={slotText("s-001.4.heading")}
             headingLevel={2}
             showToolbar={false}
             floatingToggle={false}
@@ -92,8 +94,8 @@ export default async function HomePage(): Promise<ReactElement> {
         className="mt-[var(--space-9)]"
         headingLevel={2}
         background="var(--surface-raised)"
-        heading="Made to Be Seen"
-        description="The right piece turns heads before you say a word. Find yours and own the room."
+        heading={slotText("s-001.5.heading")}
+        description={slotText("s-001.5.subtitle")}
       >
         <Button as="a" href="/shop" variant="accent" size="lg">
           Shop the Full Collection

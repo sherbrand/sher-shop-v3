@@ -23,8 +23,8 @@ export interface FilterPill {
 export interface ShopTitleProps {
   /** Breadcrumb trail. */
   breadcrumb?: Crumb[];
-  /** Page heading (required). */
-  heading: string;
+  /** Page heading. Omit to leave the heading out. */
+  heading?: string;
   /** HTML level (h1–h4) for the heading — changes the tag only, not the style. Default 1. */
   headingLevel?: HeadingLevel;
   /** Lead description below the heading. */
@@ -72,12 +72,14 @@ export function ShopTitle({
         <Breadcrumb items={breadcrumb} className={start ? "justify-start" : "justify-center"} />
       )}
 
-      <Heading
-        level={headingLevel}
-        className={`m-0 font-[family-name:var(--font-display)] font-normal uppercase leading-[var(--leading-tight)] tracking-[var(--tracking-display)] text-[var(--text-strong)] ${STEP_HERO}`}
-      >
-        {heading}
-      </Heading>
+      {heading && (
+        <Heading
+          level={headingLevel}
+          className={`m-0 font-[family-name:var(--font-display)] font-normal uppercase leading-[var(--leading-tight)] tracking-[var(--tracking-display)] text-[var(--text-strong)] ${STEP_HERO}`}
+        >
+          {heading}
+        </Heading>
+      )}
 
       {description && (
         <p
