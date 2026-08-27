@@ -38,6 +38,8 @@ const STEP_SECTION =
   "text-[length:var(--size-section-sm)] @min-[640px]:text-[length:var(--size-section-md)] @min-[1024px]:text-[length:var(--size-section-lg)]";
 const STEP_BODY =
   "text-[length:var(--size-body-sm)] @min-[640px]:text-[length:var(--size-body-md)] @min-[1024px]:text-[length:var(--size-body-lg)]";
+const STEP_LABEL =
+  "text-[length:var(--size-label-sm)] @min-[640px]:text-[length:var(--size-label-md)] @min-[1024px]:text-[length:var(--size-label-lg)]";
 
 export function EditorialSplit({
   eyebrow,
@@ -78,7 +80,7 @@ export function EditorialSplit({
 
         <div className={`flex flex-col justify-center gap-[var(--space-3)] ${textOrder}`}>
           {eyebrow && (
-            <span className="font-[family-name:var(--font-body)] text-[length:var(--size-xs)] uppercase tracking-[var(--tracking-label)] text-[var(--text-meta)]">
+            <span className={`font-[family-name:var(--font-body)] ${STEP_LABEL} uppercase tracking-[var(--tracking-label)] text-[var(--text-meta)]`}>
               {eyebrow}
             </span>
           )}

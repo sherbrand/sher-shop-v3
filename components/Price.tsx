@@ -15,10 +15,14 @@ export interface PriceProps {
   className?: string;
 }
 
+// The item rungs: the same size a product title takes on a ProductCard.
+const STEP_ITEM =
+  "text-[length:var(--size-item-sm)] @min-[640px]:text-[length:var(--size-item-md)] @min-[1024px]:text-[length:var(--size-item-lg)]";
+
 const SIZES: Record<NonNullable<PriceProps["size"]>, string> = {
   sm: "text-[length:var(--size-sm)]",
-  md: "text-[length:var(--fs-item,var(--size-item-lg))]",
-  lg: "text-[length:var(--size-title-lg)]",
+  md: STEP_ITEM,
+  lg: STEP_ITEM,
 };
 
 function format(amount: number, currency: string): string {

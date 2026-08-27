@@ -45,7 +45,7 @@ export function Transparent({
 }: TransparentProps): ReactElement {
   return (
     <header
-      className={`absolute left-0 right-0 top-0 z-[var(--z-header)] text-[var(--sher-white)] ${className}`}
+      className={`@container absolute left-0 right-0 top-0 z-[var(--z-header)] text-[var(--sher-white)] ${className}`}
     >
       <AnnouncementBar tone={announcementTone}>{announcement || undefined}</AnnouncementBar>
 
@@ -73,8 +73,10 @@ export function Transparent({
           </IconButton>
         </div>
 
-        {/* Oversized square logo, centered, anchored at the bar top so it overflows only downward. */}
-        <div className="pointer-events-none absolute left-1/2 top-[calc(var(--space-2)+4px)] -translate-x-1/2">
+        {/* Oversized square logo, centered, anchored at the bar top so it overflows only downward.
+            --logo-w steps with the header's own width, so no page CSS has to override
+            Logo's inline width. */}
+        <div className="pointer-events-none absolute left-1/2 top-[calc(var(--space-2)+4px)] -translate-x-1/2 [--logo-w:96px] @min-[640px]:[--logo-w:112px] @min-[1024px]:[--logo-w:128px]">
           <Logo
             variant="square"
             color="white"

@@ -26,7 +26,7 @@ export function AnnouncementBar({
     <div
       role="region"
       aria-label="Announcement"
-      className={`flex h-[var(--announce-h)] w-full items-center justify-center px-[var(--gutter)] text-center font-[family-name:var(--font-body)] text-[length:var(--fs-announce,var(--size-announce-lg))] uppercase tracking-[var(--tracking-label)] ${TONES[tone]} ${className}`}
+      className={`flex h-[var(--announce-h)] w-full items-center justify-center px-[var(--gutter)] text-center font-[family-name:var(--font-body)] text-[length:var(--size-announce-sm)] @min-[640px]:text-[length:var(--size-announce-md)] @min-[1024px]:text-[length:var(--size-announce-lg)] uppercase tracking-[var(--tracking-label)] ${TONES[tone]} ${className}`}
     >
       {children}
     </div>

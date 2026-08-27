@@ -47,6 +47,8 @@ const STEP_DISPLAY =
   "text-[length:var(--size-display-sm)] @min-[640px]:text-[length:var(--size-display-md)] @min-[1024px]:text-[length:var(--size-display-lg)]";
 const STEP_BODY =
   "text-[length:var(--size-body-sm)] @min-[640px]:text-[length:var(--size-body-md)] @min-[1024px]:text-[length:var(--size-body-lg)]";
+const STEP_LABEL =
+  "text-[length:var(--size-label-sm)] @min-[640px]:text-[length:var(--size-label-md)] @min-[1024px]:text-[length:var(--size-label-lg)]";
 /* Narrow bands tighten both measures. The heading cap comes off entirely below
    640px: a ch cap lands mid-phrase at that size, so the band's own width wraps it. */
 const TIGHTEN =
@@ -94,7 +96,7 @@ export function HeroTitle({
         )}
         {eyebrow && (
           <span
-            className={`font-[family-name:var(--font-body)] text-[length:var(--size-xs)] uppercase tracking-[var(--tracking-label)] ${
+            className={`font-[family-name:var(--font-body)] ${STEP_LABEL} uppercase tracking-[var(--tracking-label)] ${
               inverse ? "text-[var(--sher-white)]" : "text-[var(--text-meta)]"
             }`}
           >

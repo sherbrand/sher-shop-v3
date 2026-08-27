@@ -100,9 +100,11 @@ export function HeroCarousel({
               className="absolute inset-0 bg-cover bg-no-repeat bg-[position:center_40%] @min-[640px]:bg-center"
               /* A background image carries no alt, so the layer takes the role and
                  the name instead. Only when there is a name to give: role="img"
-                 with nothing to announce is worse than leaving it decorative. */
+                 with nothing to announce is worse than leaving it decorative, so
+                 a nameless layer is hidden from assistive tech instead. */
               role={slide.image && slide.alt ? "img" : undefined}
               aria-label={slide.image && slide.alt ? slide.alt : undefined}
+              aria-hidden={slide.image && slide.alt ? undefined : true}
               /* backgroundColor, not the `background` shorthand. React writes an
                  empty string for an undefined style value, and an empty
                  `background` clears background-image with it. The server keeps the
@@ -110,7 +112,8 @@ export function HeroCarousel({
                  blank once this client component hydrates. */
               style={{
                 backgroundImage: slide.image ? `url("${slide.image}")` : undefined,
-                backgroundColor: slide.image ? undefined : slide.bg || "var(--surface-inverse)",
+                // Always painted, so a banner shows its tone while the image loads.
+                backgroundColor: slide.bg || "var(--surface-inverse)",
               }}
             />
             <div className="absolute inset-0 bg-[image:var(--overlay-hero)]" />

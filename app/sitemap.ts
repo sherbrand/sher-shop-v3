@@ -13,6 +13,7 @@ const STATIC_PATHS = [
   "/corset-tops",
   "/matching-sets",
   "/cocktail-dresses",
+  "/beachwear",
   "/about",
   "/contact",
   "/shipping-returns",

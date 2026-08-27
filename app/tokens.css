@@ -89,7 +89,7 @@
 
   /* Announcement bar — its own stepped role (10 → 11.5), deliberately separate from
      --size-nano even though the mobile step matches, so the bar can move on its own. */
-  --size-announce-sm: 0.625rem;
+  --size-announce-sm: 0.625rem;  --size-announce-md: 0.6875rem;
   --size-announce-lg: 0.72rem;
 
   /* Line heights */
@@ -116,6 +116,7 @@
        body  = descriptions & intro paragraphs (14/16/18) */
   --size-item-sm: 1.125rem;   --size-item-md: 1.25rem;    --size-item-lg: 1.375rem;
   --size-body-sm:  0.875rem;  --size-body-md:  1rem;      --size-body-lg:  1.125rem;
+  --size-label-sm: 0.6875rem; --size-label-md: 0.8125rem; --size-label-lg: 0.9375rem;
 
   --size-display-sm: 1.9rem;  --size-display-md: 2.3rem;  --size-display-lg: 2.75rem;
   --size-hero-sm:      1.75rem; --size-hero-md:      2.1rem;  --size-hero-lg:      2.5rem;
@@ -160,6 +161,10 @@
   --pad-btn-lg: 2.5rem;  /* @kind spacing */
   --pad-pill-x: 1.25rem; /* @kind spacing */
   --pad-pill-y: 0.6rem;  /* @kind spacing */
+
+  /* Shared minimum width for the page's primary CTAs, so buttons with different
+     label lengths still line up when stacked in one column. */
+  --cta-min-w: 22rem; /* @kind spacing */
   /* Tight vertical rhythm for stacked link lists and table cells — deliberately
      between --space-1 (4px) and --space-2 (8px) so rows stay dense but tappable. */
   --pad-row-sm: 0.35rem; /* @kind spacing */

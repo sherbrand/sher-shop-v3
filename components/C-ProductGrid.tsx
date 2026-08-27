@@ -68,6 +68,8 @@ const STEP_SECTION =
   "text-[length:var(--size-section-sm)] @min-[640px]:text-[length:var(--size-section-md)] @min-[1024px]:text-[length:var(--size-section-lg)]";
 const STEP_BODY =
   "text-[length:var(--size-body-sm)] @min-[640px]:text-[length:var(--size-body-md)] @min-[1024px]:text-[length:var(--size-body-lg)]";
+const STEP_LABEL =
+  "text-[length:var(--size-label-sm)] @min-[640px]:text-[length:var(--size-label-md)] @min-[1024px]:text-[length:var(--size-label-lg)]";
 /* End-mark clearance steps at 820px, not 1024: the band caps at --container, so on
    the tablet frame it measures ~786 and on desktop ~836. It never reaches 1024. */
 const END_MARK = "mt-[var(--space-8)] @min-[820px]:mt-[var(--space-9)]";
@@ -175,7 +177,7 @@ export function ProductGrid({
           ref={toolbarRef}
           className="mb-[var(--space-5)] flex items-center justify-between gap-[var(--space-4)] border-b border-[var(--border-default)] pb-[var(--space-4)]"
         >
-          <span className="font-[family-name:var(--font-body)] text-[length:var(--size-xs)] uppercase tracking-[var(--tracking-label)] text-[var(--text-meta)]">
+          <span className={`font-[family-name:var(--font-body)] ${STEP_LABEL} uppercase tracking-[var(--tracking-label)] text-[var(--text-meta)]`}>
             {total} {label}
           </span>
           <ViewToggle value={toggle} onChange={setView} />
@@ -208,7 +210,12 @@ export function ProductGrid({
       {pageSize && products.length > 0 ? (
         remaining > 0 ? (
           <div className="mt-[var(--space-8)] flex justify-center">
-            <Button variant="primary" size="lg" onClick={() => setShown((s) => s + step)}>
+            <Button
+              variant="primary"
+              size="lg"
+              className="min-w-[var(--cta-min-w)]"
+              onClick={() => setShown((s) => s + step)}
+            >
               {loadMoreLabel}
             </Button>
           </div>

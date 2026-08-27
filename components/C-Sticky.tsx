@@ -1,14 +1,16 @@
 "use client";
 
 import type { ReactElement, ReactNode } from "react";
+import { useEffect, useState } from "react";
 import { AnnouncementBar } from "@/components/AnnouncementBar";
 import { IconButton } from "@/components/IconButton";
 import { Icon } from "@/components/Icon";
 import { Logo } from "@/components/Logo";
 
-/* C-Sticky — the sticky header shown on every screen (and taking over the Home
-   hero after 60vh of scroll). Solid page background with a hairline base. Dark
-   mark logo centered; hamburger (opens C-Menu) left, cart (opens C-Cart) right.
+/* C-Sticky — the sticky header shown on every screen (and taking over on Home
+   once the hero has scrolled out of view). Solid page background with a
+   hairline base. Dark mark logo centered; hamburger (opens C-Menu) left, cart
+   (opens C-Cart) right.
    The gutter sits OUTSIDE the container cap, matching the band and footer box
    model, so chrome and page content align at every width. */
 
@@ -38,9 +40,38 @@ export function Sticky({
   showAnnouncement = true,
   className = "",
 }: StickyProps): ReactElement {
+  // Hide on scroll down, reveal on scroll up. Direction is behavior, tracked here;
+  // whether the hide APPLIES is a CSS decision, so the breakpoint stays out of the JS.
+  const [away, setAway] = useState(false);
+
+  useEffect(() => {
+    let last = window.scrollY;
+    const onScroll = (): void => {
+      const y = window.scrollY;
+      // Ignore jitter, and never hide the header before it has cleared its own height.
+      if (Math.abs(y - last) < 6) return;
+      setAway(y > last && y > 80);
+      last = y;
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
     <header
-      className={`sticky top-0 z-[var(--z-header)] border-b border-[var(--border-default)] bg-[var(--surface-page)] text-[var(--text-strong)] ${className}`}
+      className={[
+        "@container sticky top-0 z-[var(--z-header)] border-b border-[var(--border-default)]",
+        "bg-[var(--surface-page)] text-[var(--text-strong)]",
+        /* Tailwind v4 puts translate-y on the standalone `translate` property, so that
+           is what transitions. Naming `transform` here animates nothing. */
+        "motion-safe:transition-[translate] motion-safe:duration-[var(--dur-med)] motion-safe:ease-[var(--ease-out)]",
+        /* Desktop only. The header sits outside every container, so this one reads the
+           viewport: there is nothing above it to query. Same exemption as the drawer widths.
+           `lg` is 64rem, and rem in a media query is always 16px-based, so it is 1024px
+           here despite the 81.25% root — the same breakpoint the design system uses. */
+        away ? "lg:-translate-y-full" : "",
+        className,
+      ].join(" ")}
     >
       {showAnnouncement && (
         <AnnouncementBar tone={announcementTone}>{announcement || undefined}</AnnouncementBar>

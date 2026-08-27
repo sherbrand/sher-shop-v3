@@ -16,6 +16,10 @@ export interface BreadcrumbProps {
   className?: string;
 }
 
+// Stepped label size, resolved against the enclosing band's width.
+const STEP_LABEL =
+  "text-[length:var(--size-label-sm)] @min-[640px]:text-[length:var(--size-label-md)] @min-[1024px]:text-[length:var(--size-label-lg)]";
+
 export function Breadcrumb({
   items = [],
   separator = "›",
@@ -24,7 +28,7 @@ export function Breadcrumb({
   return (
     <nav
       aria-label="Breadcrumb"
-      className={`flex flex-wrap items-center gap-[var(--space-2)] font-[family-name:var(--font-body)] text-[length:var(--size-xs)] uppercase tracking-[var(--tracking-label)] ${className}`}
+      className={`flex flex-wrap items-center gap-[var(--space-2)] font-[family-name:var(--font-body)] ${STEP_LABEL} uppercase tracking-[var(--tracking-label)] ${className}`}
     >
       {items.map((item, i) => {
         const last = i === items.length - 1;
