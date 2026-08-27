@@ -3,6 +3,7 @@ import type { ReactElement, ReactNode } from "react";
 import { Cormorant_Infant, Cardo } from "next/font/google";
 import "@/app/globals.css";
 import { SiteHeader } from "@/components/SiteHeader";
+import { slotText } from "@/lib/slots";
 import { Footer } from "@/components/C-Footer";
 import { CartProvider } from "@/components/CartProvider";
 import { SOCIAL_LINKS } from "@/lib/site";
@@ -57,7 +58,10 @@ export default function RootLayout({
     <html lang="en">
       <body className={`${cormorant.variable} ${cardo.variable}`}>
         <CartProvider>
-          <SiteHeader accountHref={accountHref} />
+          <SiteHeader
+            accountHref={accountHref}
+            announcement={slotText("announcement")}
+          />
           {children}
           <Footer socialLinks={SOCIAL_LINKS} />
         </CartProvider>

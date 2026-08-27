@@ -4,14 +4,16 @@ import { HeroTitle } from "@/components/C-HeroTitle";
 import { EditorialSplit } from "@/components/C-EditorialSplit";
 import { JsonLd } from "@/components/JsonLd";
 import { breadcrumbLd, pageMetadata } from "@/lib/seo";
+import { bandCopy, metaCopy, slotText } from "@/lib/slots";
 import type { Crumb } from "@/components/Breadcrumb";
 
 const BREADCRUMB: Crumb[] = [{ label: "Home", href: "/" }, { label: "About Us" }];
 
+const META = metaCopy("s-007");
+
 export const metadata: Metadata = pageMetadata({
-  title: "About Us",
-  description:
-    "The SHER brand makes sensual, refined womenswear, built by hand on real corsetry. Meet the brand and its founder, Sherilyn.",
+  title: META.title ? { absolute: META.title } : undefined,
+  description: META.description,
   path: "/about",
 });
 
@@ -23,22 +25,13 @@ export default function AboutPage(): ReactElement {
         breadcrumb={BREADCRUMB}
         headingLevel={1}
         measure="72ch"
-        heading="Our SHER Brand"
-        description="The SHER brand makes womenswear that is sensual and refined. We believe sensuality should lift a woman up, never cheapen her. Every piece is built by hand, one at a time, on real corsetry. Corset tops, matching sets, and cocktail dresses that shape the body and read elegant. We started SHER because premium, well-made sensual clothing was hard to find, so we make it ourselves."
+        heading={slotText("s-007.1.heading")}
+        description={slotText("s-007.1.paragraph")}
       />
 
       {/* Editorial images (s-007.2/3) still missing (MVP) — media left empty. */}
-      <EditorialSplit
-        eyebrow="Our Philosophy"
-        heading="Sensuality That Elevates"
-        paragraph="Sensual does not have to mean cheap. That line sits at the center of everything we make. We design clothes that show off the body with control, not with excess. The cut hints instead of shouts. The fit flatters instead of clings. A SHER piece makes a woman feel bold and sure of herself, and it reads elegant to everyone else. That is sensuality that elevates."
-      />
-      <EditorialSplit
-        mirror
-        eyebrow="Meet the Founder"
-        heading="The Woman Behind It, Sherilyn"
-        paragraph="Sherilyn founded SHER to make the sensual, well-built clothing she could not find for herself. She leads the design of every piece, from the cut of a corset top to the drape of a dress. Her standard is simple: it has to look elegant, feel strong, and last. That standard runs through the whole SHER brand."
-      />
+      <EditorialSplit {...bandCopy("s-007.2")} />
+      <EditorialSplit mirror {...bandCopy("s-007.3")} />
     </main>
   );
 }

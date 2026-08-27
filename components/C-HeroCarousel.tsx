@@ -1,8 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { CSSProperties, ReactElement } from "react";
-import { Button } from "@/components/Button";
+import type { CSSProperties, MouseEvent, PointerEvent, ReactElement } from "react";
 import { IconButton } from "@/components/IconButton";
 import { Icon } from "@/components/Icon";
 
@@ -10,25 +9,25 @@ import { Icon } from "@/components/Icon";
    mobile, two at 50% each from 768px. Banners are fixed portrait crops (2:3 on
    mobile and tablet, 4:5 from 1024px). Auto-advances by one banner with wrap;
    prev/next arrows and dots page by one. Each banner takes a solid tone (`bg`) or
-   an image, plus an optional text overlay (eyebrow / heading / cta) over a scrim.
+   an image under a scrim, and an optional `href` that makes the whole banner a link.
    The CELL WIDTH is a container query on the band's own width; the track shifts by
    --pos and the query supplies the matching percentage, so JS never needs to know
    how many banners are on screen. */
 
+/* Banners carry no overlay text — Home's headline lives in the C-HeroTitle band
+   below the carousel. */
 export interface HeroSlide {
   /** Solid banner tone (token or color) when no image. */
   bg?: string;
   /** Background image URL (cover). Overrides bg. */
   image?: string;
-  /** What the banner image shows. The banner is a background, so this becomes
-   *  the layer's accessible name. Leave unset to treat the image as decorative. */
+  /** Accessible name for the banner. On a plain slide it sets role="img" and
+   *  aria-label on the media layer; on a linked slide it names the link, so a
+   *  slide with `href` must carry it. Leave unset for a decorative banner. */
   alt?: string;
-  /** Optional overlay eyebrow. */
-  eyebrow?: string;
-  /** Optional overlay heading. */
-  heading?: string;
-  /** Optional overlay call-to-action. */
-  cta?: { label: string; href: string };
+  /** Makes the whole banner a link to this target — the media layer is wrapped
+   *  in an anchor, so the full area is clickable. A drag does not navigate. */
+  href?: string;
 }
 
 export interface HeroCarouselProps {
@@ -39,10 +38,6 @@ export interface HeroCarouselProps {
   autoPlay?: boolean;
   className?: string;
 }
-
-// Stepped hero size, resolved against the band's own width.
-const STEP_HERO =
-  "text-[length:var(--size-hero-sm)] @min-[640px]:text-[length:var(--size-hero-md)] @min-[1024px]:text-[length:var(--size-hero-lg)]";
 
 export function HeroCarousel({
   slides = [],
@@ -64,6 +59,18 @@ export function HeroCarousel({
   useEffect(() => {
     if (!animate) requestAnimationFrame(() => setAnimate(true));
   }, [animate]);
+
+  // A drag past this many pixels is a swipe, not a click, so it must not navigate.
+  const DRAG_SLOP = 6;
+  const [down, setDown] = useState<{ x: number; y: number } | null>(null);
+  const onPointerDown = (e: PointerEvent<HTMLAnchorElement>): void =>
+    setDown({ x: e.clientX, y: e.clientY });
+  const onLinkClick = (e: MouseEvent<HTMLAnchorElement>): void => {
+    if (!down) return;
+    if (Math.abs(e.clientX - down.x) > DRAG_SLOP || Math.abs(e.clientY - down.y) > DRAG_SLOP) {
+      e.preventDefault();
+    }
+  };
 
   const extended = [...slides, ...slides.slice(0, 2)];
   const active = ((pos % count) + count) % count;
@@ -90,21 +97,23 @@ export function HeroCarousel({
         ].join(" ")}
         style={{ "--pos": pos } as CSSProperties}
       >
-        {extended.map((slide, k) => (
-          <div
-            key={k}
-            className="relative shrink-0 grow-0 basis-full overflow-hidden aspect-[var(--ratio-2-3)] @min-[768px]:basis-1/2 @min-[1024px]:aspect-[var(--ratio-4-5)]"
-          >
+        {extended.map((slide, k) => {
+          // The trailing cells are wrap-around clones: keep them out of the a11y
+          // tree and the tab order so a link is not announced or tabbed to twice.
+          const clone = k >= count;
+          const media = (
             <div
               /* Below 640 the crop shifts down so the subject sits lower in the narrow frame. */
               className="absolute inset-0 bg-cover bg-no-repeat bg-[position:center_40%] @min-[640px]:bg-center"
               /* A background image carries no alt, so the layer takes the role and
                  the name instead. Only when there is a name to give: role="img"
                  with nothing to announce is worse than leaving it decorative, so
-                 a nameless layer is hidden from assistive tech instead. */
-              role={slide.image && slide.alt ? "img" : undefined}
-              aria-label={slide.image && slide.alt ? slide.alt : undefined}
-              aria-hidden={slide.image && slide.alt ? undefined : true}
+                 a nameless layer is hidden from assistive tech instead. On a
+                 linked slide the anchor carries the name, so the layer is hidden
+                 either way and the name is not announced twice. */
+              role={!slide.href && slide.image && slide.alt ? "img" : undefined}
+              aria-label={!slide.href && slide.image && slide.alt ? slide.alt : undefined}
+              aria-hidden={!slide.href && slide.image && slide.alt ? undefined : true}
               /* backgroundColor, not the `background` shorthand. React writes an
                  empty string for an undefined style value, and an empty
                  `background` clears background-image with it. The server keeps the
@@ -116,35 +125,34 @@ export function HeroCarousel({
                 backgroundColor: slide.bg || "var(--surface-inverse)",
               }}
             />
-            <div className="absolute inset-0 bg-[image:var(--overlay-hero)]" />
-            {(slide.eyebrow || slide.heading || slide.cta) && (
-              <div className="absolute inset-0 flex flex-col items-center justify-end gap-[var(--space-4)] px-[var(--gutter)] pb-[var(--space-9)] pt-[var(--space-8)] text-center text-[var(--sher-white)]">
-                {slide.eyebrow && (
-                  <span className="font-[family-name:var(--font-body)] text-[length:var(--size-xs)] uppercase tracking-[var(--tracking-label)] opacity-90">
-                    {slide.eyebrow}
-                  </span>
-                )}
-                {slide.heading && (
-                  <span
-                    className={`max-w-[18ch] font-[family-name:var(--font-display)] uppercase leading-[var(--leading-tight)] tracking-[var(--tracking-display)] ${STEP_HERO}`}
-                  >
-                    {slide.heading}
-                  </span>
-                )}
-                {slide.cta && (
-                  <Button
-                    as="a"
-                    href={slide.cta.href}
-                    variant="primary"
-                    className="mt-[var(--space-2)] bg-[var(--sher-white)] text-[var(--sher-dark)] hover:bg-[var(--sher-white)]"
-                  >
-                    {slide.cta.label}
-                  </Button>
-                )}
-              </div>
-            )}
-          </div>
-        ))}
+          );
+
+          return (
+            <div
+              key={k}
+              className="relative shrink-0 grow-0 basis-full overflow-hidden aspect-[var(--ratio-2-3)] @min-[768px]:basis-1/2 @min-[1024px]:aspect-[var(--ratio-4-5)]"
+            >
+              {slide.href ? (
+                <a
+                  href={slide.href}
+                  aria-label={slide.alt || undefined}
+                  aria-hidden={clone ? true : undefined}
+                  tabIndex={clone ? -1 : undefined}
+                  draggable={false}
+                  onPointerDown={onPointerDown}
+                  onClick={onLinkClick}
+                  className="absolute inset-0 block no-underline"
+                >
+                  {media}
+                </a>
+              ) : (
+                media
+              )}
+              {/* The scrim must not swallow a click meant for the banner link. */}
+              <div className="pointer-events-none absolute inset-0 bg-[image:var(--overlay-hero)]" />
+            </div>
+          );
+        })}
       </div>
 
       {count > 1 && (

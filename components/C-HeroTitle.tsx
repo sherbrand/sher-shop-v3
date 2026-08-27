@@ -17,8 +17,8 @@ export interface HeroTitleProps {
   breadcrumb?: Crumb[];
   /** Small uppercase label above the heading. */
   eyebrow?: string;
-  /** The main heading text. */
-  heading: string;
+  /** The main heading text. Omit to leave the heading out. */
+  heading?: string;
   /** HTML level (h1–h4) for the heading — changes the tag only, not the style. Default 1. */
   headingLevel?: HeadingLevel;
   /** Lead paragraph below the heading. */
@@ -103,18 +103,20 @@ export function HeroTitle({
             {eyebrow}
           </span>
         )}
-        <Heading
-          level={headingLevel}
-          className={[
-            "m-0 font-normal leading-[var(--leading-tight)]",
-            headingFace,
-            STEP_DISPLAY,
-            inverse ? "text-[var(--sher-white)]" : "text-[var(--text-strong)]",
-          ].join(" ")}
-          style={{ maxWidth: `var(--ht-hd-measure, ${headingMeasure})` } as CSSProperties}
-        >
-          {heading}
-        </Heading>
+        {heading && (
+          <Heading
+            level={headingLevel}
+            className={[
+              "m-0 font-normal leading-[var(--leading-tight)]",
+              headingFace,
+              STEP_DISPLAY,
+              inverse ? "text-[var(--sher-white)]" : "text-[var(--text-strong)]",
+            ].join(" ")}
+            style={{ maxWidth: `var(--ht-hd-measure, ${headingMeasure})` } as CSSProperties}
+          >
+            {heading}
+          </Heading>
+        )}
         {description && (
           <p
             className={[

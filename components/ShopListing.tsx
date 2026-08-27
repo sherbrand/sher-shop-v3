@@ -17,8 +17,8 @@ export type ListingItem = { product: GridProduct; typeAttribute: string | null }
 
 export type ShopListingProps = {
   breadcrumb: Crumb[];
-  heading: string;
-  description: string;
+  heading?: string;
+  description?: string;
   items: ListingItem[];
   // Distinct type_attribute values present, used as the filter pills.
   filterValues: string[];
