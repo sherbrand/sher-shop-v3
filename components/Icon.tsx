@@ -2,6 +2,9 @@ import type { ReactElement, SVGAttributes } from "react";
 
 /* SHER icon set.
    UI icons follow the brand's icon spec: Lucide line style, 1.5px stroke, round joins.
+   `play` is one of them: an OUTLINE triangle, not a filled one, with its tip inset so
+   the stroke never clips the viewBox. A solid play mass belongs on a badge over
+   imagery, which is the page's job, not the glyph's.
    Brand/social marks use Simple Icons (filled) — for official social links only.
    Paths are inlined so the set ships with no icon dependency.
    `size` is emitted in px, so the rendered glyph matches the prop exactly. */
@@ -20,7 +23,7 @@ const UI = {
   minus: "M5 12h14",
   plus: "M5 12h14M12 5v14",
   trash: "M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6",
-  play: "M8 5.5v13l11-6.5Z",
+  play: "M8.5 5.8v12.4L19 12Z",
   ruler: "M21.3 8.7 8.7 21.3a1 1 0 0 1-1.4 0l-4.6-4.6a1 1 0 0 1 0-1.4L15.3 2.7a1 1 0 0 1 1.4 0l4.6 4.6a1 1 0 0 1 0 1.4ZM14.5 5.5l2 2M11 9l2 2M7.5 12.5l2 2",
 } as const;
 

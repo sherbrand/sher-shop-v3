@@ -35,7 +35,8 @@ export interface MediaItem {
   alt?: string;
   /** Placeholder node used when there is no `src`. */
   node?: ReactNode;
-  /** Optional distinct node for the thumbnail. */
+  /** Optional distinct thumbnail. A node renders in the strip; a plain URL string
+   *  is what C-ProductPanel's stacked thumb strip paints as a background image. */
   thumb?: ReactNode;
 }
 

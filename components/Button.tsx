@@ -11,13 +11,15 @@ import type {
    primary   : dark fill, light text (strong CTA — Add to Cart, Checkout)
    accent    : accent fill, white text (AA) — softer emphasis
    surface   : raised fill on a hairline, dark text
+   tint      : surface inverted — tint at rest, raised on hover. The quieter half
+               of a stacked CTA pair, so it recedes beside an accent button.
    tonal     : primary fill, dark text; inverts to accent on hover
    secondary : hairline outline, dark text (fills on hover)
    ghost     : text only, underline on hover */
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   /** Visual emphasis. Default "primary". */
-  variant?: "primary" | "accent" | "surface" | "tonal" | "secondary" | "ghost";
+  variant?: "primary" | "accent" | "surface" | "tint" | "tonal" | "secondary" | "ghost";
   /** Size. Default "md". */
   size?: "sm" | "md" | "lg";
   /** Stretch to container width. */
@@ -44,6 +46,7 @@ const VARIANTS: Record<NonNullable<ButtonProps["variant"]>, string> = {
     "border-transparent bg-[var(--accent)] text-[var(--sher-white)] hover:bg-[var(--accent-hover)]",
   surface:
     "border-[var(--border-strong)] bg-[var(--surface-raised)] text-[var(--text-strong)] hover:bg-[var(--surface-tint)]",
+  tint: "border-[var(--border-strong)] bg-[var(--surface-tint)] text-[var(--text-strong)] hover:bg-[var(--surface-raised)]",
   tonal:
     "border-transparent bg-[var(--sher-primary)] text-[var(--text-on-primary)] hover:bg-[var(--accent-hover)] hover:text-[var(--sher-white)]",
   secondary:

@@ -4,8 +4,14 @@ import { useState } from "react";
 import type { ReactElement } from "react";
 
 /* SizeSelector — the product page's size chips. Sold-out sizes render disabled
-   with a struck label; the selected chip inverts to the dark fill. Controlled
-   (`value`/`onChange`) or uncontrolled. */
+   with a struck label. Controlled (`value`/`onChange`) or uncontrolled.
+
+   `shape`: "chip" is the wide rounded chip, the selected one inverting to the dark
+   fill. "circle" is the minimal round well — a fixed control-hit circle, transparent
+   at rest with a hairline and a meta label, the selected one filling with
+   surfaceRaised and a strong label rather than inverting. The circle keeps its
+   hairline when selected, so selection reads as a fill change and nothing shifts.
+   `align` centres the label and the row for a centred purchase panel. */
 
 export interface SizeOption {
   /** Size label, e.g. "S". */
@@ -21,6 +27,10 @@ export interface SizeSelectorProps {
   /** Initial selection when uncontrolled. Defaults to the first in-stock size. */
   defaultValue?: string;
   onChange?: (label: string) => void;
+  /** Chip shape. Default "chip". */
+  shape?: "chip" | "circle";
+  /** "center" centres the label and the chip row. Default "start". */
+  align?: "start" | "center";
   /** Group label above the chips. Default "Size". */
   label?: string;
   className?: string;
@@ -32,6 +42,8 @@ export function SizeSelector({
   defaultValue,
   onChange,
   label = "Size",
+  shape = "chip",
+  align = "start",
   className = "",
 }: SizeSelectorProps): ReactElement {
   const firstInStock = sizes.find((s) => !s.soldOut);
@@ -46,12 +58,27 @@ export function SizeSelector({
     onChange?.(option.label);
   };
 
+  const circle = shape === "circle";
+  const mid = align === "center";
+
   return (
-    <div className={`flex flex-col gap-[var(--space-3)] ${className}`}>
-      <span className="font-[family-name:var(--font-body)] text-[length:var(--size-xs)] uppercase tracking-[var(--tracking-label)] text-[var(--text-meta)]">
-        {label}
-      </span>
-      <div role="group" aria-label={label} className="flex flex-wrap gap-[var(--space-2)]">
+    <div
+      className={`flex flex-col gap-[var(--space-3)] ${mid ? "items-center" : ""} ${className}`}
+    >
+      {label && (
+        <span className="font-[family-name:var(--font-body)] text-[length:var(--size-xs)] uppercase tracking-[var(--tracking-label)] text-[var(--text-meta)]">
+          {label}
+        </span>
+      )}
+      <div
+        role="group"
+        aria-label={label || "Size"}
+        className={[
+          "flex flex-wrap",
+          circle ? "gap-[var(--space-3)]" : "gap-[var(--space-2)]",
+          mid ? "justify-center" : "",
+        ].join(" ")}
+      >
         {sizes.map((option) => {
           const active = option.label === current;
           return (
@@ -63,12 +90,21 @@ export function SizeSelector({
               aria-label={option.soldOut ? `${option.label} — sold out` : option.label}
               onClick={() => select(option)}
               className={[
-                "min-h-[44px] min-w-[48px] px-[var(--space-3)] border rounded-[var(--radius-sm)]",
-                "font-[family-name:var(--font-button)] text-[length:var(--size-xs)] uppercase tracking-[var(--tracking-label)]",
+                "min-h-[var(--control-hit)] border",
+                "font-[family-name:var(--font-button)] uppercase tracking-[var(--tracking-label)]",
                 "transition-colors duration-[var(--dur-fast)] ease-[var(--ease-out)]",
+                circle
+                  ? /* The circle holds one fixed body size at every width: it is a
+                       control, not running copy, and stepping it would break the well. */
+                    "h-[var(--control-hit)] w-[var(--control-hit)] min-w-0 p-0 rounded-[var(--radius-pill)] text-[length:var(--size-body-md)]"
+                  : "min-w-[var(--control-min-w)] px-[var(--space-3)] py-0 rounded-[var(--radius-sm)] text-[length:var(--size-xs)]",
                 active
-                  ? "border-[var(--surface-inverse)] bg-[var(--surface-inverse)] text-[var(--text-on-inverse)]"
-                  : "border-[var(--border-strong)] bg-transparent text-[var(--text-strong)]",
+                  ? circle
+                    ? "border-[var(--border-strong)] bg-[var(--surface-raised)] text-[var(--text-strong)]"
+                    : "border-[var(--surface-inverse)] bg-[var(--surface-inverse)] text-[var(--text-on-inverse)]"
+                  : circle
+                    ? "border-[var(--border-strong)] bg-transparent text-[var(--text-meta)]"
+                    : "border-[var(--border-strong)] bg-transparent text-[var(--text-strong)]",
                 option.soldOut ? "cursor-not-allowed line-through opacity-35" : "cursor-pointer",
               ].join(" ")}
             >

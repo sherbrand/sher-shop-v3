@@ -46,6 +46,10 @@
 
   /* Translucent overlays */
   --scrim:          rgba(107,99,91,0.55); /* drawer / modal backdrop — accentHover, warm */
+  /* Veils sit ON imagery, so they carry their own contrast: a badge or label drawn
+     on a veil needs no scrim over the whole image. */
+  --veil-light:     rgba(250,249,246,0.90); /* light disc/chip on a photo */
+  --veil-dark:      rgba(51,50,49,0.55);    /* dark disc/chip on a photo */
   --scrim-soft:     rgba(51,50,49,0.28);  /* image tile veil */
   --overlay-hero:   linear-gradient(180deg, rgba(51,50,49,0.28) 0%, rgba(51,50,49,0.10) 40%, rgba(51,50,49,0.42) 100%); /* @kind other */
   --border-inverse: rgba(250,249,246,0.16);/* hairline on dark surfaces */
@@ -145,6 +149,16 @@
      distance, not a fraction of the banner: the gesture then feels identical
      whether one banner or two are on screen, and no width is measured in JS. */
   --swipe-commit: 56px;
+
+  /* Control + indicator geometry. Fixed px, not rem: these are hit targets and
+     optical marks, so they must not grow with the reader's font size. 44px is the
+     minimum comfortable touch target. */
+  --control-hit:  44px;  /* min tap target — size chips, icon buttons */
+  --control-min-w: 48px; /* wide chip's minimum width, so "XS" and "XXL" agree */
+  --thumb-w:      44px;  /* gallery thumb strip cell */
+  --thumb-h:      58px;  /* 44 x 3:4-ish, matching the shot ratio */
+  --dot-sm:       8px;   /* carousel dot */
+  --badge-sm:     30px;  /* play badge disc over a thumbnail */
 
   /* Radius — small, understated */
   --radius-none: 0;
