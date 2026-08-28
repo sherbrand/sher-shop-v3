@@ -6,6 +6,7 @@ import { ProductPanel } from "@/components/C-ProductPanel";
 import type { Crumb } from "@/components/Breadcrumb";
 import type { SizeOption } from "@/components/SizeSelector";
 import type { MediaItem } from "@/components/MediaGallery";
+import { Details } from "@/components/C-Details";
 import { Sizing } from "@/components/C-Sizing";
 import { Shipping } from "@/components/C-Shipping";
 import { useCart } from "@/components/CartProvider";
@@ -42,6 +43,7 @@ export function ProductDetail(props: ProductDetailProps): ReactElement {
   const [size, setSize] = useState<string | null>(firstInStock);
   const [quantity, setQuantity] = useState(1);
   const [pending, setPending] = useState(false);
+  const [detailsOpen, setDetailsOpen] = useState(false);
   const [sizeChartOpen, setSizeChartOpen] = useState(false);
   const [shippingOpen, setShippingOpen] = useState(false);
 
@@ -63,6 +65,9 @@ export function ProductDetail(props: ProductDetailProps): ReactElement {
   return (
     <>
       <ProductPanel
+        layout="stacked"
+        indicator="thumbs"
+        showQuantity={false}
         breadcrumb={props.breadcrumb}
         name={props.name}
         price={props.price}
@@ -79,12 +84,20 @@ export function ProductDetail(props: ProductDetailProps): ReactElement {
         onQuantity={setQuantity}
         onAddToCart={() => run(addItem)}
         onBuyNow={() => run(buyNow)}
+        onDetails={() => setDetailsOpen(true)}
         onSizeChart={() => setSizeChartOpen(true)}
         onShipping={() => setShippingOpen(true)}
         preorderHref={props.preorderHref}
       />
 
       {/* Empty chart until D-005 Product Data exists — no invented measurements. */}
+      <Details
+        open={detailsOpen}
+        onClose={() => setDetailsOpen(false)}
+        productName={props.name}
+        intro={props.description}
+      />
+
       <Sizing
         open={sizeChartOpen}
         onClose={() => setSizeChartOpen(false)}
