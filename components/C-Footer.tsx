@@ -1,4 +1,5 @@
 import type { ReactElement } from "react";
+import { categoryLinks } from "@/lib/categories";
 import { Heading } from "@/components/Heading";
 import type { HeadingLevel } from "@/components/Heading";
 import { Icon } from "@/components/Icon";
@@ -33,11 +34,8 @@ export interface FooterProps {
 }
 
 const SHOP: NavLink[] = [
-  { label: "Corset Tops", href: "/corset-tops" },
-  { label: "Matching Sets", href: "/matching-sets" },
-  { label: "Cocktail Dress", href: "/cocktail-dresses" },
-  { label: "Beachwear", href: "/beachwear" },
-  { label: "Shop All", href: "/shop" },
+  ...categoryLinks(),
+  { label: "View all", href: "/shop" },
 ];
 
 const INFO: NavLink[] = [

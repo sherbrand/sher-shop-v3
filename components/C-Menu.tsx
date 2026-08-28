@@ -1,6 +1,7 @@
 "use client";
 
 import type { MouseEvent, ReactElement } from "react";
+import { categoryLinks } from "@/lib/categories";
 import { useState } from "react";
 import { IconButton } from "@/components/IconButton";
 import { Icon } from "@/components/Icon";
@@ -52,11 +53,8 @@ export interface MenuProps {
 }
 
 const SHOP: NavLink[] = [
-  { label: "Corset Tops", href: "/corset-tops" },
-  { label: "Matching Sets", href: "/matching-sets" },
-  { label: "Cocktail Dress", href: "/cocktail-dresses" },
-  { label: "Beachwear", href: "/beachwear" },
-  { label: "View All Products", href: "/shop" },
+  ...categoryLinks(),
+  { label: "View all", href: "/shop" },
 ];
 
 const INFO: NavLink[] = [

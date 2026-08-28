@@ -26,6 +26,9 @@ export const PRODUCT_FRAGMENT = /* GraphQL */ `
         }
       }
     }
+    collections(first: 10) {
+      nodes { handle }
+    }
     options { id name values }
     variants(first: 100) {
       nodes {

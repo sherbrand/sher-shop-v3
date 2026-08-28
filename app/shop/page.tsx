@@ -6,6 +6,7 @@ import { ShopTitle } from "@/components/C-ShopTitle";
 import { ShopGrid } from "@/components/ShopGrid";
 import { ShopEditorial } from "@/components/C-ShopEditorial";
 import { bandCopy, metaCopy, slotText } from "@/lib/slots";
+import { categoryLinks } from "@/lib/categories";
 import { Button } from "@/components/Button";
 import { JsonLd } from "@/components/JsonLd";
 import { breadcrumbLd, pageMetadata } from "@/lib/seo";
@@ -33,12 +34,7 @@ export default async function ShopPage(): Promise<ReactElement> {
           breadcrumb={BREADCRUMB}
           heading={slotText("s-002.1.heading")}
           description={slotText("s-002.1.subtitle")}
-          filters={[
-            { label: "Corset Tops", href: "/corset-tops" },
-            { label: "Matching Sets", href: "/matching-sets" },
-            { label: "Cocktail Dresses", href: "/cocktail-dresses" },
-            { label: "Beachwear", href: "/beachwear" },
-          ]}
+          filters={categoryLinks()}
         />
         <ShopGrid products={products.map(toGridProduct)} />
       </div>

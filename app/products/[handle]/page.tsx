@@ -13,6 +13,7 @@ import { JsonLd } from "@/components/JsonLd";
 import { breadcrumbLd, pageMetadata, productLd } from "@/lib/seo";
 import { ProductDetail } from "./product-detail";
 import { proseSections } from "@/lib/slots";
+import { categoryFor } from "@/lib/categories";
 
 // A size is sold out when every variant carrying it is unavailable (F-011).
 // Colour and other options are ignored: the design panel selects size only.
@@ -73,7 +74,15 @@ export default async function ProductPage({
   const product = await getProduct(handle);
   if (!product) notFound();
 
-  const breadcrumb: Crumb[] = [{ label: "Shop", href: "/shop" }, { label: product.title }];
+  /* S-006.1 — Shop › Category › product. A product carries the all-products
+     collection as well as its category, so the category is picked out by handle.
+     One with no category falls back to Shop › product. */
+  const category = categoryFor(product.collectionHandles);
+  const breadcrumb: Crumb[] = [
+    { label: "Shop", href: "/shop" },
+    ...(category ? [{ label: category.label, href: category.href }] : []),
+    { label: product.title },
+  ];
   const path = `/products/${handle}`;
 
   // "You May Also Like": up to 2 products that are not this one (F-001). Mapped
