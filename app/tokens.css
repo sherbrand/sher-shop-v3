@@ -199,7 +199,7 @@
   --container-prose:768px;  /* readable measure for policy / info pages */
   --gutter:         1.5rem; /* 24 — page padding */
   --header-h:       4.5rem; /* 72 */
-  --announce-h:     2rem;/* 32 */
+  --announce-h:     2.25rem;/* 36 */
 
   /* Motion — quick, ease-out, no bounce/overshoot */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1); /* @kind other */
