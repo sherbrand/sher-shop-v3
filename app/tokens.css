@@ -45,7 +45,7 @@
   --border-focus:     var(--sher-dark);
 
   /* Translucent overlays */
-  --scrim:          rgba(51,50,49,0.32);  /* drawer / modal backdrop */
+  --scrim:          rgba(107,99,91,0.55); /* drawer / modal backdrop — accentHover, warm */
   --scrim-soft:     rgba(51,50,49,0.28);  /* image tile veil */
   --overlay-hero:   linear-gradient(180deg, rgba(51,50,49,0.28) 0%, rgba(51,50,49,0.10) 40%, rgba(51,50,49,0.42) 100%); /* @kind other */
   --border-inverse: rgba(250,249,246,0.16);/* hairline on dark surfaces */
@@ -141,6 +141,11 @@
   --space-9:  6rem;    /* 96 */
   --space-10: 8rem;    /* 128 */
 
+  /* Pointer travel that commits a carousel swipe to the next banner. A fixed
+     distance, not a fraction of the banner: the gesture then feels identical
+     whether one banner or two are on screen, and no width is measured in JS. */
+  --swipe-commit: 56px;
+
   /* Radius — small, understated */
   --radius-none: 0;
   --radius-sm:   2px;
@@ -199,7 +204,7 @@
   --container-prose:768px;  /* readable measure for policy / info pages */
   --gutter:         1.5rem; /* 24 — page padding */
   --header-h:       4.5rem; /* 72 */
-  --announce-h:     2.25rem;/* 36 */
+  --announce-h:     2rem;   /* 32 */
 
   /* Motion — quick, ease-out, no bounce/overshoot */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1); /* @kind other */

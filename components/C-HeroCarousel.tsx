@@ -12,7 +12,18 @@ import { Icon } from "@/components/Icon";
    an image under a scrim, and an optional `href` that makes the whole banner a link.
    The CELL WIDTH is a container query on the band's own width; the track shifts by
    --pos and the query supplies the matching percentage, so JS never needs to know
-   how many banners are on screen. */
+   how many banners are on screen.
+
+   DRAG GUARD: the anchor covers the whole banner, so a pointer gesture that the
+   user means as a swipe would otherwise land as a click and navigate. Pointer-down
+   records the start point; a click that moved more than DRAG_SLOP px in either axis
+   is cancelled with preventDefault. Native image and link dragging is off
+   (draggable={false}) so the anchor cannot start a ghost-drag either. */
+
+// px of pointer travel past which a click counts as a drag, not a tap
+const DRAG_SLOP = 10;
+// Used when --swipe-commit cannot be read. Matches the token's own value.
+const COMMIT_FALLBACK = 56;
 
 /* Banners carry no overlay text — Home's headline lives in the C-HeroTitle band
    below the carousel. */
@@ -36,6 +47,10 @@ export interface HeroCarouselProps {
   interval?: number;
   /** Auto-advance on/off. Default true. */
   autoPlay?: boolean;
+  /** Position indicator treatment: "dots" (pill dots, active stretches) or "bars"
+   *  (equal hairline bars, active brightens). Both sit centred at the bottom of
+   *  the band. Default "dots". */
+  indicator?: "dots" | "bars";
   className?: string;
 }
 
@@ -43,19 +58,69 @@ export function HeroCarousel({
   slides = [],
   interval = 6000,
   autoPlay = true,
+  indicator = "dots",
   className = "",
 }: HeroCarouselProps): ReactElement {
   const [pos, setPos] = useState(0);
   const [animate, setAnimate] = useState(true);
-  const count = slides.length || 1;
-
-  const trackRef = useRef<HTMLDivElement>(null);
-  const dragStart = useRef<number | null>(null);
-  const [drag, setDrag] = useState(0);
   const [dragging, setDragging] = useState(false);
+  const count = slides.length || 1;
+  const trackRef = useRef<HTMLDivElement>(null);
+  const drag = useRef<{ x: number; dx: number } | null>(null);
+  const [down, setDown] = useState<{ x: number; y: number } | null>(null);
 
-  // A finger on the band holds the auto-advance, so a banner cannot slide out
-  // from under the drag.
+  // The live finger offset rides on the track as a custom property, so the
+  // transform stays in CSS and React re-renders nothing while the finger moves.
+  const setOffset = (px: number): void => {
+    trackRef.current?.style.setProperty("--drag", `${px}px`);
+  };
+
+  // The commit distance is a TOKEN read, not a layout measurement.
+  const commitDistance = (): number => {
+    const el = trackRef.current;
+    if (!el) return COMMIT_FALLBACK;
+    const v = parseFloat(getComputedStyle(el).getPropertyValue("--swipe-commit"));
+    return Number.isFinite(v) && v > 0 ? v : COMMIT_FALLBACK;
+  };
+
+  const onDragStart = (e: PointerEvent<HTMLDivElement>): void => {
+    if (count <= 1 || !e.isPrimary) return;
+    drag.current = { x: e.clientX, dx: 0 };
+    setDragging(true);
+    try {
+      trackRef.current?.setPointerCapture(e.pointerId);
+    } catch {
+      // Capture is a nicety: without it the gesture still ends on pointerup.
+    }
+  };
+
+  const onDragMove = (e: PointerEvent<HTMLDivElement>): void => {
+    if (!drag.current) return;
+    drag.current.dx = e.clientX - drag.current.x;
+    setOffset(drag.current.dx);
+  };
+
+  const endDrag = (commit: boolean): void => {
+    const d = drag.current;
+    drag.current = null;
+    setOffset(0);
+    setDragging(false);
+    if (!d) return;
+    if (commit && Math.abs(d.dx) > commitDistance()) {
+      setPos((p) => p + (d.dx < 0 ? 1 : -1));
+    }
+  };
+
+  // A linked banner must not navigate when the gesture was a swipe.
+  const onPointerDown = (e: PointerEvent<HTMLAnchorElement>): void =>
+    setDown({ x: e.clientX, y: e.clientY });
+  const onLinkClick = (e: MouseEvent<HTMLAnchorElement>): void => {
+    if (!down) return;
+    if (Math.abs(e.clientX - down.x) > DRAG_SLOP || Math.abs(e.clientY - down.y) > DRAG_SLOP) {
+      e.preventDefault();
+    }
+  };
+
   useEffect(() => {
     if (!autoPlay || count <= 1 || dragging) return;
     const timer = setInterval(() => setPos((p) => p + 1), interval);
@@ -67,55 +132,6 @@ export function HeroCarousel({
     if (!animate) requestAnimationFrame(() => setAnimate(true));
   }, [animate]);
 
-  // A drag past this many pixels is a swipe, not a click, so it must not navigate.
-  const DRAG_SLOP = 6;
-  const [down, setDown] = useState<{ x: number; y: number } | null>(null);
-  const onPointerDown = (e: PointerEvent<HTMLAnchorElement>): void =>
-    setDown({ x: e.clientX, y: e.clientY });
-  const onLinkClick = (e: MouseEvent<HTMLAnchorElement>): void => {
-    if (!down) return;
-    if (Math.abs(e.clientX - down.x) > DRAG_SLOP || Math.abs(e.clientY - down.y) > DRAG_SLOP) {
-      e.preventDefault();
-    }
-  };
-
-  /* Drag to change banner. The track follows the finger, then either settles on
-     the next banner or springs back to the one it started on.
-
-     The band only claims horizontal movement: `touch-action: pan-y` leaves
-     vertical panning to the browser, so a finger that starts on the hero can
-     still scroll the page. When the browser takes the gesture for a scroll it
-     sends pointercancel, which drops the drag. */
-  // A banner settles on the next one once the drag passes this much of its own
-  // width. Below that it springs back, so a small movement is never a swipe.
-  const SETTLE_RATIO = 0.15;
-
-  const bannerWidth = (): number =>
-    trackRef.current?.firstElementChild?.getBoundingClientRect().width ?? 0;
-
-  const startDrag = (e: PointerEvent<HTMLDivElement>): void => {
-    if (count <= 1) return;
-    dragStart.current = e.clientX;
-    setDragging(true);
-  };
-
-  const moveDrag = (e: PointerEvent<HTMLDivElement>): void => {
-    if (dragStart.current === null) return;
-    setDrag(e.clientX - dragStart.current);
-  };
-
-  const endDrag = (): void => {
-    if (dragStart.current === null) return;
-    const width = bannerWidth();
-    // Dragging left (negative) reaches for the next banner, right for the previous.
-    if (width > 0 && Math.abs(drag) > width * SETTLE_RATIO) {
-      go(drag < 0 ? active + 1 : active - 1);
-    }
-    dragStart.current = null;
-    setDrag(0);
-    setDragging(false);
-  };
-
   const extended = [...slides, ...slides.slice(0, 2)];
   const active = ((pos % count) + count) % count;
   const go = (k: number): void => setPos((((k % count) + count) % count));
@@ -126,6 +142,8 @@ export function HeroCarousel({
     }
   };
 
+  const bars = indicator === "bars";
+
   return (
     <section
       className={`@container relative w-full overflow-hidden bg-[var(--surface-inverse)] ${className}`}
@@ -134,45 +152,34 @@ export function HeroCarousel({
       <div
         ref={trackRef}
         onTransitionEnd={onEnd}
-        onPointerDown={startDrag}
-        onPointerMove={moveDrag}
-        onPointerUp={endDrag}
-        onPointerCancel={endDrag}
-        onPointerLeave={endDrag}
+        onPointerDown={onDragStart}
+        onPointerMove={onDragMove}
+        onPointerUp={() => endDrag(true)}
+        onPointerCancel={() => endDrag(false)}
         className={[
-          // --drag is the live finger offset; it is 0 unless a drag is running.
-          "flex translate-x-[calc(var(--pos,0)*-100%_+_var(--drag,0px))]",
-          "@min-[768px]:translate-x-[calc(var(--pos,0)*-50%_+_var(--drag,0px))]",
-          // The track must not ease while it is following a finger.
+          "flex touch-pan-y",
+          "translate-x-[calc(var(--pos,0)*-100%+var(--drag,0px))] @min-[768px]:translate-x-[calc(var(--pos,0)*-50%+var(--drag,0px))]",
           animate && !dragging
             ? "transition-transform duration-[var(--dur-slow)] ease-[var(--ease-out)]"
             : "transition-none",
         ].join(" ")}
-        style={
-          {
-            "--pos": pos,
-            "--drag": `${drag}px`,
-            touchAction: "pan-y",
-          } as CSSProperties
-        }
+        style={{ "--pos": pos } as CSSProperties}
       >
         {extended.map((slide, k) => {
           // The trailing cells are wrap-around clones: keep them out of the a11y
           // tree and the tab order so a link is not announced or tabbed to twice.
           const clone = k >= count;
+          const named = !slide.href && !!slide.alt;
           const media = (
             <div
               /* Below 640 the crop shifts down so the subject sits lower in the narrow frame. */
               className="absolute inset-0 bg-cover bg-no-repeat bg-[position:center_40%] @min-[640px]:bg-center"
               /* A background image carries no alt, so the layer takes the role and
-                 the name instead. Only when there is a name to give: role="img"
-                 with nothing to announce is worse than leaving it decorative, so
-                 a nameless layer is hidden from assistive tech instead. On a
-                 linked slide the anchor carries the name, so the layer is hidden
-                 either way and the name is not announced twice. */
-              role={!slide.href && slide.image && slide.alt ? "img" : undefined}
-              aria-label={!slide.href && slide.image && slide.alt ? slide.alt : undefined}
-              aria-hidden={!slide.href && slide.image && slide.alt ? undefined : true}
+                 the name instead. On a linked slide the anchor carries the name,
+                 so the layer is hidden and the name is not announced twice. */
+              role={named ? "img" : undefined}
+              aria-label={named ? slide.alt : undefined}
+              aria-hidden={named ? undefined : true}
               /* backgroundColor, not the `background` shorthand. React writes an
                  empty string for an undefined style value, and an empty
                  `background` clears background-image with it. The server keeps the
@@ -237,19 +244,27 @@ export function HeroCarousel({
             </IconButton>
           </div>
 
-          <div className="absolute bottom-[var(--space-5)] left-0 right-0 flex justify-center gap-[var(--space-2)]">
+          <div
+            className={[
+              "absolute left-0 right-0 flex justify-center gap-[var(--space-2)]",
+              bars ? "bottom-[var(--space-4)]" : "bottom-[var(--space-5)]",
+            ].join(" ")}
+          >
             {slides.map((_, k) => (
               <button
                 key={k}
                 aria-label={`Go to slide ${k + 1}`}
                 onClick={() => go(k)}
                 className={[
-                  "h-[8px] cursor-pointer border-none p-0 rounded-[var(--radius-pill)]",
-                  "transition-[width,background] duration-[var(--dur-med)] ease-[var(--ease-out)]",
-                  k === active
-                    ? "w-[22px] bg-[var(--sher-white)]"
-                    : "w-[8px] bg-[var(--dot-idle)]",
-                ].join(" ")}
+                  "cursor-pointer border-none p-0",
+                  bars
+                    ? "h-[2px] w-[22px] rounded-[var(--radius-none)] transition-[background] duration-[var(--dur-med)] ease-[var(--ease-out)]"
+                    : "h-[8px] rounded-[var(--radius-pill)] transition-[width,background] duration-[var(--dur-med)] ease-[var(--ease-out)]",
+                  !bars && (k === active ? "w-[22px]" : "w-[8px]"),
+                  k === active ? "bg-[var(--sher-white)]" : "bg-[var(--dot-idle)]",
+                ]
+                  .filter(Boolean)
+                  .join(" ")}
               />
             ))}
           </div>

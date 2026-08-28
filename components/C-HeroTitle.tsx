@@ -103,6 +103,7 @@ export function HeroTitle({
             {eyebrow}
           </span>
         )}
+        {/* Omitted rather than rendered empty when the slot has no row (F-008). */}
         {heading && (
           <Heading
             level={headingLevel}

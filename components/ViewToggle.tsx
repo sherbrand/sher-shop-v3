@@ -46,7 +46,7 @@ function Bars({
         <span
           key={k}
           className={[
-            "w-[3px] rounded-[1px]",
+            "w-[3px] rounded-[var(--radius-sm)]",
             active ? "bg-[var(--text-on-inverse)]" : "bg-[var(--text-strong)]",
             k >= mobile ? "hidden @min-[1024px]:block" : "",
           ].join(" ")}

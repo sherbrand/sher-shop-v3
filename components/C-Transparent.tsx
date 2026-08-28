@@ -11,14 +11,12 @@ import { Logo } from "@/components/Logo";
    centered and overflowing below the bar. Hamburger (opens C-Menu) left, cart
    (opens C-Cart) right.
    The gutter sits OUTSIDE the container cap, matching the band and footer box
-   model, so chrome and page content align at every width.
-   The -9px icon hedge pulls the 44px button back so the GLYPH lines up with the
-   page gutter, not the button box. */
+   model, so chrome and page content align at every width. */
 
 export interface TransparentProps {
   /** Announcement bar copy. Defaults to the shipping line. */
   announcement?: ReactNode;
-  /** Announcement bar tone. Default "accent". */
+  /** Announcement bar tone. Defaults to the bar's own tone. */
   announcementTone?: "dark" | "light" | "accent";
   /** Hamburger handler — open C-Menu. */
   onMenu?: () => void;
@@ -35,7 +33,7 @@ export interface TransparentProps {
 
 export function Transparent({
   announcement,
-  announcementTone = "accent",
+  announcementTone,
   onMenu,
   onCart,
   cartCount = 0,
@@ -54,7 +52,7 @@ export function Transparent({
           <IconButton
             label="Open menu"
             onClick={onMenu}
-            className="-ml-[9px] text-[var(--sher-white)]"
+            className="text-[var(--sher-white)]"
           >
             <Icon name="menu" size={26} />
           </IconButton>
@@ -62,7 +60,7 @@ export function Transparent({
           <IconButton
             label={`Open cart${cartCount ? `, ${cartCount} items` : ""}`}
             onClick={onCart}
-            className="relative -mr-[9px] text-[var(--sher-white)]"
+            className="relative text-[var(--sher-white)]"
           >
             <Icon name={cartIcon} size={24} />
             {cartCount > 0 && (
