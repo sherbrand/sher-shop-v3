@@ -1,4 +1,4 @@
-import type { ReactElement } from "react";
+import type { CSSProperties, ReactElement } from "react";
 import { Heading } from "@/components/Heading";
 import type { HeadingLevel } from "@/components/Heading";
 import { Icon } from "@/components/Icon";
@@ -32,6 +32,10 @@ export interface ContactMethodsProps {
   items?: ContactItem[];
   /** HTML level (h1–h4) for each row heading — changes the tag only, not the style. Default 2. */
   headingLevel?: HeadingLevel;
+  /** Width of the centered column. Default var(--container-prose) — the rows are
+   *  read, not scanned, so they take the readable measure rather than the page's
+   *  full width, and the hairlines stay tied to the copy they separate. */
+  contentWidth?: string;
   className?: string;
 }
 
@@ -42,10 +46,14 @@ const STEP_BODY =
 export function ContactMethods({
   items = [],
   headingLevel = 2,
+  contentWidth = "var(--container-prose)",
   className = "",
 }: ContactMethodsProps): ReactElement {
   return (
-    <div className={`@container flex flex-col text-center ${className}`}>
+    <div
+      className={`@container mx-auto flex w-full flex-col text-center ${className}`}
+      style={{ maxWidth: contentWidth } as CSSProperties}
+    >
       {items.map((item, i) => (
         <div
           key={`${item.heading}-${i}`}
