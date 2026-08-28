@@ -29,14 +29,15 @@ const cardo = Cardo({
   display: "swap",
 });
 
-/* The browser paints its own chrome around the page, and without a theme colour
-   it uses the page's background: a pale seam above the announcement bar, most
-   visible in an in-app browser. This hands it the bar's own colour instead.
+/* The browser paints its own chrome around the page, and left to itself it picks
+   its own white, which shows as a pale seam above the announcement bar. This
+   hands it the page's own background instead, so the chrome reads as part of the
+   page and the accent bar still stands out as a band across the top.
 
-   The value mirrors --sher-accent in tokens.css. It cannot read the token: this
-   export is evaluated as JavaScript, before any stylesheet exists. Change it
-   with the token. */
-export const viewport: Viewport = { themeColor: "#7C736B" };
+   The value mirrors --sher-background in tokens.css. It cannot read the token:
+   this export is evaluated as JavaScript, before any stylesheet exists. Change
+   it with the token. */
+export const viewport: Viewport = { themeColor: "#FAF9F6" };
 
 // metadataBase resolves every page's relative canonical / Open Graph URL to an
 // absolute one (B-010). The title template wraps each page's own title.
