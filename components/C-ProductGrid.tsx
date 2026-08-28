@@ -73,6 +73,13 @@ const STEP_LABEL =
 /* End-mark clearance steps at 820px, not 1024: the band caps at --container, so on
    the tablet frame it measures ~786 and on desktop ~836. It never reaches 1024. */
 const END_MARK = "mt-[var(--space-8)] @min-[820px]:mt-[var(--space-9)]";
+/* At 2-up the card is wide enough for the name to take the title rung; 3-up holds
+   at the item rung. Keyed off the grid's own data-cols-lg, so no prop threads down. */
+const TWO_UP_TITLE = [
+  "[&[data-cols-lg='2']_[data-card-title]]:text-[length:var(--size-title-sm)]",
+  "@min-[640px]:[&[data-cols-lg='2']_[data-card-title]]:text-[length:var(--size-title-md)]",
+  "@min-[1024px]:[&[data-cols-lg='2']_[data-card-title]]:text-[length:var(--size-title-lg)]",
+].join(" ");
 
 const triple = (value: string): [number, number, number] => {
   const parts = String(value ?? "")
@@ -177,10 +184,10 @@ export function ProductGrid({
           ref={toolbarRef}
           className="mb-[var(--space-5)] flex items-center justify-between gap-[var(--space-4)] border-b border-[var(--border-default)] pb-[var(--space-4)]"
         >
-          <span className={`font-[family-name:var(--font-body)] ${STEP_LABEL} uppercase tracking-[var(--tracking-label)] text-[var(--text-meta)]`}>
+          <span className={`pl-[var(--space-2)] font-[family-name:var(--font-body)] ${STEP_LABEL} uppercase tracking-[var(--tracking-label)] text-[var(--text-meta)]`}>
             {total} {label}
           </span>
-          <ViewToggle value={toggle} onChange={setView} />
+          <ViewToggle value={toggle} onChange={setView} className="mr-[var(--space-2)]" />
         </div>
       )}
 
@@ -191,7 +198,15 @@ export function ProductGrid({
       ) : (
         /* The row gap runs wider than the column gap so a card's name reads as
            belonging to the image above it, not the one below. */
-        <div className="grid gap-x-[var(--space-4)] gap-y-[var(--space-7)] grid-cols-[repeat(var(--cols-sm,1),1fr)] @min-[640px]:grid-cols-[repeat(var(--cols-md,1),1fr)] @min-[1024px]:grid-cols-[repeat(var(--cols-lg,2),1fr)]">
+        <div
+          data-cols-lg={colLg}
+          className={[
+            "grid gap-x-[var(--space-4)] gap-y-[var(--space-7)] grid-cols-[repeat(var(--cols-sm,1),1fr)]",
+            "@min-[640px]:grid-cols-[repeat(var(--cols-md,1),1fr)] @min-[1024px]:grid-cols-[repeat(var(--cols-lg,2),1fr)]",
+            /* A product name gains a rung where the card is wide (2-up) and holds at 3-up. */
+            TWO_UP_TITLE,
+          ].join(" ")}
+        >
           {paged.map((product) => (
             <ProductCard
               key={product.id}
@@ -225,7 +240,7 @@ export function ProductGrid({
       ) : null}
 
       {floatingToggle && showToolbar && products.length > 0 && (
-        <div className="sticky bottom-[var(--space-5)] z-[60] h-0">
+        <div className="sticky bottom-[var(--space-5)] z-[60] ml-[var(--space-2)] h-0">
           <div
             className={[
               "absolute bottom-0 left-0 border border-[var(--border-default)] bg-[var(--surface-page)]",

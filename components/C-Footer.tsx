@@ -35,9 +35,9 @@ export interface FooterProps {
 const SHOP: NavLink[] = [
   { label: "Corset Tops", href: "/corset-tops" },
   { label: "Matching Sets", href: "/matching-sets" },
-  { label: "Cocktail Dress", href: "/cocktail-dresses" },
+  { label: "Cocktail Dresses", href: "/cocktail-dresses" },
   { label: "Beachwear", href: "/beachwear" },
-  { label: "Shop All", href: "/shop" },
+  { label: "View all", href: "/shop" },
 ];
 
 const INFO: NavLink[] = [

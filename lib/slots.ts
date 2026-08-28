@@ -20,8 +20,8 @@ import { join } from "node:path";
    This file is the reader every screen shares. Slot data shaped into one
    screen's component props lives with that screen: see lib/home. */
 
-const MEDIA_SOURCE = "docs/content/d-004_media.tsv";
-const VALUES_SOURCE = "docs/content/d-006_slot-values.tsv";
+const MEDIA_SOURCE = "data/d-004_media.tsv";
+const VALUES_SOURCE = "data/d-006_slot-values.tsv";
 
 type Row = Record<string, string>;
 

@@ -134,8 +134,6 @@ export function ShopEditorial({
               {eyebrow}
             </span>
           )}
-          {/* Guarded like the eyebrow and the paragraph: a band with no heading
-              leaves the tag out rather than rendering an empty one. */}
           {heading && (
             <Heading
               level={headingLevel}

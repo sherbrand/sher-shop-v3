@@ -9,7 +9,9 @@ import { ButtonPill } from "@/components/ButtonPill";
 
 /* C-ShopTitle — the page header band for Shop and category pages: a breadcrumb, a
    heading, an optional description, and an optional row of filter pills. Heading
-   and description sizes step against the band's OWN width. */
+   and description sizes step against the band's OWN width. The band caps itself at
+   the prose measure and centres in whatever the page gives it, so it owns its own
+   width rather than the page. */
 
 export interface FilterPill {
   label: string;
@@ -64,14 +66,15 @@ export function ShopTitle({
 
   return (
     <header
-      className={`@container flex flex-col items-stretch gap-[var(--space-3)] ${
-        start ? "text-left" : "text-center"
+      className={`@container flex max-w-[var(--container-prose)] flex-col items-stretch gap-[var(--space-3)] ${
+        start ? "ml-0 mr-0 text-left" : "mx-auto text-center"
       } ${className}`}
     >
       {breadcrumb.length > 0 && (
         <Breadcrumb items={breadcrumb} className={start ? "justify-start" : "justify-center"} />
       )}
 
+      {/* Omitted rather than rendered empty when the slot has no row (F-008). */}
       {heading && (
         <Heading
           level={headingLevel}

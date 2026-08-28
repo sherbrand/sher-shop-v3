@@ -54,9 +54,9 @@ export interface MenuProps {
 const SHOP: NavLink[] = [
   { label: "Corset Tops", href: "/corset-tops" },
   { label: "Matching Sets", href: "/matching-sets" },
-  { label: "Cocktail Dress", href: "/cocktail-dresses" },
+  { label: "Cocktail Dresses", href: "/cocktail-dresses" },
   { label: "Beachwear", href: "/beachwear" },
-  { label: "View All Products", href: "/shop" },
+  { label: "View all", href: "/shop" },
 ];
 
 const INFO: NavLink[] = [

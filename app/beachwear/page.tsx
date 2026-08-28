@@ -6,12 +6,16 @@ import { toListingItem, uniqueTypeValues } from "@/lib/listing";
 import { ShopListing } from "@/components/ShopListing";
 import { ShopEditorial } from "@/components/C-ShopEditorial";
 import { bandCopy, faqItems, metaCopy, slotText } from "@/lib/slots";
+import { category } from "@/lib/categories";
 import { ShopFaq } from "@/components/C-ShopFaq";
 import { JsonLd } from "@/components/JsonLd";
 import { breadcrumbLd, pageMetadata } from "@/lib/seo";
 import type { Crumb } from "@/components/Breadcrumb";
 
-const BREADCRUMB: Crumb[] = [{ label: "Shop", href: "/shop" }, { label: "Beachwear" }];
+const BREADCRUMB: Crumb[] = [
+  { label: "Shop", href: "/shop" },
+  { label: category("beachwear").label },
+];
 
 const META = metaCopy("s-012");
 

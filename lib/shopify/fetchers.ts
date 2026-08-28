@@ -33,6 +33,7 @@ type RawProduct = {
   featuredImage: Image | null;
   images: { nodes: Image[] };
   media: { nodes: RawMediaNode[] };
+  collections: { nodes: Array<{ handle: string }> };
   options: ProductOption[];
   variants: { nodes: ProductVariant[] };
   typeAttribute: { value: string } | null;
@@ -57,6 +58,7 @@ function reshapeProduct(p: RawProduct): Product {
   return {
     id: p.id,
     handle: p.handle,
+    collectionHandles: p.collections.nodes.map((c) => c.handle),
     title: p.title,
     description: p.description,
     descriptionHtml: p.descriptionHtml,

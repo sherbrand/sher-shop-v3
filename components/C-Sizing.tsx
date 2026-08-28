@@ -148,7 +148,7 @@ export function Sizing({
               Size Chart
             </Heading>
             {productName && (
-              <p className="m-0 mt-[0.25rem] text-[length:var(--size-sm)] text-[var(--text-meta)]">
+              <p className="m-0 mt-[var(--space-1)] text-[length:var(--size-sm)] text-[var(--text-meta)]">
                 {productName}
               </p>
             )}

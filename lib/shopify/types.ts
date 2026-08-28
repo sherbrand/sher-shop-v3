@@ -42,6 +42,9 @@ export type ProductVariant = {
 export type Product = {
   id: string;
   handle: string;
+  /** Handles of every collection the product is in — the all-products one and
+   *  its category. Used to name its category in a breadcrumb (S-006). */
+  collectionHandles: string[];
   title: string;
   description: string;
   descriptionHtml: string;

@@ -79,7 +79,7 @@ export function Sticky({
 
       <div className="px-[var(--gutter)]">
         <div className="relative mx-auto flex h-[var(--header-h)] max-w-[var(--container)] items-center justify-between">
-          <IconButton label="Open menu" onClick={onMenu} className="-ml-[9px]">
+          <IconButton label="Open menu" onClick={onMenu} className="">
             <Icon name="menu" size={26} />
           </IconButton>
 
@@ -90,7 +90,7 @@ export function Sticky({
           <IconButton
             label={`Open cart${cartCount ? `, ${cartCount} items` : ""}`}
             onClick={onCart}
-            className="relative -mr-[9px]"
+            className="relative"
           >
             <Icon name={cartIcon} size={24} />
             {cartCount > 0 && (

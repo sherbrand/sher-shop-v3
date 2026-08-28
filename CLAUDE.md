@@ -220,6 +220,7 @@ Each file or folder and the job it owns.
 | Base CSS | `/app/base.css` | The site's document defaults |
 | components/ | `/components/` | Every component the site uses |
 | assets/ | `/public/assets/` | Every asset the site serves |
+| data/ | `/data/` | Every TSV the build reads |
 | content/ | `/docs/content/` | The final page content |
 | FinalPRD | `/docs/prdfinal-shershop-v<n>.md` | The build spec for one version, filled in |
 | Outline Notation | `/docs/outline-notation.md` | The layout grammar |

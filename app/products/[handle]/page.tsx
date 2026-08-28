@@ -4,6 +4,7 @@ import { notFound } from "next/navigation";
 import { getProduct, getProducts } from "@/lib/shopify/fetchers";
 import type { Product } from "@/lib/shopify/types";
 import { RelatedProducts } from "@/components/C-RelatedProducts";
+import { Button } from "@/components/Button";
 import type { GridProduct } from "@/components/C-ProductGrid";
 import { toGridProduct } from "@/lib/listing";
 import type { Crumb } from "@/components/Breadcrumb";
@@ -12,7 +13,8 @@ import type { MediaItem } from "@/components/MediaGallery";
 import { JsonLd } from "@/components/JsonLd";
 import { breadcrumbLd, pageMetadata, productLd } from "@/lib/seo";
 import { ProductDetail } from "./product-detail";
-import { proseSections } from "@/lib/slots";
+import { proseSections, slotText } from "@/lib/slots";
+import { categoryFor } from "@/lib/categories";
 
 // A size is sold out when every variant carrying it is unavailable (F-011).
 // Colour and other options are ignored: the design panel selects size only.
@@ -73,13 +75,21 @@ export default async function ProductPage({
   const product = await getProduct(handle);
   if (!product) notFound();
 
-  const breadcrumb: Crumb[] = [{ label: "Shop", href: "/shop" }, { label: product.title }];
+  /* S-006.1 — Shop › Category › product. A product carries the all-products
+     collection as well as its category, so the category is picked out by handle.
+     One with no category falls back to Shop › product. */
+  const category = categoryFor(product.collectionHandles);
+  const breadcrumb: Crumb[] = [
+    { label: "Shop", href: "/shop" },
+    ...(category ? [{ label: category.label, href: category.href }] : []),
+    { label: product.title },
+  ];
   const path = `/products/${handle}`;
 
   // "You May Also Like": up to 2 products that are not this one (F-001). Mapped
   // through toGridProduct so the cards get the same hover/touch image swap.
   const others = (await getProducts(12)).filter((p) => p.handle !== product.handle);
-  const related: GridProduct[] = others.slice(0, 2).map(toGridProduct);
+  const related: GridProduct[] = others.slice(0, 3).map(toGridProduct);
 
   return (
     <main className="mx-auto flex max-w-[var(--container)] flex-col gap-[var(--space-9)] px-[var(--gutter)] py-[var(--space-7)]">
@@ -115,14 +125,21 @@ export default async function ProductPage({
         attributeValue={product.typeAttribute ?? undefined}
         preorderHref="/contact"
       />
+      {/* S-006.2 — a swipe rail of three, with the two back buttons in its last
+          cell. The first points at the product's own category, the second at the
+          whole shop; a product with no category shows only the second. */}
       <RelatedProducts
         products={related}
-        columns="2/2/2"
-        actionsLayout="stack"
-        backVariant="surface"
-        backLabel="View All Products"
-        backHref="/shop"
-      />
+        layout="stacked"
+        backVariant="tint"
+        subtitle={slotText("s-006.2.subtitle")}
+        backLabel={category ? `Back to ${category.label}` : undefined}
+        backHref={category?.href}
+      >
+        <Button as="a" href="/shop" variant="accent">
+          Back to All Products
+        </Button>
+      </RelatedProducts>
     </main>
   );
 }

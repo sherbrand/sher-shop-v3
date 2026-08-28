@@ -73,7 +73,11 @@ export function ProductCard({
               {category}
             </span>
           )}
-          <span className={`block font-[family-name:var(--font-body)] ${STEP_ITEM} text-[var(--text-strong)] underline-offset-[0.25em] group-hover:underline`}>
+          {/* The marker lets a 2-up grid step this name up a rung. */}
+          <span
+            data-card-title
+            className={`block font-[family-name:var(--font-body)] ${STEP_ITEM} text-[var(--text-strong)] underline-offset-[0.25em] group-hover:underline`}
+          >
             {title}
           </span>
         </span>

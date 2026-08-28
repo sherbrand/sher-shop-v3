@@ -16,7 +16,7 @@ const nextConfig: NextConfig = {
      on the server instead, finds nothing, and fails. Name the files here so
      every server bundle carries them. */
   outputFileTracingIncludes: {
-    "/**": ["./docs/content/*.tsv"],
+    "/**": ["./data/*.tsv"],
   },
 };
 
