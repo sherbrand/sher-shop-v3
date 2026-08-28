@@ -1,4 +1,4 @@
-import type { ReactElement } from "react";
+import type { CSSProperties, ReactElement } from "react";
 import { Heading } from "@/components/Heading";
 import type { HeadingLevel } from "@/components/Heading";
 import { Icon } from "@/components/Icon";
@@ -6,7 +6,10 @@ import type { BrandIconName } from "@/components/Icon";
 
 /* C-ContactMethods — the stacked contact band: one row per method, each a heading
    over its content. Three kinds: "social" (brand-mark links), "email" (mailto
-   link), "address" (plain address text, newlines kept). Rows are hairline-separated. */
+   link), "address" (plain address text, newlines kept). Rows are hairline-separated.
+
+   Rows are centered. The band centers its text and lets each row keep the flex
+   default of stretching full width, so the hairlines still span the column. */
 
 export interface ContactSocialLink {
   label: string;
@@ -29,6 +32,10 @@ export interface ContactMethodsProps {
   items?: ContactItem[];
   /** HTML level (h1–h4) for each row heading — changes the tag only, not the style. Default 2. */
   headingLevel?: HeadingLevel;
+  /** Width of the centered column. Default var(--container-prose) — the rows are
+   *  read, not scanned, so they take the readable measure rather than the page's
+   *  full width, and the hairlines stay tied to the copy they separate. */
+  contentWidth?: string;
   className?: string;
 }
 
@@ -39,10 +46,14 @@ const STEP_BODY =
 export function ContactMethods({
   items = [],
   headingLevel = 2,
+  contentWidth = "var(--container-prose)",
   className = "",
 }: ContactMethodsProps): ReactElement {
   return (
-    <div className={`@container flex flex-col ${className}`}>
+    <div
+      className={`@container mx-auto flex w-full flex-col text-center ${className}`}
+      style={{ maxWidth: contentWidth } as CSSProperties}
+    >
       {items.map((item, i) => (
         <div
           key={`${item.heading}-${i}`}
@@ -59,8 +70,10 @@ export function ContactMethods({
             {item.heading}
           </Heading>
 
+          {/* Flex items ignore text-align, so the marks take their own centering
+              from justify-content. */}
           {item.kind === "social" && (
-            <div className="flex items-center gap-[var(--space-4)]">
+            <div className="flex items-center justify-center gap-[var(--space-4)]">
               {(item.links ?? []).map((link) => (
                 <a
                   key={link.label}

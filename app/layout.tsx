@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import type { ReactElement, ReactNode } from "react";
 import { Cormorant_Infant, Cardo } from "next/font/google";
 import "@/app/globals.css";
@@ -28,6 +28,16 @@ const cardo = Cardo({
   variable: "--font-body",
   display: "swap",
 });
+
+/* The browser paints its own chrome around the page, and left to itself it picks
+   its own white, which shows as a pale seam above the announcement bar. This
+   hands it the brand's near-black instead, so the chrome sits back and the
+   accent bar reads as the first band of the page.
+
+   The value mirrors --sher-dark in tokens.css. It cannot read the token:
+   this export is evaluated as JavaScript, before any stylesheet exists. Change
+   it with the token. */
+export const viewport: Viewport = { themeColor: "#333231" };
 
 // metadataBase resolves every page's relative canonical / Open Graph URL to an
 // absolute one (B-010). The title template wraps each page's own title.
