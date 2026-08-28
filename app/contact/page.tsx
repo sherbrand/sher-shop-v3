@@ -39,7 +39,7 @@ const CONTACT_ITEMS: ContactItem[] = CONTACT_ROWS.flatMap(({ slot, ...rest }) =>
 
 export default function ContactPage(): ReactElement {
   return (
-    <main className="mx-auto flex max-w-[var(--container)] flex-col gap-[var(--space-6)] px-[var(--gutter)] py-[var(--space-7)]">
+    <main className="mx-auto flex max-w-[var(--container)] flex-col gap-[var(--space-6)] px-[var(--gutter)] pt-[var(--space-7)] pb-[var(--space-9)]">
       <JsonLd data={breadcrumbLd(BREADCRUMB, "/contact")} />
       <HeroTitle
         breadcrumb={BREADCRUMB}
