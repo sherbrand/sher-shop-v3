@@ -6,7 +6,10 @@ import type { BrandIconName } from "@/components/Icon";
 
 /* C-ContactMethods — the stacked contact band: one row per method, each a heading
    over its content. Three kinds: "social" (brand-mark links), "email" (mailto
-   link), "address" (plain address text, newlines kept). Rows are hairline-separated. */
+   link), "address" (plain address text, newlines kept). Rows are hairline-separated.
+
+   Rows are centered. The band centers its text and lets each row keep the flex
+   default of stretching full width, so the hairlines still span the column. */
 
 export interface ContactSocialLink {
   label: string;
@@ -42,7 +45,7 @@ export function ContactMethods({
   className = "",
 }: ContactMethodsProps): ReactElement {
   return (
-    <div className={`@container flex flex-col ${className}`}>
+    <div className={`@container flex flex-col text-center ${className}`}>
       {items.map((item, i) => (
         <div
           key={`${item.heading}-${i}`}
@@ -59,8 +62,10 @@ export function ContactMethods({
             {item.heading}
           </Heading>
 
+          {/* Flex items ignore text-align, so the marks take their own centering
+              from justify-content. */}
           {item.kind === "social" && (
-            <div className="flex items-center gap-[var(--space-4)]">
+            <div className="flex items-center justify-center gap-[var(--space-4)]">
               {(item.links ?? []).map((link) => (
                 <a
                   key={link.label}
