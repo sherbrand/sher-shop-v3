@@ -106,6 +106,8 @@
 - **Feature:** F-008 Slot Content, F-012 Featured Products
 - **Behavior:**
   - The hero carousel slides through its banners. With one banner it does not slide.
+  - A banner follows the finger when dragged sideways, and settles on the next banner
+    or springs back on release. Dragging up or down scrolls the page as usual.
 - **Components:**
   - S-001.1 → C-HeroCarousel
   - S-001.2 → C-HeroTitle [headingLevel=1]

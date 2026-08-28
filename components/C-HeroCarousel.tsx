@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { CSSProperties, MouseEvent, PointerEvent, ReactElement } from "react";
 import { IconButton } from "@/components/IconButton";
 import { Icon } from "@/components/Icon";
@@ -49,11 +49,18 @@ export function HeroCarousel({
   const [animate, setAnimate] = useState(true);
   const count = slides.length || 1;
 
+  const trackRef = useRef<HTMLDivElement>(null);
+  const dragStart = useRef<number | null>(null);
+  const [drag, setDrag] = useState(0);
+  const [dragging, setDragging] = useState(false);
+
+  // A finger on the band holds the auto-advance, so a banner cannot slide out
+  // from under the drag.
   useEffect(() => {
-    if (!autoPlay || count <= 1) return;
+    if (!autoPlay || count <= 1 || dragging) return;
     const timer = setInterval(() => setPos((p) => p + 1), interval);
     return () => clearInterval(timer);
-  }, [autoPlay, interval, count]);
+  }, [autoPlay, interval, count, dragging]);
 
   // Re-enable the transition on the frame after the silent wrap-around jump.
   useEffect(() => {
@@ -72,6 +79,43 @@ export function HeroCarousel({
     }
   };
 
+  /* Drag to change banner. The track follows the finger, then either settles on
+     the next banner or springs back to the one it started on.
+
+     The band only claims horizontal movement: `touch-action: pan-y` leaves
+     vertical panning to the browser, so a finger that starts on the hero can
+     still scroll the page. When the browser takes the gesture for a scroll it
+     sends pointercancel, which drops the drag. */
+  // A banner settles on the next one once the drag passes this much of its own
+  // width. Below that it springs back, so a small movement is never a swipe.
+  const SETTLE_RATIO = 0.15;
+
+  const bannerWidth = (): number =>
+    trackRef.current?.firstElementChild?.getBoundingClientRect().width ?? 0;
+
+  const startDrag = (e: PointerEvent<HTMLDivElement>): void => {
+    if (count <= 1) return;
+    dragStart.current = e.clientX;
+    setDragging(true);
+  };
+
+  const moveDrag = (e: PointerEvent<HTMLDivElement>): void => {
+    if (dragStart.current === null) return;
+    setDrag(e.clientX - dragStart.current);
+  };
+
+  const endDrag = (): void => {
+    if (dragStart.current === null) return;
+    const width = bannerWidth();
+    // Dragging left (negative) reaches for the next banner, right for the previous.
+    if (width > 0 && Math.abs(drag) > width * SETTLE_RATIO) {
+      go(drag < 0 ? active + 1 : active - 1);
+    }
+    dragStart.current = null;
+    setDrag(0);
+    setDragging(false);
+  };
+
   const extended = [...slides, ...slides.slice(0, 2)];
   const active = ((pos % count) + count) % count;
   const go = (k: number): void => setPos((((k % count) + count) % count));
@@ -88,14 +132,29 @@ export function HeroCarousel({
       aria-roledescription="carousel"
     >
       <div
+        ref={trackRef}
         onTransitionEnd={onEnd}
+        onPointerDown={startDrag}
+        onPointerMove={moveDrag}
+        onPointerUp={endDrag}
+        onPointerCancel={endDrag}
+        onPointerLeave={endDrag}
         className={[
-          "flex translate-x-[calc(var(--pos,0)*-100%)] @min-[768px]:translate-x-[calc(var(--pos,0)*-50%)]",
-          animate
+          // --drag is the live finger offset; it is 0 unless a drag is running.
+          "flex translate-x-[calc(var(--pos,0)*-100%_+_var(--drag,0px))]",
+          "@min-[768px]:translate-x-[calc(var(--pos,0)*-50%_+_var(--drag,0px))]",
+          // The track must not ease while it is following a finger.
+          animate && !dragging
             ? "transition-transform duration-[var(--dur-slow)] ease-[var(--ease-out)]"
             : "transition-none",
         ].join(" ")}
-        style={{ "--pos": pos } as CSSProperties}
+        style={
+          {
+            "--pos": pos,
+            "--drag": `${drag}px`,
+            touchAction: "pan-y",
+          } as CSSProperties
+        }
       >
         {extended.map((slide, k) => {
           // The trailing cells are wrap-around clones: keep them out of the a11y
