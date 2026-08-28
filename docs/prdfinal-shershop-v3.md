@@ -66,7 +66,7 @@
 
 ### F-008 — Slot Content
 - **What it does:** Fills a screen's hand-placed slots from two TSV files in the repo. D-004 Media Slots gives a slot its image, its alt text, and an optional link. D-006 Slot Values gives a slot its text. The slot id is the key in both, so one slot can take its picture from one file and its words from the other.
-- **When it appears:** On Home (S-001) and the commerce screens (S-002, S-003, S-004, S-005, S-012).
+- **When it appears:** Wherever a screen or the site chrome declares a slot.
 - **If something goes wrong:** A slot with no row is left out, not rendered empty. Where a slot needs both files and only one of them has it, the slot is left out and logged.
 
 ### F-009 — Structured Data
@@ -95,9 +95,9 @@
 | D-001 | Product | Shopify Storefront API | Title, slug, description, price, images, video, size variants, availability, and the type attribute (closure type, set type, length, or swim type), held as a Shopify product metafield exposed to the Storefront API. |
 | D-002 | Collection | Shopify Storefront API | The all-products collection and the four category collections, plus which products belong to each. Powers the listing grids. |
 | D-003 | Cart | Shopify Storefront API, with the cart ID in a browser cookie | Line items, quantities, subtotal, and the checkout URL. |
-| D-004 | Media Slots | A TSV file in the repo | Every image the site places by hand, on any screen. One row per slot. Columns: `page`, `slot`, `image`, `alt`, `href`. `page` is the screen or surface the slot appears on, like `/shop` or `Footer`; it is a label for filtering and the code does not read it. `slot` is the key, and its name carries its role: slots rendering as hero banners are named `hero-N` and run in that order, category tiles are named `cat-<category>`. `href` is optional and makes that media a link. |
-| D-005 | Product Data | A TSV file in the repo | Per-product data that is not in Shopify. One row per product, keyed by slug. Columns: which image to use as the grid thumbnail, and the cm measurements as one column per size (`bust_S`, `bust_M`, …). A product fills only the measurements it uses and leaves the rest blank. Inches are worked out from the cm values. |
-| D-006 | Slot Values | A TSV file in the repo | Every value the site needs that is not an image and does not come from Shopify. One row per value. Columns: `page`, `slot`, `value`. `slot` is the key and the only column the code reads; `page` is the screen or surface the value appears on, like `/shop` or `Footer`, and is a label for filtering. |
+| D-004 | Media Slots | `/data/d-004_media.tsv` | Every image the site places by hand, on any screen. One row per slot. Columns: `page`, `slot`, `image`, `alt`, `href`. `page` is the screen or surface the slot appears on, like `/shop` or `Footer`; it is a label for filtering and the code does not read it. `slot` is the key. `href` is optional and makes that media a link. |
+| D-005 | Product Data | `/data/d-005_product-data.tsv` | Per-product data that is not in Shopify. One row per product, keyed by slug. Columns: which image to use as the grid thumbnail, and the cm measurements as one column per size (`bust_S`, `bust_M`, …). A product fills only the measurements it uses and leaves the rest blank. Inches are worked out from the cm values. |
+| D-006 | Slot Values | `/data/d-006_slot-values.tsv` | Every value the site needs that is not an image and does not come from Shopify. One row per value. Columns: `page`, `slot`, `value`. `slot` is the key and the only column the code reads; `page` is the screen or surface the value appears on, like `/shop` or `Footer`, and is a label for filtering. |
 
 ## 5. Screens
 
@@ -108,20 +108,22 @@
   - The hero carousel slides through its banners. With one banner it does not slide.
   - A banner follows the finger when dragged sideways, and settles on the next banner
     or springs back on release. Dragging up or down scrolls the page as usual.
+- **Assets:**
+  - S-001.3 → D-004 Media Slots
+  - S-001.4 → D-001 Product
 - **Components:**
-  - S-001.1 → C-HeroCarousel
+  - S-001.1 → C-HeroCarousel [indicator=bars]
   - S-001.2 → C-HeroTitle [headingLevel=1]
   - S-001.3 → C-CategoryGrid [cta]
   - S-001.4 → C-ProductGrid [showToolbar=false, columns=1/2/2]
   - S-001.5 → C-HeroTitle [headingLevel=2]
-- **Assets:**
-  - None
 
 ### S-002 — All Products
 - **Outline:** Refer to /docs/content/s-002_all-products.md
 - **Feature:** F-001 Product Grid, F-003 Grid View Toggle, F-008 Slot Content, F-009 Structured Data
 - **Behavior:**
   - The button pills link to the four category pages. They do not filter this grid.
+- **Assets:** D-004 Media Slots
 - **Components:**
   - S-002.1 → C-ShopTitle
   - S-002.2 → C-ProductGrid [columns=1/1/2, pageSize=12, endMark=mark]
@@ -129,11 +131,6 @@
   - S-002.4 → C-ShopEditorial [fullBleed, mirror, mobileFirst=media, mobileAlign=left]
   - S-002.5 → C-ShopEditorial [fullBleed, mobileFirst=media, mobileAlign=right]
   - S-002.6 → C-ShopEditorial [fullBleed, mirror, mobileFirst=media, mobileAlign=left]
-- **Assets:**
-  - S-002.3 → s-002.3-1-corset-top-boning-and-lacing.webp (MISSING)
-  - S-002.4 → s-002.4-1-matching-set-with-trousers.webp (MISSING)
-  - S-002.5 → s-002.5-1-satin-slip-cocktail-dress.webp (MISSING)
-  - S-002.6 → s-002.6-1-one-piece-at-the-water.webp (MISSING)
 
 ### S-003 — Corset Tops
 - **Outline:** Refer to /docs/content/s-003_corset-tops.md
@@ -141,6 +138,7 @@
 - **Behavior:**
   - The filter narrows the grid in place by closure type.
   - The FAQ accordion keeps one item open at a time.
+- **Assets:** D-004 Media Slots
 - **Components:**
   - S-003.1 → C-ShopTitle
   - S-003.2 → C-ProductGrid [columns=1/1/2, pageSize=12, endMark=mark]
@@ -148,10 +146,6 @@
   - S-003.4 → C-ShopEditorial [fullBleed, mirror, mobileFirst=media, mobileAlign=left]
   - S-003.5 → C-ShopEditorial [fullBleed, mobileFirst=media, mobileAlign=right]
   - S-003.6 → C-ShopFaq
-- **Assets:**
-  - S-003.3 → s-003.3-1-corset-top-on-model.webp (MISSING)
-  - S-003.4 → s-003.4-1-lace-and-zip-closures.webp (MISSING)
-  - S-003.5 → s-003.5-1-corset-top-inside-detail.webp (MISSING)
 
 ### S-004 — Matching Sets
 - **Outline:** Refer to /docs/content/s-004_matching-sets.md
@@ -159,6 +153,7 @@
 - **Behavior:**
   - The filter narrows the grid in place by set type.
   - The FAQ accordion keeps one item open at a time.
+- **Assets:** D-004 Media Slots
 - **Components:**
   - S-004.1 → C-ShopTitle
   - S-004.2 → C-ProductGrid [columns=1/1/2, pageSize=12, endMark=mark]
@@ -166,10 +161,6 @@
   - S-004.4 → C-ShopEditorial [fullBleed, mirror, mobileFirst=media, mobileAlign=left]
   - S-004.5 → C-ShopEditorial [fullBleed, mobileFirst=media, mobileAlign=right]
   - S-004.6 → C-ShopFaq
-- **Assets:**
-  - S-004.3 → s-004.3-1-matching-set-on-model.webp (MISSING)
-  - S-004.4 → s-004.4-1-skirt-set-and-trouser-set.webp (MISSING)
-  - S-004.5 → s-004.5-1-matching-set-seam-detail.webp (MISSING)
 
 ### S-005 — Cocktail Dresses
 - **Outline:** Refer to /docs/content/s-005_cocktail-dresses.md
@@ -177,6 +168,7 @@
 - **Behavior:**
   - The filter narrows the grid in place by length.
   - The FAQ accordion keeps one item open at a time.
+- **Assets:** D-004 Media Slots
 - **Components:**
   - S-005.1 → C-ShopTitle
   - S-005.2 → C-ProductGrid [columns=1/1/2, pageSize=12, endMark=mark]
@@ -184,10 +176,6 @@
   - S-005.4 → C-ShopEditorial [fullBleed, mirror, mobileFirst=media, mobileAlign=left]
   - S-005.5 → C-ShopEditorial [fullBleed, mobileFirst=media, mobileAlign=right]
   - S-005.6 → C-ShopFaq
-- **Assets:**
-  - S-005.3 → s-005.3-1-cocktail-dress-on-model.webp (MISSING)
-  - S-005.4 → s-005.4-1-mini-midi-maxi-lengths.webp (MISSING)
-  - S-005.5 → s-005.5-1-cocktail-dress-satin-detail.webp (MISSING)
 
 ### S-012 — Beachwear
 - **Outline:** Refer to /docs/content/s-012_beachwear.md
@@ -195,6 +183,7 @@
 - **Behavior:**
   - The filter narrows the grid in place by swim type.
   - The FAQ accordion keeps one item open at a time.
+- **Assets:** D-004 Media Slots
 - **Components:**
   - S-012.1 → C-ShopTitle
   - S-012.2 → C-ProductGrid [columns=1/1/2, pageSize=12, endMark=mark]
@@ -202,10 +191,6 @@
   - S-012.4 → C-ShopEditorial [fullBleed, mirror, mobileFirst=media, mobileAlign=left]
   - S-012.5 → C-ShopEditorial [fullBleed, mobileFirst=media, mobileAlign=right]
   - S-012.6 → C-ShopFaq
-- **Assets:**
-  - S-012.3 → s-012.3-1-beachwear-on-model.webp (MISSING)
-  - S-012.4 → s-012.4-1-one-piece-and-bikini.webp (MISSING)
-  - S-012.5 → s-012.5-1-beachwear-lining-detail.webp (MISSING)
 
 ### S-006 — Product Detail
 - **Outline:** Refer to /docs/content/s-006_product-detail.md
@@ -214,57 +199,57 @@
   - The breadcrumb trims the product name with an ellipsis on small screens. The full name stays in the markup.
   - The type attribute (closure type, set type, length, or swim type) is a Shopify product metafield read through the Storefront API.
   - Add to Cart opens C-Cart. Buy Now goes straight to Shopify checkout.
-  - The size chart link opens C-Sizing. The shipping link opens C-Shipping.
-  - "You May Also Like" shows 2 random products from anywhere in the store, not just this product's category.
-- **Components:**
-  - S-006.1 → C-ProductPanel [headingLevel=1]
-  - S-006.2 → C-RelatedProducts [columns=2/2/2, actionsLayout=stack, backVariant=surface]
+  - The details link opens C-Details. The sizing link opens C-Sizing. The shipping link opens C-Shipping.
+  - "You May Also Like" shows 3 random products from anywhere in the store, not just this product's category.
 - **Assets:**
   - None
+- **Components:**
+  - S-006.1 → C-ProductPanel [layout=stacked, indicator=thumbs, showQuantity=false]
+  - S-006.2 → C-RelatedProducts [layout=stacked, backVariant=tint]
 
 ### S-007 — About Us
 - **Outline:** Refer to /docs/content/s-007_about-us.md
-- **Feature:** None
+- **Feature:** F-008 Slot Content
 - **Behavior:**
   - None
+- **Assets:** D-004 Media Slots
 - **Components:**
   - S-007.1 → C-HeroTitle [headingLevel=1, measure=72ch]
   - S-007.2 → C-EditorialSplit
   - S-007.3 → C-EditorialSplit [mirror]
-- **Assets:**
-  - S-007.2 → s-007.2-1-woman-in-corset-top.webp (MISSING)
-  - S-007.3 → s-007.3-1-sherilyn-founder-studio.webp (MISSING)
 
 ### S-008 — Contact
 - **Outline:** Refer to /docs/content/s-008_contact.md
-- **Feature:** None
+- **Feature:** F-008 Slot Content
 - **Behavior:**
   - The direct-message links open the SHER Instagram, Facebook, and TikTok profiles in a new tab.
   - The email address opens the visitor's mail app.
+- **Assets:**
+  - None
 - **Components:**
   - S-008.1 → C-HeroTitle [headingLevel=1, measure=60ch]
   - S-008.2 → C-ContactMethods
-- **Assets:**
-  - None
 
 ### S-009 — Shipping & Returns
 - **Outline:** Refer to /docs/content/s-009_shipping-returns.md
-- **Feature:** None
+- **Feature:** F-008 Slot Content
 - **Behavior:**
   - This page and C-Shipping read the same content, so the two never drift.
+- **Assets:**
+  - None
 - **Components:**
   - S-009.1 → C-HeroTitle [headingLevel=1]
   - S-009.2 → C-ContentProse
   - S-009.3 → C-ContentProse
   - S-009.4 → C-ContentProse
   - S-009.5 → C-ContentProse
-- **Assets:**
-  - None
 
 ### S-010 — Privacy Policy
 - **Outline:** Refer to /docs/content/s-010_privacy-policy.md
-- **Feature:** None
+- **Feature:** F-008 Slot Content
 - **Behavior:**
+  - None
+- **Assets:**
   - None
 - **Components:**
   - S-010.1 → C-HeroTitle [headingLevel=1]
@@ -274,13 +259,13 @@
   - S-010.5 → C-ContentProse
   - S-010.6 → C-ContentProse
   - S-010.7 → C-ContentProse
-- **Assets:**
-  - None
 
 ### S-011 — Terms of Service
 - **Outline:** Refer to /docs/content/s-011_terms-of-service.md
-- **Feature:** None
+- **Feature:** F-008 Slot Content
 - **Behavior:**
+  - None
+- **Assets:**
   - None
 - **Components:**
   - S-011.1 → C-HeroTitle [headingLevel=1]
@@ -289,14 +274,12 @@
   - S-011.4 → C-ContentProse
   - S-011.5 → C-ContentProse
   - S-011.6 → C-ContentProse
-- **Assets:**
-  - None
 
 ## 6. Layout Components
 
 ### C-Transparent — Transparent Header
 - **Component:** Refer to /components/C-Transparent.tsx
-- **Feature:** F-005 Cart Management
+- **Feature:** F-005 Cart Management, F-008 Slot Content
 - **Behavior:**
   - Home only. It sits over the hero, stays see-through, and scrolls away with the page.
   - Once it scrolls out of view, C-Sticky takes over.
@@ -304,7 +287,7 @@
 
 ### C-Sticky — Sticky Header
 - **Component:** Refer to /components/C-Sticky.tsx
-- **Feature:** F-005 Cart Management
+- **Feature:** F-005 Cart Management, F-008 Slot Content
 - **Behavior:**
   - Sticks to the top of every screen. On Home it takes over once the hero scrolls out of view.
   - The item count shows how many items are in the cart. It is hidden when the cart is empty.
@@ -335,6 +318,14 @@
   - The social icons open the SHER profiles in a new tab.
   - The copyright line shows the current year.
 
+### C-Details — Details Drawer
+- **Component:** Refer to /components/C-Details.tsx
+- **Feature:** None
+- **Behavior:**
+  - Opens from the Details link on the product page.
+  - Closes on the close control or a tap outside the drawer.
+  - Shows the product name and its description, read from D-001 Product.
+
 ### C-Sizing — Size Chart Drawer
 - **Component:** Refer to /components/C-Sizing.tsx
 - **Feature:** F-007 Size Chart
@@ -364,14 +355,14 @@ Menu Drawer (C-Menu)
  ├── Shop Now
  │    ├── Corset Tops → S-003 (/corset-tops)
  │    ├── Matching Sets → S-004 (/matching-sets)
- │    ├── Cocktail Dress → S-005 (/cocktail-dresses)
+ │    ├── Cocktail Dresses → S-005 (/cocktail-dresses)
  │    ├── Beachwear → S-012 (/beachwear)
- │    └── View All Products → S-002 (/shop)
+ │    └── View all → S-002 (/shop)
  ├── More Info
  │    ├── Our Story → S-007 (/about)
  │    ├── Contact Us → S-008 (/contact)
  │    └── Shipping & Returns → S-009 (/shipping-returns)
- ├── Login / Account → Shopify hosted customer accounts
+ ├── Login / Account → /account (Shopify hosted customer accounts)
  └── Connect with Us
       ├── Instagram → external URL
       ├── Facebook → external URL
@@ -392,7 +383,8 @@ Shop button pills — S-002
  └── Beachwear → S-012 (/beachwear)
 
 Product Detail — in page (S-006)
- ├── Size chart link → opens C-Sizing
+ ├── Details link → opens C-Details
+ ├── Sizing link → opens C-Sizing
  ├── Shipping link → opens C-Shipping
  ├── Add to Cart → opens C-Cart
  ├── Buy Now → Shopify hosted checkout
@@ -404,9 +396,9 @@ Footer (C-Footer) — every screen
  ├── Shop & Learn
  │    ├── Corset Tops → S-003 (/corset-tops)
  │    ├── Matching Sets → S-004 (/matching-sets)
- │    ├── Cocktail Dress → S-005 (/cocktail-dresses)
+ │    ├── Cocktail Dresses → S-005 (/cocktail-dresses)
  │    ├── Beachwear → S-012 (/beachwear)
- │    └── Shop All → S-002 (/shop)
+ │    └── View all → S-002 (/shop)
  ├── More Info
  │    ├── Our Story → S-007 (/about)
  │    ├── Contact → S-008 (/contact)
@@ -526,6 +518,7 @@ Every screen scores 90 or higher on Lighthouse for performance, accessibility, b
 | C-Menu | Menu Drawer | Active |
 | C-Cart | Cart Drawer | Active |
 | C-Footer | Footer | Active |
+| C-Details | Details Drawer | Active |
 | C-Sizing | Size Chart Drawer | Active |
 | C-Shipping | Shipping & Returns Drawer | Active |
 | C-HeroCarousel | Hero Carousel | Active |
