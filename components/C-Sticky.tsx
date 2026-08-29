@@ -84,7 +84,8 @@ export function Sticky({
   // Direction is behavior, tracked here; whether a hide APPLIES is a CSS
   // decision, so the breakpoint stays out of the JS.
   const [away, setAway] = useState(hiddenAtRest);
-  // Threshold state is separate: `away` flips both ways, `past` only latches on.
+  // Threshold state is separate from direction: `past` is a plain position test,
+  // so it flips back when the reader returns inside the threshold band.
   const [past, setPast] = useState(false);
   const rootRef = useRef<HTMLElement>(null);
 
@@ -181,8 +182,9 @@ export function Sticky({
           /* Tailwind v4 puts translate-y on the standalone `translate` property, so that
              is what transitions. Naming `transform` here animates nothing. */
           "motion-safe:transition-[translate] motion-safe:duration-[var(--dur-med)] motion-safe:ease-[var(--ease-out)]",
-          /* Below 1024px a hidden-at-rest header stays away until the threshold
-             latches on. A swipeable gallery makes scroll direction unreliable,
+          /* Below 1024px a hidden-at-rest header is away until the page has
+             scrolled past the threshold, and away again once it scrolls back
+             inside it. A swipeable gallery makes scroll direction unreliable,
              so distance decides. */
           hiddenAtRest && !past ? "@max-[1023.98px]:-translate-y-full" : "",
           /* From 1024px direction decides, for both the plain and the

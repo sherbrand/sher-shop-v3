@@ -4,7 +4,7 @@ description: "Shop the {product name} by SHER. Built on real corsetry, with ever
 url: /products/[product-slug]
 ---
 
-`S-006.1: Media Gallery <thumbnail strip + main image; fixed order: video then images> | (Breadcrumb <Shop › {Category} (to /{category}) › product> / Title <product name> / Price / Size Selector <available sizes> / Btn.1 / Btn.2 / Type Attribute <closure type for corsets, set type for matching sets, length for cocktail dresses> / (Link.1 <opens C-Details> + Link.2 <opens C-Sizing> + Link.3 <opens C-Shipping>))`
+`S-006.1: Media Gallery <thumbnail strip + main image; fixed order: video then images> | (Breadcrumb <{Category} (to /{category}) › product; Shop › product where the product has no category> / Title <product name> / Price / Size Selector <available sizes> / Btn.1 / Btn.2 / Type Attribute <closure type for corsets, set type for matching sets, length for cocktail dresses, swim type for beachwear> / (Link.1 <opens C-Details> + Link.2 <opens C-Sizing> + Link.3 <opens C-Shipping>))`
 - Title: {Silk Lace Corset Top}
 - Btn.1: Add to Cart
 - Btn.2: Buy Now
