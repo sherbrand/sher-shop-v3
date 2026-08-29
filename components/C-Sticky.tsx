@@ -128,7 +128,9 @@ export function Sticky({
           : host
             ? host.clientHeight
             : window.innerHeight;
-        setPast(y > span * revealRatio);
+        // Latched: once past, it stays past — the header does not re-hide if
+        // the reader scrolls back to the top.
+        setPast((p) => p || y > span * revealRatio);
       }
 
       // Ignore jitter, and never hide the header before it has cleared its own height.
