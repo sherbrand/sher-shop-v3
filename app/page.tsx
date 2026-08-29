@@ -81,6 +81,7 @@ export default async function HomePage(): Promise<ReactElement> {
         <section className="mx-auto mt-[var(--space-9)] max-w-[var(--container)] px-[var(--gutter)]">
           <Divider variant="mark" className="mb-[var(--space-8)]" />
           <ProductGrid
+            align="center"
             heading={slotText("s-001.4.heading")}
             headingLevel={2}
             showToolbar={false}
