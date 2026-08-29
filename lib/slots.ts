@@ -77,16 +77,17 @@ export function slotText(slot: string): string | undefined {
   return value;
 }
 
-/* The slot numbers of one family (hero-1, featured-2), in numeric order. The
-   slot name carries the order, so re-sorting rows in a spreadsheet cannot
-   silently reshuffle them. */
+/* The slot numbers of one family (s-001.1.image-1, featured-2), in numeric
+   order. The slot name carries the order, so re-sorting rows in a spreadsheet
+   cannot silently reshuffle them.
+
+   Matched with startsWith rather than a RegExp built from the prefix: a section
+   ID carries dots, and a dot in a pattern matches any character. */
 function numberedSlots(slots: Iterable<string>, prefix: string): string[] {
+  const tail = (slot: string): string => slot.slice(prefix.length + 1);
   return [...slots]
-    .filter((slot) => new RegExp(`^${prefix}-\\d+$`).test(slot))
-    .sort(
-      (a, b) =>
-        Number(a.slice(prefix.length + 1)) - Number(b.slice(prefix.length + 1)),
-    );
+    .filter((slot) => slot.startsWith(`${prefix}-`) && /^\d+$/.test(tail(slot)))
+    .sort((a, b) => Number(tail(a)) - Number(tail(b)));
 }
 
 export interface BandCopy {

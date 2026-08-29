@@ -1,9 +1,27 @@
 page	slot	image	alt	href
-/	hero-1	/assets/cocktail/hero.webp	a model in a yellow ribbed midi dress on a marble staircase in a grand hall	
-/	hero-2	/assets/cocktail/hero2.webp	a model in a yellow ribbed midi dress walking down a sunlit marble staircase	
-/	hero-3	/assets/batch1/matching-set_panelled-hall_tall-mouldings.webp	a model in a watercolor-print halter top and wide-leg trousers, standing in a panelled hall with tall arched windows	
-/	hero-4	/assets/batch1/matching-sets-camo2.webp	a model in a watercolor-print halter top and wide-leg trousers, walking past concrete architecture at golden hour	
-/	cat-corsets	/assets/batch1/corset-tops-legacy.jpg	an ivory strapless corset top with structured bust seaming, against a terracotta wall	/corset-tops
-/	cat-sets	/assets/batch1/matching-sets-camo.webp	a model in a watercolor-print halter top and wide-leg trousers, walking beside a reflecting pool lined with statues	/matching-sets
-/	cat-dresses	/assets/cocktail/tile-cocktail.webp	a satin cocktail dress on a model, catching the light	/cocktail-dresses
-/	cat-beachwear	/assets/batch1/beachwear-one-piece-lace.webp	a SHER black lace one piece on a model beside a seaside pool	/beachwear
+/	s-001.1.image-1	/assets/cocktail/hero.webp	a model in a yellow ribbed midi dress on a marble staircase in a grand hall	
+/	s-001.1.image-2	/assets/cocktail/hero2.webp	a model in a yellow ribbed midi dress walking down a sunlit marble staircase	
+/	s-001.1.image-3	/assets/batch1/matching-set_panelled-hall_tall-mouldings.webp	a model in a watercolor-print halter top and wide-leg trousers, standing in a panelled hall with tall arched windows	
+/	s-001.1.image-4	/assets/batch1/matching-sets-camo2.webp	a model in a watercolor-print halter top and wide-leg trousers, walking past concrete architecture at golden hour	
+/	s-001.3.image-1	/assets/batch1/corset-tops-legacy.jpg	an ivory strapless corset top with structured bust seaming, against a terracotta wall	/corset-tops
+/	s-001.3.image-2	/assets/batch1/matching-sets-camo.webp	a model in a watercolor-print halter top and wide-leg trousers, walking beside a reflecting pool lined with statues	/matching-sets
+/	s-001.3.image-3	/assets/cocktail/tile-cocktail.webp	a satin cocktail dress on a model, catching the light	/cocktail-dresses
+/	s-001.3.image-4	/assets/batch1/beachwear-one-piece-lace.webp	a SHER black lace one piece on a model beside a seaside pool	/beachwear
+/shop	s-002.3.image-1		a SHER corset top showing hand-set boning channels and back lacing	
+/shop	s-002.4.image-1		a SHER matching set: a corset top with matching trousers on a model	
+/shop	s-002.5.image-1		a SHER cocktail dress in satin on a model, cut in a slip shape	
+/shop	s-002.6.image-1		a SHER one piece on a model at the water, showing its shaped waist seams	
+/corset-tops	s-003.3.image-1		a SHER corset top on a model, showing its shaped waist and structured bust	
+/corset-tops	s-003.4.image-1		a SHER corset top shown from both sides, with back lacing on one and a separating zip on the other	
+/corset-tops	s-003.5.image-1		inside of a SHER corset top showing hand-set boning channels, satin lining, and structured bust cups	
+/matching-sets	s-004.3.image-1		a SHER matching set on a model, showing the top and bottom worn as one look	
+/matching-sets	s-004.4.image-1		a SHER Skirt Set and Trouser Set side by side on models, showing both set types	
+/matching-sets	s-004.5.image-1		close view of a SHER matching set showing the top hem meeting the waistband, with inside seams and fabric detail	
+/cocktail-dresses	s-005.3.image-1	/assets/cocktail/ck-satin.webp	a SHER cocktail dress on a model, showing its satin drape and clean neckline	
+/cocktail-dresses	s-005.4.image-1		SHER cocktail dresses in Mini, Midi, and Maxi side by side on models, showing all three lengths	
+/cocktail-dresses	s-005.5.image-1		close view of a SHER cocktail dress showing weighted satin, shaped seams, and the inside lining	
+/beachwear	s-012.3.image-1		a SHER one piece on a model at the water, showing its shaped waist seams	
+/beachwear	s-012.4.image-1		a SHER one piece and a SHER bikini set shown side by side on models	
+/beachwear	s-012.5.image-1		inside of a SHER one piece showing the full lining, shaped bust cups, and flat seams	
+/about	s-007.2.image-1		a woman in a SHER corset top, sensual and refined	
+/about	s-007.3.image-1		Sherilyn, founder of SHER, in the studio	
