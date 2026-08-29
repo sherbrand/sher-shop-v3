@@ -86,13 +86,13 @@ export function EditorialSplit({
           )}
           <Heading
             level={headingLevel}
-            className={`m-0 max-w-[24ch] font-[family-name:var(--font-display)] font-normal uppercase leading-[var(--leading-snug)] tracking-[var(--tracking-display)] text-[var(--text-strong)] ${STEP_SECTION}`}
+            className={`m-0 max-w-[min(24ch,100%)] font-[family-name:var(--font-display)] font-normal uppercase leading-[var(--leading-snug)] tracking-[var(--tracking-display)] text-[var(--text-strong)] ${STEP_SECTION}`}
           >
             {heading}
           </Heading>
           {paragraph && (
             <p
-              className={`m-0 max-w-[62ch] leading-[var(--leading-normal)] text-[var(--text-default)] ${STEP_BODY}`}
+              className={`m-0 max-w-[min(62ch,100%)] leading-[var(--leading-normal)] text-[var(--text-default)] ${STEP_BODY}`}
             >
               {paragraph}
             </p>

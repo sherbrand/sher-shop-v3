@@ -25,6 +25,19 @@ const DRAG_SLOP = 10;
 // Used when --swipe-commit cannot be read. Matches the token's own value.
 const COMMIT_FALLBACK = 56;
 
+/* Arrow disc. Hidden below 1024px, and above it revealed by hover or focus-within
+   on the band. Left/right insets are set per arrow at the call site. */
+const ARROW = [
+  "hidden absolute top-1/2 -translate-y-1/2",
+  "@min-[1024px]:grid @min-[1024px]:place-items-center",
+  "@min-[1024px]:h-[var(--hc-arrow-size)] @min-[1024px]:w-[var(--hc-arrow-size)]",
+  "@min-[1024px]:rounded-[var(--radius-pill)] @min-[1024px]:bg-[var(--veil-light)]",
+  "@min-[1024px]:text-[var(--sher-dark)] @min-[1024px]:opacity-0",
+  "@min-[1024px]:hover:bg-[var(--sher-white)]",
+  "motion-safe:transition-[opacity,background] motion-safe:duration-[var(--dur-med)] motion-safe:ease-[var(--ease-out)]",
+  "@min-[1024px]:group-hover/hero:opacity-100 @min-[1024px]:group-focus-within/hero:opacity-100",
+].join(" ");
+
 /* Banners carry no overlay text — Home's headline lives in the C-HeroTitle band
    below the carousel. */
 export interface HeroSlide {
@@ -51,6 +64,11 @@ export interface HeroCarouselProps {
    *  (equal hairline bars, active brightens). Both sit centred at the bottom of
    *  the band. Default "dots". */
   indicator?: "dots" | "bars";
+  /** Give each banner a full screen of height. DESKTOP ONLY, gated at 1024px, so it
+   *  can never fire on mobile or tablet. It sets the height rather than capping it:
+   *  a cap only bites where the banner is already taller than a screen. The image
+   *  covers, so it crops top and bottom rather than letterboxing. Default false. */
+  fillScreen?: boolean;
   className?: string;
 }
 
@@ -59,6 +77,7 @@ export function HeroCarousel({
   interval = 6000,
   autoPlay = true,
   indicator = "dots",
+  fillScreen = false,
   className = "",
 }: HeroCarouselProps): ReactElement {
   const [pos, setPos] = useState(0);
@@ -123,7 +142,13 @@ export function HeroCarousel({
 
   useEffect(() => {
     if (!autoPlay || count <= 1 || dragging) return;
-    const timer = setInterval(() => setPos((p) => p + 1), interval);
+    const timer = setInterval(() => {
+      // A hidden tab throttles timers and batches the catch-up ticks, which is how
+      // pos used to climb past the slide count faster than transitionend could
+      // reset it. Not advancing a carousel nobody can see is right anyway.
+      if (document.hidden) return;
+      setPos((p) => p + 1);
+    }, interval);
     return () => clearInterval(timer);
   }, [autoPlay, interval, count, dragging]);
 
@@ -135,10 +160,19 @@ export function HeroCarousel({
   const extended = [...slides, ...slides.slice(0, 2)];
   const active = ((pos % count) + count) % count;
   const go = (k: number): void => setPos((((k % count) + count) % count));
+  /* posRef mirrors pos so the wrap reset never reads a stale closure value: onEnd is
+     a DOM handler, so the `pos` captured when it was created can be several ticks
+     behind. The reset is a modulo, not a single subtraction, so an overshoot of any
+     size lands back inside the real slide range instead of on the clone cells. */
+  const posRef = useRef(0);
+  useEffect(() => {
+    posRef.current = pos;
+  }, [pos]);
   const onEnd = (): void => {
-    if (pos >= count) {
+    const p = posRef.current;
+    if (p >= count) {
       setAnimate(false);
-      setPos(pos - count);
+      setPos(p % count);
     }
   };
 
@@ -146,7 +180,7 @@ export function HeroCarousel({
 
   return (
     <section
-      className={`@container relative w-full overflow-hidden bg-[var(--surface-inverse)] ${className}`}
+      className={`group/hero @container relative w-full overflow-hidden bg-[var(--surface-inverse)] ${className}`}
       aria-roledescription="carousel"
     >
       <div
@@ -169,34 +203,56 @@ export function HeroCarousel({
           // The trailing cells are wrap-around clones: keep them out of the a11y
           // tree and the tab order so a link is not announced or tabbed to twice.
           const clone = k >= count;
-          const named = !slide.href && !!slide.alt;
+          // A tone-only banner has no <img> to carry the alt, so the tone layer takes
+          // the name instead. A linked slide is named by its anchor, an imaged one by
+          // its <img>.
+          const named = !slide.image && !slide.href && !!slide.alt && !clone;
+          /* Tone first, image over it, so a banner has its colour before its image
+             arrives. */
           const media = (
-            <div
-              /* Below 640 the crop shifts down so the subject sits lower in the narrow frame. */
-              className="absolute inset-0 bg-cover bg-no-repeat bg-[position:center_40%] @min-[640px]:bg-center"
-              /* A background image carries no alt, so the layer takes the role and
-                 the name instead. On a linked slide the anchor carries the name,
-                 so the layer is hidden and the name is not announced twice. */
-              role={named ? "img" : undefined}
-              aria-label={named ? slide.alt : undefined}
-              aria-hidden={named ? undefined : true}
-              /* backgroundColor, not the `background` shorthand. React writes an
-                 empty string for an undefined style value, and an empty
-                 `background` clears background-image with it. The server keeps the
-                 image because it skips undefined values, so the banner only goes
-                 blank once this client component hydrates. */
-              style={{
-                backgroundImage: slide.image ? `url("${slide.image}")` : undefined,
-                // Always painted, so a banner shows its tone while the image loads.
-                backgroundColor: slide.bg || "var(--surface-inverse)",
-              }}
-            />
+            <>
+              <div
+                className="absolute inset-0"
+                role={named ? "img" : undefined}
+                aria-label={named ? slide.alt : undefined}
+                aria-hidden={named ? undefined : true}
+                style={{ backgroundColor: slide.bg || "var(--surface-inverse)" }}
+              />
+              {slide.image && (
+                <img
+                  src={slide.image}
+                  alt={clone ? "" : slide.alt || ""}
+                  draggable={false}
+                  decoding="async"
+                  /* The first two are eager: from 768px the band shows two banners at
+                     rest, so slide 2 is an LCP candidate there, and on mobile it is the
+                     very next banner. `loading` cannot vary by breakpoint, so this is
+                     one choice for every width. Only slide 1 takes priority, so slide 2
+                     does not compete with it. The wrap clones reuse the same src and
+                     cost no extra request. */
+                  loading={k < 2 ? "eager" : "lazy"}
+                  // camelCase here: React 19 types and accepts it. The export writes
+                  // it lowercase because its own preview runs React 18, which warns
+                  // on the camelCase spelling. Same attribute either way.
+                  fetchPriority={k === 0 ? "high" : undefined}
+                  /* Below 640 the crop shifts down so the subject sits lower in the
+                     narrow frame. */
+                  className="absolute inset-0 block h-full w-full object-cover object-[center_40%] @min-[640px]:object-center"
+                />
+              )}
+            </>
           );
 
           return (
             <div
               key={k}
-              className="relative shrink-0 grow-0 basis-full overflow-hidden aspect-[var(--ratio-2-3)] @min-[768px]:basis-1/2 @min-[1024px]:aspect-[var(--ratio-4-5)]"
+              className={[
+                "relative shrink-0 grow-0 basis-full overflow-hidden",
+                "aspect-[var(--ratio-2-3)] @min-[768px]:basis-1/2 @min-[1024px]:aspect-[var(--ratio-4-5)]",
+                /* 100cqh resolves against the nearest size container, the viewport
+                   here, since the band is inline-size only. */
+                fillScreen ? "@min-[1024px]:aspect-auto @min-[1024px]:h-[100cqh]" : "",
+              ].join(" ")}
             >
               {slide.href ? (
                 <a
@@ -223,23 +279,19 @@ export function HeroCarousel({
 
       {count > 1 && (
         <>
-          {/* Arrows are inset from the edge, but pull flush on mobile where the
-              banner is narrow and the 44px hit area already eats most of the inset. */}
-          <div className="absolute top-1/2 left-0 -translate-y-1/2 @min-[640px]:left-[var(--space-3)]">
-            <IconButton
-              label="Previous slide"
-              onClick={() => go(active - 1)}
-              className="text-[var(--sher-white)]"
-            >
+          {/* Desktop only, and hidden until the reader reaches for them. Below
+              1024px nothing is drawn over the photograph: the banner is swiped and
+              the dots carry position. The arrow is a light disc with a dark glyph,
+              the same shape as the play badge, so it supplies its own contrast
+              against any part of the image. focus-within matters as much as hover:
+              hiding an affordance must not hide it from the keyboard. */}
+          <div className={ARROW + " @min-[1024px]:left-[var(--space-6)]"}>
+            <IconButton label="Previous slide" onClick={() => go(active - 1)}>
               <Icon name="chevron-left" size={26} />
             </IconButton>
           </div>
-          <div className="absolute top-1/2 right-0 -translate-y-1/2 @min-[640px]:right-[var(--space-3)]">
-            <IconButton
-              label="Next slide"
-              onClick={() => go(active + 1)}
-              className="text-[var(--sher-white)]"
-            >
+          <div className={ARROW + " @min-[1024px]:right-[var(--space-6)]"}>
+            <IconButton label="Next slide" onClick={() => go(active + 1)}>
               <Icon name="chevron-right" size={26} />
             </IconButton>
           </div>
@@ -258,9 +310,9 @@ export function HeroCarousel({
                 className={[
                   "cursor-pointer border-none p-0",
                   bars
-                    ? "h-[2px] w-[22px] rounded-[var(--radius-none)] transition-[background] duration-[var(--dur-med)] ease-[var(--ease-out)]"
-                    : "h-[8px] rounded-[var(--radius-pill)] transition-[width,background] duration-[var(--dur-med)] ease-[var(--ease-out)]",
-                  !bars && (k === active ? "w-[22px]" : "w-[8px]"),
+                    ? "h-[var(--dot-bar-h)] w-[var(--dot-wide)] rounded-[var(--radius-none)] transition-[background] duration-[var(--dur-med)] ease-[var(--ease-out)]"
+                    : "h-[var(--dot-sm)] rounded-[var(--radius-pill)] transition-[width,background] duration-[var(--dur-med)] ease-[var(--ease-out)]",
+                  !bars && (k === active ? "w-[var(--dot-wide)]" : "w-[var(--dot-sm)]"),
                   k === active ? "bg-[var(--sher-white)]" : "bg-[var(--dot-idle)]",
                 ]
                   .filter(Boolean)

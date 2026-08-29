@@ -18,9 +18,11 @@ const HERO_FALLBACK_BG = "var(--sher-dark)";
    header renders as a transparent overlay over it and only hands off to the
    sticky header once the hero scrolls past (see SiteHeader). The carousel slides
    once there is more than one banner. A banner with an `href` is a link. */
-export const HERO_SLIDES: HeroSlide[] = mediaSlots("hero").flatMap((slot) => {
+export const HERO_SLIDES: HeroSlide[] = mediaSlots("s-001.1.image").flatMap((slot) => {
   const media = mediaSlot(slot);
-  if (!media) return [];
+  // A slot with no picture yet is not a banner. Without this an unfilled row
+  // would still take a turn in the carousel, showing only the fallback tone.
+  if (!media?.image) return [];
   return [
     {
       bg: HERO_FALLBACK_BG,
@@ -35,10 +37,10 @@ export const HERO_SLIDES: HeroSlide[] = mediaSlots("hero").flatMap((slot) => {
    button, so its label is fixed UI copy and sits here beside the slot it belongs
    to. The picture, its alt, and the link come from D-004. */
 const CATEGORY_TILES: { slot: string; label: string }[] = [
-  { slot: "cat-corsets", label: "Shop Corset Tops" },
-  { slot: "cat-sets", label: "Shop Matching Sets" },
-  { slot: "cat-dresses", label: "Shop Cocktail Dresses" },
-  { slot: "cat-beachwear", label: "Shop Beachwear" },
+  { slot: "s-001.3.image-1", label: "Shop Corset Tops" },
+  { slot: "s-001.3.image-2", label: "Shop Matching Sets" },
+  { slot: "s-001.3.image-3", label: "Shop Cocktail Dresses" },
+  { slot: "s-001.3.image-4", label: "Shop Beachwear" },
 ];
 
 /* A tile needs a picture and a link to work, so a slot missing either is left

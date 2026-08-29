@@ -138,7 +138,7 @@ export function ShopEditorial({
             <Heading
               level={headingLevel}
               className={[
-                "m-0 max-w-[24ch] font-normal leading-[var(--leading-snug)] text-[var(--text-strong)]",
+                "m-0 max-w-[min(24ch,100%)] font-normal leading-[var(--leading-snug)] text-[var(--text-strong)]",
                 headingFace,
                 STEP_SECTION,
                 alignRight ? "@max-[767.98px]:ml-auto" : "",
@@ -149,7 +149,7 @@ export function ShopEditorial({
           )}
           {paragraph && (
             <p
-              className={`m-0 max-w-[62ch] leading-[var(--leading-normal)] text-[var(--text-default)] ${STEP_BODY}`}
+              className={`m-0 max-w-[min(62ch,100%)] leading-[var(--leading-normal)] text-[var(--text-default)] ${STEP_BODY}`}
             >
               {paragraph}
             </p>

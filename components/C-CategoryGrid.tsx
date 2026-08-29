@@ -60,20 +60,29 @@ export function CategoryGrid({
               href={item.href}
               className="relative block overflow-hidden no-underline aspect-[var(--ratio-4-5)]"
             >
+              {/* Tone layer, then the image over it. The image is a real <img> with
+                  loading="lazy": no tile is ever the LCP element, since the grid sits
+                  below the hero and the title on Home, so every tile can wait until
+                  the browser brings it near the viewport instead of all four fetching
+                  on load. A passed `media` node wins and owns its own loading. */}
               <div
-                className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-                /* backgroundColor, not the `background` shorthand: an empty
-                   shorthand clears background-image with it. The tiles render on
-                   the server so nothing reapplies the style today, but the same
-                   line blanks the hero the moment its component hydrates. */
-                style={{
-                  backgroundImage: item.image ? `url("${item.image}")` : undefined,
-                  // Always painted, so a tile shows its tone while the image loads.
-                  backgroundColor: item.bg || "var(--surface-raised)",
-                }}
+                className="absolute inset-0"
+                style={{ backgroundColor: item.bg || "var(--surface-raised)" }}
               >
                 {item.media}
               </div>
+              {item.image && !item.media && (
+                /* alt="" — the anchor is already named by the tile's label, so
+                   naming the photo as well would have it read twice. */
+                <img
+                  src={item.image}
+                  alt=""
+                  loading="lazy"
+                  decoding="async"
+                  draggable={false}
+                  className="absolute inset-0 block h-full w-full object-cover"
+                />
+              )}
               <span
                 className={[
                   "pointer-events-none absolute inset-0 flex items-end p-[var(--space-6)]",

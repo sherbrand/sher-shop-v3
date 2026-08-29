@@ -71,7 +71,7 @@ export function Accordion({
                 expanded ? "max-h-[600px] opacity-100" : "max-h-0 opacity-0"
               }`}
             >
-              <p className="m-0 max-w-[72ch] pb-[var(--space-5)] text-[length:var(--size-body-sm)] @min-[640px]:text-[length:var(--size-body-md)] @min-[1024px]:text-[length:var(--size-body-lg)] leading-[var(--leading-normal)] text-[var(--text-default)]">
+              <p className="m-0 max-w-[min(72ch,100%)] pb-[var(--space-5)] text-[length:var(--size-body-sm)] @min-[640px]:text-[length:var(--size-body-md)] @min-[1024px]:text-[length:var(--size-body-lg)] leading-[var(--leading-normal)] text-[var(--text-default)]">
                 {item.a}
               </p>
             </div>

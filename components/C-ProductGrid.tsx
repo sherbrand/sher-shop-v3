@@ -50,6 +50,9 @@ export interface ProductGridProps {
   onView?: (key: string) => void;
   /** Show the count + view-toggle toolbar. Default true. */
   showToolbar?: boolean;
+  /** Alignment of the BAND HEADING only — the toolbar and the cards keep their own.
+   *  Matches C-ShopTitle and C-HeroTitle. Default "start". */
+  align?: "start" | "center";
   /** Stick a floating copy of the ViewToggle to the scrollport bottom-left. Default true. */
   floatingToggle?: boolean;
   /** Show only this many products at first, revealing another `pageSize` per click. */
@@ -96,6 +99,7 @@ export function ProductGrid({
   columns = "1/1/2",
   heading,
   headingLevel = 2,
+  align = "start",
   label = "pieces",
   count,
   onView,
@@ -173,7 +177,10 @@ export function ProductGrid({
       {heading && (
         <Heading
           level={headingLevel}
-          className={`mx-0 mt-0 mb-[var(--space-6)] font-[family-name:var(--font-display)] font-normal uppercase leading-[var(--leading-snug)] tracking-[var(--tracking-display)] text-[var(--text-strong)] ${STEP_SECTION}`}
+          /* Heading only: the toolbar and the cards keep their own alignment. */
+          className={`mx-0 mt-0 mb-[var(--space-6)] font-[family-name:var(--font-display)] font-normal uppercase leading-[var(--leading-snug)] tracking-[var(--tracking-display)] text-[var(--text-strong)] ${
+            align === "center" ? "text-center" : ""
+          } ${STEP_SECTION}`}
         >
           {heading}
         </Heading>

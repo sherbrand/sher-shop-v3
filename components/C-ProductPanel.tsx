@@ -424,7 +424,7 @@ export function ProductPanel({
                 60ch at mid band widths. Cap against the track and the measure. */}
             <div className="mx-auto flex min-w-0 max-w-[min(60ch,100%)] flex-col items-center gap-[var(--space-5)] px-[var(--gutter)] py-[var(--space-8)] text-center @min-[768px]:p-[var(--space-8)]">
               {breadcrumb.length > 0 && (
-                <Breadcrumb items={breadcrumb} className="justify-center" />
+                <Breadcrumb items={breadcrumb} className="mx-auto justify-center" />
               )}
 
               <Heading level={headingLevel} className={`${HEADING} ${STEP_TITLE}`}>
@@ -502,7 +502,7 @@ export function ProductPanel({
         <div className="flex flex-col gap-[var(--space-4)]">
           {breadcrumb.length > 0 && <Breadcrumb items={breadcrumb} />}
 
-          <Heading level={headingLevel} className={`${HEADING} max-w-[24ch] ${STEP_HERO}`}>
+          <Heading level={headingLevel} className={`${HEADING} max-w-[min(24ch,100%)] ${STEP_HERO}`}>
             {name}
           </Heading>
 
@@ -525,7 +525,7 @@ export function ProductPanel({
             <div className="flex flex-col gap-[var(--space-3)] pt-[var(--space-2)]">
               {description && (
                 <p
-                  className={`m-0 max-w-[56ch] leading-[var(--leading-normal)] text-[var(--text-default)] ${STEP_BODY}`}
+                  className={`m-0 max-w-[min(56ch,100%)] leading-[var(--leading-normal)] text-[var(--text-default)] ${STEP_BODY}`}
                 >
                   {description}
                 </p>
