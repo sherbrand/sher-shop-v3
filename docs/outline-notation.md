@@ -115,6 +115,6 @@ An image beside a stack of text. Each `Paragraph` carries a `< >` brief saying w
 
 A cart drawer — a component outline. `//` sets a big break between each block. `"Btn: Checkout"` is a quoted literal, so it renders as-is, while `Line Items <…>` has an unquoted brief in `< >`, describing what to build. `Subtotal` needs no brief; its name says it all.
 
-`("H2: You May Also Like" / Subtitle <see the full category> / "Btn: Back to {Category}" <to /{category}>) | Product Grid <2 random products>`
+`("H2: You May Also Like" / Subtitle <see the full category> / "Btn: Back to {Category}" <to /{category}>) | Product Grid <3 random products>`
 
 A related block on a template page. `{Category}` and `{category}` are field names data fills in when the page renders — one inside quoted copy, one inside a link target. `Product Grid` is an element, so its `< >` says what to build and it gets no copy.

@@ -89,6 +89,11 @@
 - **When it appears:** In the Featured Products block on S-001.
 - **If something goes wrong:** If a handle no longer matches a live product, leave that slot out.
 
+### F-013 — Breadcrumb Trail
+- **What it does:** Shows the trail to the page. Every crumb links except the current one. The trail is one line and never wraps. It caps its width even where there is room, so a long trail does not read as clutter. When it runs past that cap the current crumb trims with an ellipsis, and the parent crumbs keep their full width. Trimming is visual only, so the full label stays in the markup for crawlers and screen readers.
+- **When it appears:** At the top of every page except Home (S-001), and in the buy panel on the Product Detail page (S-006).
+- **If something goes wrong:** If a page has no parent to name, it shows the current crumb alone.
+
 ## 4. Data
 | ID | Data Item | Source | Details |
 |---|---|---|---|
@@ -120,7 +125,7 @@
 
 ### S-002 — All Products
 - **Outline:** Refer to /docs/content/s-002_all-products.md
-- **Feature:** F-001 Product Grid, F-003 Grid View Toggle, F-008 Slot Content, F-009 Structured Data
+- **Feature:** F-001 Product Grid, F-003 Grid View Toggle, F-008 Slot Content, F-009 Structured Data, F-013 Breadcrumb Trail
 - **Behavior:**
   - The button pills link to the four category pages. They do not filter this grid.
 - **Assets:** D-004 Media Slots
@@ -134,7 +139,7 @@
 
 ### S-003 — Corset Tops
 - **Outline:** Refer to /docs/content/s-003_corset-tops.md
-- **Feature:** F-001 Product Grid, F-002 Attribute Filter, F-003 Grid View Toggle, F-008 Slot Content, F-009 Structured Data
+- **Feature:** F-001 Product Grid, F-002 Attribute Filter, F-003 Grid View Toggle, F-008 Slot Content, F-009 Structured Data, F-013 Breadcrumb Trail
 - **Behavior:**
   - The filter narrows the grid in place by closure type.
   - The FAQ accordion keeps one item open at a time.
@@ -149,7 +154,7 @@
 
 ### S-004 — Matching Sets
 - **Outline:** Refer to /docs/content/s-004_matching-sets.md
-- **Feature:** F-001 Product Grid, F-002 Attribute Filter, F-003 Grid View Toggle, F-008 Slot Content, F-009 Structured Data
+- **Feature:** F-001 Product Grid, F-002 Attribute Filter, F-003 Grid View Toggle, F-008 Slot Content, F-009 Structured Data, F-013 Breadcrumb Trail
 - **Behavior:**
   - The filter narrows the grid in place by set type.
   - The FAQ accordion keeps one item open at a time.
@@ -164,7 +169,7 @@
 
 ### S-005 — Cocktail Dresses
 - **Outline:** Refer to /docs/content/s-005_cocktail-dresses.md
-- **Feature:** F-001 Product Grid, F-002 Attribute Filter, F-003 Grid View Toggle, F-008 Slot Content, F-009 Structured Data
+- **Feature:** F-001 Product Grid, F-002 Attribute Filter, F-003 Grid View Toggle, F-008 Slot Content, F-009 Structured Data, F-013 Breadcrumb Trail
 - **Behavior:**
   - The filter narrows the grid in place by length.
   - The FAQ accordion keeps one item open at a time.
@@ -179,7 +184,7 @@
 
 ### S-012 — Beachwear
 - **Outline:** Refer to /docs/content/s-012_beachwear.md
-- **Feature:** F-001 Product Grid, F-002 Attribute Filter, F-003 Grid View Toggle, F-008 Slot Content, F-009 Structured Data
+- **Feature:** F-001 Product Grid, F-002 Attribute Filter, F-003 Grid View Toggle, F-008 Slot Content, F-009 Structured Data, F-013 Breadcrumb Trail
 - **Behavior:**
   - The filter narrows the grid in place by swim type.
   - The FAQ accordion keeps one item open at a time.
@@ -194,9 +199,9 @@
 
 ### S-006 — Product Detail
 - **Outline:** Refer to /docs/content/s-006_product-detail.md
-- **Feature:** F-001 Product Grid, F-004 Add to Cart, F-006 Checkout, F-007 Size Chart, F-009 Structured Data, F-010 Product Media Gallery, F-011 Size and Stock
+- **Feature:** F-001 Product Grid, F-004 Add to Cart, F-006 Checkout, F-007 Size Chart, F-009 Structured Data, F-010 Product Media Gallery, F-011 Size and Stock, F-013 Breadcrumb Trail
 - **Behavior:**
-  - The breadcrumb trims the product name with an ellipsis on small screens. The full name stays in the markup.
+  - The header starts hidden so the first gallery shot meets the top edge. C-Sticky covers how it comes back.
   - The type attribute (closure type, set type, length, or swim type) is a Shopify product metafield read through the Storefront API.
   - Add to Cart opens C-Cart. Buy Now goes straight to Shopify checkout.
   - The details link opens C-Details. The sizing link opens C-Sizing. The shipping link opens C-Shipping.
@@ -209,7 +214,7 @@
 
 ### S-007 — About Us
 - **Outline:** Refer to /docs/content/s-007_about-us.md
-- **Feature:** F-008 Slot Content
+- **Feature:** F-008 Slot Content, F-013 Breadcrumb Trail
 - **Behavior:**
   - None
 - **Assets:** D-004 Media Slots
@@ -220,7 +225,7 @@
 
 ### S-008 — Contact
 - **Outline:** Refer to /docs/content/s-008_contact.md
-- **Feature:** F-008 Slot Content
+- **Feature:** F-008 Slot Content, F-013 Breadcrumb Trail
 - **Behavior:**
   - The direct-message links open the SHER Instagram, Facebook, and TikTok profiles in a new tab.
   - The email address opens the visitor's mail app.
@@ -232,7 +237,7 @@
 
 ### S-009 — Shipping & Returns
 - **Outline:** Refer to /docs/content/s-009_shipping-returns.md
-- **Feature:** F-008 Slot Content
+- **Feature:** F-008 Slot Content, F-013 Breadcrumb Trail
 - **Behavior:**
   - This page and C-Shipping read the same content, so the two never drift.
 - **Assets:**
@@ -246,7 +251,7 @@
 
 ### S-010 — Privacy Policy
 - **Outline:** Refer to /docs/content/s-010_privacy-policy.md
-- **Feature:** F-008 Slot Content
+- **Feature:** F-008 Slot Content, F-013 Breadcrumb Trail
 - **Behavior:**
   - None
 - **Assets:**
@@ -262,7 +267,7 @@
 
 ### S-011 — Terms of Service
 - **Outline:** Refer to /docs/content/s-011_terms-of-service.md
-- **Feature:** F-008 Slot Content
+- **Feature:** F-008 Slot Content, F-013 Breadcrumb Trail
 - **Behavior:**
   - None
 - **Assets:**
@@ -282,14 +287,16 @@
 - **Feature:** F-005 Cart Management, F-008 Slot Content
 - **Behavior:**
   - Home only. It sits over the hero, stays see-through, and scrolls away with the page.
-  - Once it scrolls out of view, C-Sticky takes over.
+  - C-Sticky takes over once the hero's bottom edge scrolls past the top.
   - The item count shows how many items are in the cart. It is hidden when the cart is empty.
 
 ### C-Sticky — Sticky Header
 - **Component:** Refer to /components/C-Sticky.tsx
 - **Feature:** F-005 Cart Management, F-008 Slot Content
 - **Behavior:**
-  - Sticks to the top of every screen. On Home it takes over once the hero scrolls out of view.
+  - Sticks to the top of every screen and holds its own height. Below 1024px it stays put once it is there. From 1024px it hides on a downward scroll and returns on an upward one.
+  - On Home it takes over once the hero's bottom edge scrolls past the top. Below 1024px it then stays. From 1024px it hides and returns with the scroll, as on every other page.
+  - On the product page it starts hidden and holds no space, so the first gallery shot meets the top edge. Below 1024px it appears once the page has scrolled past about a third of the screen height, and hides again when it scrolls back inside that band. From 1024px it appears on an upward scroll and hides going down, and stays hidden at the very top.
   - The item count shows how many items are in the cart. It is hidden when the cart is empty.
 
 ### C-Menu — Menu Drawer
@@ -507,6 +514,7 @@ Every screen scores 90 or higher on Lighthouse for performance, accessibility, b
 | F-010 | Product Media Gallery | Active |
 | F-011 | Size and Stock | Active |
 | F-012 | Featured Products | Active |
+| F-013 | Breadcrumb Trail | Active |
 | D-001 | Product | Active |
 | D-002 | Collection | Active |
 | D-003 | Cart | Active |
