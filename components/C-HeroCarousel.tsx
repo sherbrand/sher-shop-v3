@@ -142,7 +142,13 @@ export function HeroCarousel({
 
   useEffect(() => {
     if (!autoPlay || count <= 1 || dragging) return;
-    const timer = setInterval(() => setPos((p) => p + 1), interval);
+    const timer = setInterval(() => {
+      // A hidden tab throttles timers and batches the catch-up ticks, which is how
+      // pos used to climb past the slide count faster than transitionend could
+      // reset it. Not advancing a carousel nobody can see is right anyway.
+      if (document.hidden) return;
+      setPos((p) => p + 1);
+    }, interval);
     return () => clearInterval(timer);
   }, [autoPlay, interval, count, dragging]);
 
@@ -154,10 +160,19 @@ export function HeroCarousel({
   const extended = [...slides, ...slides.slice(0, 2)];
   const active = ((pos % count) + count) % count;
   const go = (k: number): void => setPos((((k % count) + count) % count));
+  /* posRef mirrors pos so the wrap reset never reads a stale closure value: onEnd is
+     a DOM handler, so the `pos` captured when it was created can be several ticks
+     behind. The reset is a modulo, not a single subtraction, so an overshoot of any
+     size lands back inside the real slide range instead of on the clone cells. */
+  const posRef = useRef(0);
+  useEffect(() => {
+    posRef.current = pos;
+  }, [pos]);
   const onEnd = (): void => {
-    if (pos >= count) {
+    const p = posRef.current;
+    if (p >= count) {
       setAnimate(false);
-      setPos(pos - count);
+      setPos(p % count);
     }
   };
 
