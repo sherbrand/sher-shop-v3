@@ -5,6 +5,7 @@ import { toGridProduct } from "@/lib/listing";
 import { ShopTitle } from "@/components/C-ShopTitle";
 import { ShopGrid } from "@/components/ShopGrid";
 import { ShopEditorial } from "@/components/C-ShopEditorial";
+import { SlotImage } from "@/components/SlotImage";
 import { bandCopy, metaCopy, slotText } from "@/lib/slots";
 import { categoryLinks } from "@/lib/categories";
 import { Button } from "@/components/Button";
@@ -39,9 +40,9 @@ export default async function ShopPage(): Promise<ReactElement> {
         <ShopGrid products={products.map(toGridProduct)} />
       </div>
 
-      {/* Editorial images (s-002.3/4/5) still missing (MVP) — media left empty. */}
       <div className="bg-[var(--surface-tint)]">
         <ShopEditorial
+          media={<SlotImage slot="s-002.3.image-1" />}
           fullBleed
           mobileFirst="media"
           mobileAlign="right"
@@ -52,6 +53,7 @@ export default async function ShopPage(): Promise<ReactElement> {
           </Button>
         </ShopEditorial>
         <ShopEditorial
+          media={<SlotImage slot="s-002.4.image-1" />}
           mirror
           fullBleed
           mobileFirst="media"
@@ -63,10 +65,7 @@ export default async function ShopPage(): Promise<ReactElement> {
           </Button>
         </ShopEditorial>
         <ShopEditorial
-          media={
-            // eslint-disable-next-line @next/next/no-img-element -- local optimized asset
-            <img src="/assets/cocktail/shop-cocktail.webp" alt="A SHER cocktail dress worn on a model" className="h-full w-full object-cover" />
-          }
+          media={<SlotImage slot="s-002.5.image-1" />}
           fullBleed
           mobileFirst="media"
           mobileAlign="right"
@@ -77,6 +76,7 @@ export default async function ShopPage(): Promise<ReactElement> {
           </Button>
         </ShopEditorial>
         <ShopEditorial
+          media={<SlotImage slot="s-002.6.image-1" />}
           mirror
           fullBleed
           mobileFirst="media"

@@ -1,27 +1,30 @@
 page	slot	image	alt	href
-/	s-001.1.image-1	/assets/cocktail/hero.webp	a model in a yellow ribbed midi dress on a marble staircase in a grand hall	
-/	s-001.1.image-2	/assets/cocktail/hero2.webp	a model in a yellow ribbed midi dress walking down a sunlit marble staircase	
-/	s-001.1.image-3	/assets/batch1/matching-set_panelled-hall_tall-mouldings.webp	a model in a watercolor-print halter top and wide-leg trousers, standing in a panelled hall with tall arched windows	
-/	s-001.1.image-4	/assets/batch1/matching-sets-camo2.webp	a model in a watercolor-print halter top and wide-leg trousers, walking past concrete architecture at golden hour	
-/	s-001.3.image-1	/assets/batch1/corset-tops-legacy.jpg	an ivory strapless corset top with structured bust seaming, against a terracotta wall	/corset-tops
-/	s-001.3.image-2	/assets/batch1/matching-sets-camo.webp	a model in a watercolor-print halter top and wide-leg trousers, walking beside a reflecting pool lined with statues	/matching-sets
-/	s-001.3.image-3	/assets/cocktail/tile-cocktail.webp	a satin cocktail dress on a model, catching the light	/cocktail-dresses
-/	s-001.3.image-4	/assets/batch1/beachwear-one-piece-lace.webp	a SHER black lace one piece on a model beside a seaside pool	/beachwear
-/shop	s-002.3.image-1		a SHER corset top showing hand-set boning channels and back lacing	
-/shop	s-002.4.image-1		a SHER matching set: a corset top with matching trousers on a model	
-/shop	s-002.5.image-1		a SHER cocktail dress in satin on a model, cut in a slip shape	
-/shop	s-002.6.image-1		a SHER one piece on a model at the water, showing its shaped waist seams	
-/corset-tops	s-003.3.image-1		a SHER corset top on a model, showing its shaped waist and structured bust	
-/corset-tops	s-003.4.image-1		a SHER corset top shown from both sides, with back lacing on one and a separating zip on the other	
-/corset-tops	s-003.5.image-1		inside of a SHER corset top showing hand-set boning channels, satin lining, and structured bust cups	
-/matching-sets	s-004.3.image-1		a SHER matching set on a model, showing the top and bottom worn as one look	
-/matching-sets	s-004.4.image-1		a SHER Skirt Set and Trouser Set side by side on models, showing both set types	
-/matching-sets	s-004.5.image-1		close view of a SHER matching set showing the top hem meeting the waistband, with inside seams and fabric detail	
-/cocktail-dresses	s-005.3.image-1	/assets/cocktail/ck-satin.webp	a SHER cocktail dress on a model, showing its satin drape and clean neckline	
-/cocktail-dresses	s-005.4.image-1		SHER cocktail dresses in Mini, Midi, and Maxi side by side on models, showing all three lengths	
-/cocktail-dresses	s-005.5.image-1		close view of a SHER cocktail dress showing weighted satin, shaped seams, and the inside lining	
-/beachwear	s-012.3.image-1		a SHER one piece on a model at the water, showing its shaped waist seams	
-/beachwear	s-012.4.image-1		a SHER one piece and a SHER bikini set shown side by side on models	
-/beachwear	s-012.5.image-1		inside of a SHER one piece showing the full lining, shaped bust cups, and flat seams	
-/about	s-007.2.image-1		a woman in a SHER corset top, sensual and refined	
-/about	s-007.3.image-1		Sherilyn, founder of SHER, in the studio	
+/	s-001.1.image-1	/assets/s-001.1_hero/corset-tops_white-merlin-corset_pool.webp	a SHER corset top in ivory, strapless with structured bust seaming, worn with jeans by a garden pool	
+/	s-001.1.image-2	/assets/s-001.1_hero/beachwear_camisole-lace-one-piece_pool.webp	SHER beachwear: a black lace one piece on a model at a seaside pool	
+/	s-001.1.image-3	/assets/s-001.1_hero/matching-sets_silver-clara-set_garden.webp	a SHER matching set in silver brocade, a strapless top with a matching mini skirt, on garden steps	
+/	s-001.1.image-4	/assets/s-001.1_hero/cocktail-dresses_quartz-vivian-maxi-dress_garden.webp	a SHER cocktail dress in pale pink satin, a strapless maxi, at a garden balustrade at sunset	
+/	s-001.1.image-5	/assets/s-001.1_hero/cocktail-dresses_ivory-iva-mini-dress_apartment.webp	a SHER cocktail dress in ivory, a mini with a cut-out waist, in a sunlit apartment hall	
+/	s-001.1.image-6	/assets/s-001.1_hero/cocktail-dresses_olive-quinn-midi-dress_staircase.webp	a SHER cocktail dress in olive ribbed knit, on a model on a marble staircase in a grand hall	
+/	s-001.1.image-7	/assets/s-001.1_hero/matching-sets_camo-lunar-set_apartment.webp	a SHER matching set: a watercolor-print halter top with wide-leg trousers, in a panelled hall with tall arched windows	
+/	s-001.3.image-1	/assets/s-001.3_tiles/corset-tops_white-merlin-corset_courtyard.jpg	a SHER corset top in ivory, strapless with structured bust seaming, against a terracotta wall	/corset-tops
+/	s-001.3.image-2	/assets/s-001.3_tiles/matching-sets_camo-lunar-set_garden.webp	a SHER matching set: a watercolor-print halter top with wide-leg trousers, on a model walking beside a reflecting pool lined with statues	/matching-sets
+/	s-001.3.image-3	/assets/s-001.3_tiles/cocktail-dresses_olive-quinn-midi-dress_studio.webp	a SHER cocktail dress in olive ribbed knit, on a model against a plain concrete wall	/cocktail-dresses
+/	s-001.3.image-4	/assets/s-001.3_tiles/beachwear_camisole-lace-one-piece_boat.webp	SHER beachwear: a black lace one piece on a model on a boat's swim platform at golden hour	/beachwear
+/shop	s-002.3.image-1	/assets/s-002_all-products/corset-tops_white-merlin-corset_pool-1.webp	a SHER corset top in ivory, showing its structured bust seaming, worn with jeans beside a black-tiled pool	
+/shop	s-002.4.image-1	/assets/s-002_all-products/matching-sets_camo-lunar-set_colonnade.webp	a SHER matching set: a watercolor-print halter top with matching wide-leg trousers, on a model beside stone columns	
+/shop	s-002.5.image-1	/assets/s-002_all-products/cocktail-dresses_quartz-vivian-maxi-dress_colonial.webp	a SHER cocktail dress in pale pink satin, cut in a slip shape, on a sea verandah at sunset	
+/shop	s-002.6.image-1	/assets/s-002_all-products/beachwear_camisole-lace-one-piece_villa.webp	SHER beachwear: a black lace one piece on a model at an outdoor shower, showing its shaped waist seams	
+/corset-tops	s-003.3.image-1	/assets/s-003_corset-tops/corset-tops_floral-francia-corset_pool.webp	a SHER corset top in a floral print, the Floral Francia, worn with satin trousers beside a pool	
+/corset-tops	s-003.4.image-1	/assets/s-003_corset-tops/corset-tops_white-merlin-corset_beach-club.webp	a SHER corset top in ivory, showing its shaped waist and structured bust, at a beach club at golden hour	
+/corset-tops	s-003.5.image-1	/assets/s-003_corset-tops/corset-tops_floral-francia-corset_colonnade.webp	a close view of a SHER corset top in a floral print, showing its shaped bust cups and pleated waist	
+/matching-sets	s-004.3.image-1	/assets/s-004_matching-sets/matching-sets_silver-clara-set_hotel.webp	a SHER matching set on a model, a silver brocade top with a matching mini skirt worn as one look, in a hotel corridor	
+/matching-sets	s-004.4.image-1	/assets/s-004_matching-sets/matching-sets_twilight-lunar-set_minimal.webp	a SHER matching set in silver metallic, a halter top with matching trousers, on steps above the sea	
+/matching-sets	s-004.5.image-1	/assets/s-004_matching-sets/matching-sets_camo-lunar-set_rooftop.webp	a SHER matching set: a watercolor-print halter top with wide-leg trousers, on a rooftop terrace	
+/cocktail-dresses	s-005.3.image-1	/assets/s-005_cocktail-dresses/cocktail-dresses_sienna-maxi-dress_rooftop.webp	a SHER cocktail dress on a model, showing its satin drape and clean neckline	
+/cocktail-dresses	s-005.4.image-1	/assets/s-005_cocktail-dresses/cocktail-dresses_quartz-vivian-maxi-dress_colonial-1.webp	a SHER cocktail dress in pale pink satin, a maxi, on a colonial verandah	
+/cocktail-dresses	s-005.5.image-1	/assets/s-005_cocktail-dresses/cocktail-dresses_serena-mini-dress_classical.webp	a SHER cocktail dress in black, a mini with rosettes at the bust, at a classical villa at sunset	
+/beachwear	s-012.3.image-1	/assets/s-012_beachwear/beachwear_camisole-lace-one-piece_pool-1.webp	SHER beachwear: a black lace one piece on a model beside an ancient pool, showing its shaped waist seams	
+/beachwear	s-012.4.image-1	/assets/s-012_beachwear/beachwear_camisole-lace-one-piece_rooftop-bar.webp	SHER beachwear: a black lace one piece on a model on a rooftop terrace	
+/beachwear	s-012.5.image-1	/assets/s-012_beachwear/beachwear_camisole-lace-one-piece_suite.webp	SHER beachwear: a black lace one piece on a model on a balcony over the river	
+/about	s-007.2.image-1	/assets/s-007_about-us/corset-tops_white-merlin-corset_suite.webp	a woman in a SHER corset top in ivory, worn with jeans in a marble bathroom	
+/about	s-007.3.image-1	/assets/s-007_about-us/cocktail-dresses_sienna-maxi-dress_studio.webp	PLACEHOLDER, not Sherilyn: a SHER cocktail dress in olive satin, on a model in a studio	

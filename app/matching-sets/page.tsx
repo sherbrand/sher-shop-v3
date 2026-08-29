@@ -5,6 +5,7 @@ import { getCollection } from "@/lib/shopify/fetchers";
 import { toListingItem, uniqueTypeValues } from "@/lib/listing";
 import { ShopListing } from "@/components/ShopListing";
 import { ShopEditorial } from "@/components/C-ShopEditorial";
+import { SlotImage } from "@/components/SlotImage";
 import { bandCopy, faqItems, metaCopy, slotText } from "@/lib/slots";
 import { category } from "@/lib/categories";
 import { ShopFaq } from "@/components/C-ShopFaq";
@@ -42,15 +43,16 @@ export default async function MatchingSetsPage(): Promise<ReactElement> {
         />
       </div>
 
-      {/* Editorial images (s-004.3/4/5) still missing (MVP) — media left empty. */}
       <div className="bg-[var(--surface-tint)]">
         <ShopEditorial
+          media={<SlotImage slot="s-004.3.image-1" />}
           fullBleed
           mobileFirst="media"
           mobileAlign="right"
           {...bandCopy("s-004.3")}
         />
         <ShopEditorial
+          media={<SlotImage slot="s-004.4.image-1" />}
           mirror
           fullBleed
           mobileFirst="media"
@@ -58,6 +60,7 @@ export default async function MatchingSetsPage(): Promise<ReactElement> {
           {...bandCopy("s-004.4")}
         />
         <ShopEditorial
+          media={<SlotImage slot="s-004.5.image-1" />}
           fullBleed
           mobileFirst="media"
           mobileAlign="right"
