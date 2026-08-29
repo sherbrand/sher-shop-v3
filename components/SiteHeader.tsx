@@ -101,12 +101,10 @@ export function SiteHeader({
         inert={!stickyOn}
         // Tailwind v4 moves the slide onto the standalone `translate` property,
         // so that is what transitions here. Naming `transform` animates nothing.
-        /* A hidden-at-rest header holds no space in the flow, so the first band
-           meets the top edge. Everywhere else the slot stays sticky and reserves
-           its own height, so nothing jumps on the Home handoff. */
-        className={`${
-          isProduct ? "fixed inset-x-0" : "sticky"
-        } top-0 z-[var(--z-header)] motion-safe:transition-[translate,opacity] motion-safe:duration-[var(--dur-slow)] motion-safe:ease-[var(--ease-out)] ${
+        /* The slot stays sticky at every route. C-Sticky takes itself out of the
+           flow when hiddenAtRest, so the first band meets the top edge without
+           this wrapper doing anything. */
+        className={`sticky top-0 z-[var(--z-header)] motion-safe:transition-[translate,opacity] motion-safe:duration-[var(--dur-slow)] motion-safe:ease-[var(--ease-out)] ${
           stickyOn ? "translate-y-0 opacity-100" : "-translate-y-[115%] opacity-0"
         }`}
       >

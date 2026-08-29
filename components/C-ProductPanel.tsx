@@ -418,9 +418,11 @@ export function ProductPanel({
               declaration is dropped and the panel simply sticks without vertical
               centring. */}
           <div className="bg-[var(--surface-page)] @min-[768px]:sticky @min-[768px]:top-0 @min-[768px]:flex @min-[768px]:max-h-[100cqh] @min-[768px]:min-h-[100cqh] @min-[768px]:overflow-y-auto @min-[768px]:[align-items:safe_center]">
-            <div className="mx-auto flex max-w-[60ch] flex-col items-center gap-[var(--space-5)] px-[var(--gutter)] py-[var(--space-8)] text-center @min-[768px]:p-[var(--space-8)]">
-              {/* The centered panel is narrow, so the product name may trim here.
-                  The heading right below prints it in full. */}
+            {/* min-w-0 and the 100% arm are both load-bearing: this is a flex item of
+                the buy column, so min-width:auto would refuse to shrink below the
+                60ch measure and spill past the grid track, which is narrower than
+                60ch at mid band widths. Cap against the track and the measure. */}
+            <div className="mx-auto flex min-w-0 max-w-[min(60ch,100%)] flex-col items-center gap-[var(--space-5)] px-[var(--gutter)] py-[var(--space-8)] text-center @min-[768px]:p-[var(--space-8)]">
               {breadcrumb.length > 0 && (
                 <Breadcrumb items={breadcrumb} className="justify-center" />
               )}
@@ -471,7 +473,7 @@ export function ProductPanel({
 
               {!onDetails && description && (
                 <p
-                  className={`m-0 max-w-[46ch] leading-[var(--leading-normal)] text-[var(--text-default)] ${STEP_BODY}`}
+                  className={`m-0 min-w-0 max-w-[min(46ch,100%)] leading-[var(--leading-normal)] text-[var(--text-default)] ${STEP_BODY}`}
                 >
                   {description}
                 </p>
