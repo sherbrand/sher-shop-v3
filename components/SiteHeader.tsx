@@ -42,21 +42,33 @@ export function SiteHeader({
   const [stickyOn, setStickyOn] = useState<boolean | null>(null);
 
   useEffect(() => {
+    // A page with no hero has nothing to hand off from, so the header is simply on.
+    const hero = document.querySelector("[data-hero]");
+    if (!hero) {
+      setStickyOn(true);
+      return;
+    }
     const check = (): void => {
-      // Measured against the hero's real bottom edge, not a viewport fraction,
-      // so the handoff lands at the same point on every screen size. A page with
-      // no hero has nothing to hand off from, so the header is simply on.
-      const hero = document.querySelector("[data-hero]");
-      if (!hero) {
-        setStickyOn(true);
-        return;
-      }
-      setStickyOn(hero.getBoundingClientRect().bottom <= 0);
+      // Measured against the hero's real bottom edge, not a viewport fraction, so
+      // the handoff lands at the same point on every screen size.
+      const rect = hero.getBoundingClientRect();
+      /* A hero with no height has not been laid out yet: the stylesheet supplies its
+         aspect-ratio, and before that lands the box is empty. Its bottom then reads 0,
+         which looks exactly like "scrolled past" and would turn the header on over the
+         hero. Decide nothing until there is a real box. */
+      if (rect.height === 0) return;
+      setStickyOn(rect.bottom <= 0);
     };
     check();
+    /* Fires the moment the hero gets its real box, so a stylesheet that arrives after
+       the markup corrects itself. Without it the first wrong answer would stand until
+       the reader happened to scroll or resize. */
+    const observer = new ResizeObserver(check);
+    observer.observe(hero);
     window.addEventListener("scroll", check, { passive: true });
     window.addEventListener("resize", check);
     return () => {
+      observer.disconnect();
       window.removeEventListener("scroll", check);
       window.removeEventListener("resize", check);
     };
