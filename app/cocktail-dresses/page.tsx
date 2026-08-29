@@ -5,6 +5,7 @@ import { getCollection } from "@/lib/shopify/fetchers";
 import { toListingItem, uniqueTypeValues } from "@/lib/listing";
 import { ShopListing } from "@/components/ShopListing";
 import { ShopEditorial } from "@/components/C-ShopEditorial";
+import { SlotImage } from "@/components/SlotImage";
 import { bandCopy, faqItems, metaCopy, slotText } from "@/lib/slots";
 import { category } from "@/lib/categories";
 import { ShopFaq } from "@/components/C-ShopFaq";
@@ -45,20 +46,14 @@ export default async function CocktailDressesPage(): Promise<ReactElement> {
       {/* Editorial images (s-005.3/4/5) — curated cocktail-dress shots. */}
       <div className="bg-[var(--surface-tint)]">
         <ShopEditorial
-          media={
-            // eslint-disable-next-line @next/next/no-img-element -- local optimized asset
-            <img src="/assets/cocktail/ck-onmodel.webp" alt="A SHER cocktail dress worn on a model" className="h-full w-full object-cover" />
-          }
+          media={<SlotImage slot="s-005.3.image-1" />}
           fullBleed
           mobileFirst="media"
           mobileAlign="right"
           {...bandCopy("s-005.3")}
         />
         <ShopEditorial
-          media={
-            // eslint-disable-next-line @next/next/no-img-element -- local optimized asset
-            <img src="/assets/cocktail/ck-lengths.webp" alt="A SHER cocktail dress showing its length on a model" className="h-full w-full object-cover" />
-          }
+          media={<SlotImage slot="s-005.4.image-1" />}
           mirror
           fullBleed
           mobileFirst="media"
@@ -66,10 +61,7 @@ export default async function CocktailDressesPage(): Promise<ReactElement> {
           {...bandCopy("s-005.4")}
         />
         <ShopEditorial
-          media={
-            // eslint-disable-next-line @next/next/no-img-element -- local optimized asset
-            <img src="/assets/cocktail/ck-satin.webp" alt="Close satin detail of a SHER cocktail dress" className="h-full w-full object-cover" />
-          }
+          media={<SlotImage slot="s-005.5.image-1" />}
           fullBleed
           mobileFirst="media"
           mobileAlign="right"

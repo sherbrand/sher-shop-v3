@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import type { ReactElement } from "react";
 import { HeroTitle } from "@/components/C-HeroTitle";
 import { EditorialSplit } from "@/components/C-EditorialSplit";
+import { SlotImage } from "@/components/SlotImage";
 import { JsonLd } from "@/components/JsonLd";
 import { breadcrumbLd, pageMetadata } from "@/lib/seo";
 import { bandCopy, metaCopy, slotText } from "@/lib/slots";
@@ -30,8 +31,8 @@ export default function AboutPage(): ReactElement {
       />
 
       {/* Editorial images (s-007.2/3) still missing (MVP) — media left empty. */}
-      <EditorialSplit {...bandCopy("s-007.2")} />
-      <EditorialSplit mirror {...bandCopy("s-007.3")} />
+      <EditorialSplit media={<SlotImage slot="s-007.2.image-1" />} {...bandCopy("s-007.2")} />
+      <EditorialSplit mirror media={<SlotImage slot="s-007.3.image-1" />} {...bandCopy("s-007.3")} />
     </main>
   );
 }
