@@ -131,7 +131,10 @@ export default async function ProductPage({
   const related: GridProduct[] = others.slice(0, 3).map(toGridProduct);
 
   return (
-    <main className="mx-auto flex max-w-[var(--container)] flex-col gap-[var(--space-9)] px-[var(--gutter)] py-[var(--space-7)]">
+    /* C-ProductPanel carries its own gutters (its buy column pads to --gutter),
+       so the band runs full-bleed and the gallery meets the screen edge. Only
+       the related rail below takes the page container. */
+    <main className="flex flex-col gap-[var(--space-9)] pb-[var(--space-7)]">
       <JsonLd
         data={productLd({
           name: product.title,
@@ -167,6 +170,7 @@ export default async function ProductPage({
       {/* S-006.2 — a swipe rail of three, with the two back buttons in its last
           cell. The first points at the product's own category, the second at the
           whole shop; a product with no category shows only the second. */}
+      <div className="mx-auto flex w-full max-w-[var(--container)] flex-col px-[var(--gutter)]">
       <RelatedProducts
         products={related}
         layout="stacked"
@@ -179,6 +183,7 @@ export default async function ProductPage({
           Back to All Products
         </Button>
       </RelatedProducts>
+      </div>
     </main>
   );
 }

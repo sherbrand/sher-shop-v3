@@ -67,7 +67,10 @@ export function ShopTitle({
 
   return (
     <header
-      className={`@container ${start ? "ml-0 mr-0" : "mx-auto"} ${className}`}
+      /* w-full, not margin:auto. The root declares its own container, and an
+         inline-size container cannot take its width from its contents: as a
+         shrink-to-fit flex item it would collapse to one word per line. */
+      className={`@container w-full ${className}`}
     >
       {/* The padding goes on this INNER element: the band root is the query
           container, and an element cannot query its own container. */}
