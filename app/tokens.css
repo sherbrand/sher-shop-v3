@@ -166,7 +166,10 @@
   --control-min-w: 48px; /* wide chip's minimum width, so "XS" and "XXL" agree */
   --thumb-w:      44px;  /* gallery thumb strip cell */
   --thumb-h:      58px;  /* 44 x 3:4-ish, matching the shot ratio */
-  --dot-sm:       8px;   /* carousel dot */
+  --dot-sm:       10px;  /* carousel dot */
+  --dot-wide:     26px;  /* the active dot, stretched to a pill */
+  --dot-bar-h:    2px;   /* the bars indicator's hairline height */
+  --hc-arrow-size: 48px; /* hero carousel arrow disc */
   --badge-sm:     30px;  /* play badge disc over a thumbnail */
   /* Optical hedge: half the difference between the 44px control and its ~26px glyph.
      Pulls header glyphs out to the page gutter. Derived, so not a 4px rung. */
