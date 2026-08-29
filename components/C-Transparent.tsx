@@ -16,7 +16,7 @@ import { Logo } from "@/components/Logo";
 export interface TransparentProps {
   /** Announcement bar copy. Defaults to the shipping line. */
   announcement?: ReactNode;
-  /** Announcement bar tone. Defaults to the bar's own tone. */
+  /** Tone of the embedded announcement bar. Default "accent". */
   announcementTone?: "dark" | "light" | "accent";
   /** Hamburger handler — open C-Menu. */
   onMenu?: () => void;
@@ -33,7 +33,7 @@ export interface TransparentProps {
 
 export function Transparent({
   announcement,
-  announcementTone,
+  announcementTone = "accent",
   onMenu,
   onCart,
   cartCount = 0,
@@ -49,10 +49,13 @@ export function Transparent({
 
       <div className="relative px-[var(--gutter)]">
         <div className="mx-auto flex h-[var(--header-h)] max-w-[var(--container)] items-center justify-between">
+          {/* Optical hedge: a 44px button centers a ~26px glyph, leaving ~9px of dead
+              space inside the box. Pull the first and last buttons back by that much
+              so the GLYPH lines up with the page gutter, not the button box. */}
           <IconButton
             label="Open menu"
             onClick={onMenu}
-            className="text-[var(--sher-white)]"
+            className="ml-[calc(var(--glyph-hedge)*-1)] text-[var(--sher-white)]"
           >
             <Icon name="menu" size={26} />
           </IconButton>
@@ -60,7 +63,7 @@ export function Transparent({
           <IconButton
             label={`Open cart${cartCount ? `, ${cartCount} items` : ""}`}
             onClick={onCart}
-            className="relative text-[var(--sher-white)]"
+            className="relative mr-[calc(var(--glyph-hedge)*-1)] text-[var(--sher-white)]"
           >
             <Icon name={cartIcon} size={24} />
             {cartCount > 0 && (

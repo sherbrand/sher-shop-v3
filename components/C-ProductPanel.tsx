@@ -417,7 +417,12 @@ export function ProductPanel({
               centring. */}
           <div className="bg-[var(--surface-page)] @min-[768px]:sticky @min-[768px]:top-0 @min-[768px]:flex @min-[768px]:max-h-[100cqh] @min-[768px]:min-h-[100cqh] @min-[768px]:overflow-y-auto @min-[768px]:[align-items:safe_center]">
             <div className="mx-auto flex max-w-[60ch] flex-col items-center gap-[var(--space-5)] px-[var(--gutter)] py-[var(--space-8)] text-center @min-[768px]:p-[var(--space-8)]">
-              {breadcrumb.length > 0 && <Breadcrumb items={breadcrumb} className="justify-center" />}
+              {/* The centered panel is narrow, so the current crumb wraps instead of
+                  losing its tail — the product name is the longest and the most
+                  important part of the trail. */}
+              {breadcrumb.length > 0 && (
+                <Breadcrumb items={breadcrumb} wrap className="justify-center" />
+              )}
 
               <Heading level={headingLevel} className={`${HEADING} ${STEP_TITLE}`}>
                 {name}

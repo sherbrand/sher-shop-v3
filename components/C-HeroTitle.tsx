@@ -17,7 +17,8 @@ export interface HeroTitleProps {
   breadcrumb?: Crumb[];
   /** Small uppercase label above the heading. */
   eyebrow?: string;
-  /** The main heading text. Omit to leave the heading out. */
+  /** The main heading text. Omit it and no heading tag is rendered at all, rather
+   *  than an empty one — for a band that is only eyebrow, lead, and actions. */
   heading?: string;
   /** HTML level (h1–h4) for the heading — changes the tag only, not the style. Default 1. */
   headingLevel?: HeadingLevel;
@@ -103,7 +104,6 @@ export function HeroTitle({
             {eyebrow}
           </span>
         )}
-        {/* Omitted rather than rendered empty when the slot has no row (F-008). */}
         {heading && (
           <Heading
             level={headingLevel}

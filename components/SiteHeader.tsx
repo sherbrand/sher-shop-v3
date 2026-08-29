@@ -28,6 +28,10 @@ export function SiteHeader({
   const pathname = usePathname();
   const router = useRouter();
   const isHome = pathname === "/";
+  // S-006: the product page opens on a full-bleed gallery shot, so the header
+  // starts off-screen. C-Sticky's own 1024px query then splits how it returns:
+  // distance below the breakpoint, scroll direction above it.
+  const isProduct = pathname.startsWith("/products/");
 
   const [menuOpen, setMenuOpen] = useState(false);
   // Off Home the sticky header is on from the first paint, so it never slides in.
@@ -106,6 +110,8 @@ export function SiteHeader({
           onMenu={openMenu}
           onCart={openCart}
           cartCount={cartCount}
+          hiddenAtRest={isProduct}
+          reveal={isProduct ? "threshold" : "direction"}
         />
       </div>
       <Menu
