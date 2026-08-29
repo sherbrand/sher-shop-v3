@@ -18,9 +18,11 @@ import { Logo } from "@/components/Logo";
      reveal="direction" — returns on an upward scroll, hides again going down,
        and re-hides at the very top. The desktop behavior.
      reveal="threshold" — stays away until `revealRatio` of the first
-       `revealTarget` has scrolled past, then stays for good. The touch
-       behavior: a swipeable gallery makes scroll direction an unreliable
-       intent signal, so distance is used instead.
+       `revealTarget` has scrolled past. The touch behavior: a swipeable
+       gallery makes scroll direction an unreliable intent signal, so
+       distance is used instead. It is NOT latched: scroll back to the top
+       and the header hides again, so the full-bleed first band meets the
+       top edge as it did on arrival.
 
    Both are tracked at once and both resolve in CSS: the 1024px container query
    picks direction above the breakpoint and threshold below it, so one page gets
@@ -40,10 +42,11 @@ export interface StickyProps {
    *  Default false. */
   hiddenAtRest?: boolean;
   /** How the header returns. "direction" (default) reveals on an upward scroll
-   *  and hides going down. "threshold" stays away until `revealRatio` of
-   *  `revealTarget` has scrolled past, then stays for good. Both are tracked;
-   *  the 1024px container query picks direction above the breakpoint and
-   *  threshold below it. */
+   *  and hides going down — with `hiddenAtRest` it stays hidden all the way down
+   *  from the top, with no distance floor. "threshold" stays away until
+   *  `revealRatio` of `revealTarget` has scrolled past. Neither latches: scrolling
+   *  back to the top hides the header again. Both are tracked; the 1024px container
+   *  query picks direction above the breakpoint and threshold below it. */
   reveal?: "direction" | "threshold";
   /** CSS selector for the element whose HEIGHT sets the threshold distance.
    *  Falls back to the scrollport height. */
@@ -128,14 +131,16 @@ export function Sticky({
           : host
             ? host.clientHeight
             : window.innerHeight;
-        // Latched: once past, it stays past — the header does not re-hide if
-        // the reader scrolls back to the top.
-        setPast((p) => p || y > span * revealRatio);
+        setPast(y > span * revealRatio);
       }
 
-      // Ignore jitter, and never hide the header before it has cleared its own height.
+      // Ignore jitter. A hidden-at-rest header stays hidden all the way DOWN from
+      // the top: any downward move keeps it away, with no distance floor to open a
+      // gap where it would slide in and straight back out. It returns only on an
+      // upward move. The ordinary header keeps its floor, which is there to ignore
+      // small scrolls near the top.
       if (Math.abs(y - last) >= 6) {
-        setAway(hiddenAtRest && y <= 8 ? true : y > last && y > 80);
+        setAway(hiddenAtRest ? y <= 8 || y > last : y > last && y > 80);
         last = y;
       }
     };

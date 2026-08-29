@@ -104,7 +104,9 @@ const RAIL = [
   "grid grid-cols-1 gap-[2px]",
   "@max-[767.98px]:grid-flow-col @max-[767.98px]:grid-cols-none @max-[767.98px]:auto-cols-[100%]",
   "@max-[767.98px]:gap-0 @max-[767.98px]:overflow-x-auto @max-[767.98px]:snap-x @max-[767.98px]:snap-proximity",
-  "@max-[767.98px]:overscroll-x-contain @max-[767.98px]:touch-pan-y @max-[767.98px]:cursor-grab",
+  /* BOTH axes: the JS drag handles the POINTER only and declines touch, so native
+     panning is what moves this rail on a phone. pan-y alone would freeze it. */
+  "@max-[767.98px]:overscroll-x-contain @max-[767.98px]:[touch-action:pan-x_pan-y] @max-[767.98px]:cursor-grab",
   "@max-[767.98px]:[scrollbar-width:none] @max-[767.98px]:[&::-webkit-scrollbar]:hidden",
   "@max-[767.98px]:[&>*]:snap-start",
   "@max-[767.98px]:data-[drag=1]:cursor-grabbing @max-[767.98px]:data-[drag=1]:snap-none",
@@ -128,7 +130,7 @@ const DOTS = [
 const THUMBS = [
   "hidden @max-[767.98px]:flex flex-nowrap gap-[var(--space-2)]",
   "pl-[var(--space-2)] pt-[var(--space-3)] overflow-x-auto overscroll-x-contain",
-  "touch-pan-x cursor-grab [-webkit-overflow-scrolling:touch]",
+  "[touch-action:pan-x_pan-y] cursor-grab [-webkit-overflow-scrolling:touch]",
   "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden data-[drag=1]:cursor-grabbing",
   "[&>button]:relative [&>button]:shrink-0 [&>button]:grow-0 [&>button]:basis-auto",
   "[&>button]:h-[var(--thumb-h)] [&>button]:w-[var(--thumb-w)] [&>button]:cursor-pointer",
