@@ -56,7 +56,7 @@ export default async function HomePage(): Promise<ReactElement> {
           data-hero
           className="mt-[calc(-1*(var(--header-h)+var(--announce-h)))]"
         >
-          <HeroCarousel slides={HERO_SLIDES} indicator="bars" />
+          <HeroCarousel slides={HERO_SLIDES} indicator="bars" fillScreen />
         </div>
       )}
 

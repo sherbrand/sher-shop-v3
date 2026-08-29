@@ -248,10 +248,16 @@ export function HeroCarousel({
               key={k}
               className={[
                 "relative shrink-0 grow-0 basis-full overflow-hidden",
-                "aspect-[var(--ratio-2-3)] @min-[768px]:basis-1/2 @min-[1024px]:aspect-[var(--ratio-4-5)]",
-                /* 100cqh resolves against the nearest size container, the viewport
+                "aspect-[var(--ratio-2-3)] @min-[768px]:basis-1/2",
+                /* The two arms are exclusive on purpose. Emitting both an aspect
+                   ratio and aspect-auto for the same query would leave the winner to
+                   whichever Tailwind happens to print last.
+
+                   100cqh resolves against the nearest size container, the viewport
                    here, since the band is inline-size only. */
-                fillScreen ? "@min-[1024px]:aspect-auto @min-[1024px]:h-[100cqh]" : "",
+                fillScreen
+                  ? "@min-[1024px]:aspect-auto @min-[1024px]:h-[100cqh]"
+                  : "@min-[1024px]:aspect-[var(--ratio-4-5)]",
               ].join(" ")}
             >
               {slide.href ? (
