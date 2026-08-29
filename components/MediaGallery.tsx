@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { ReactElement, ReactNode } from "react";
 import { Icon } from "@/components/Icon";
+import { sized } from "@/lib/media";
 
 /* MediaGallery — the product page's media gallery: a thumbnail strip beside a
    main stage. Media order is fixed by the caller (video first, then images).
@@ -13,16 +14,6 @@ import { Icon } from "@/components/Icon";
    The strip turns vertical at the GALLERY's own 380px. Nested in C-ProductPanel's
    two-up grid it receives about half the frame, so a page-level breakpoint would
    never fire. */
-
-// Shopify's image CDN resizes via a `width` query param. Requesting a
-// display-sized image instead of the full-resolution original is the single
-// biggest win for the product page's LCP and total bytes (B-011). Non-Shopify
-// or already-parameterised sizes are left as given.
-function sized(url: string | undefined, width: number): string | undefined {
-  if (!url || !url.includes("cdn.shopify.com")) return url;
-  const separator = url.includes("?") ? "&" : "?";
-  return `${url}${separator}width=${width}`;
-}
 
 export interface MediaItem {
   /** "video" or "image". Video renders in the stage with a play badge on its thumb. */
@@ -36,7 +27,8 @@ export interface MediaItem {
   /** Placeholder node used when there is no `src`. */
   node?: ReactNode;
   /** Optional distinct thumbnail. A node renders in the strip; a plain URL string
-   *  is what C-ProductPanel's stacked thumb strip paints as a background image. */
+   *  is painted as a background image by C-ProductPanel's stacked thumb strip,
+   *  and rendered as an <img> by this gallery's strip. */
   thumb?: ReactNode;
 }
 
@@ -112,7 +104,18 @@ export function MediaGallery({ media = [], className = "" }: MediaGalleryProps):
                 i === active ? "border-[var(--surface-inverse)]" : "border-[var(--border-default)]",
               ].join(" ")}
             >
-              {item.thumb ||
+              {/* A string `thumb` is a plain URL, already sized by the caller.
+                  Render it as an image, or it prints as text. */}
+              {typeof item.thumb === "string" ? (
+                // eslint-disable-next-line @next/next/no-img-element -- thumbs come from the Shopify CDN, sized by the caller
+                <img
+                  src={item.thumb}
+                  alt=""
+                  loading="lazy"
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                item.thumb ||
                 item.node ||
                 (item.src && item.type !== "video" ? (
                   // eslint-disable-next-line @next/next/no-img-element -- thumbs come from the Shopify CDN, sized down here
@@ -122,7 +125,8 @@ export function MediaGallery({ media = [], className = "" }: MediaGalleryProps):
                     loading="lazy"
                     className="h-full w-full object-cover"
                   />
-                ) : null)}
+                ) : null)
+              )}
               {item.type === "video" && (
                 <span
                   aria-hidden="true"

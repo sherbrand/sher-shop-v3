@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import type { ReactElement } from "react";
 import { notFound } from "next/navigation";
+import Image from "next/image";
 import { getProduct, getProducts } from "@/lib/shopify/fetchers";
 import type { Product } from "@/lib/shopify/types";
 import { RelatedProducts } from "@/components/C-RelatedProducts";
@@ -10,6 +11,7 @@ import { toGridProduct } from "@/lib/listing";
 import type { Crumb } from "@/components/Breadcrumb";
 import type { SizeOption } from "@/components/SizeSelector";
 import type { MediaItem } from "@/components/MediaGallery";
+import { sized } from "@/lib/media";
 import { JsonLd } from "@/components/JsonLd";
 import { breadcrumbLd, pageMetadata, productLd } from "@/lib/seo";
 import { ProductDetail } from "./product-detail";
@@ -30,18 +32,55 @@ function toSizes(product: Product): SizeOption[] {
   });
 }
 
-// Gallery order per F-010: the video(s) first, then the images.
+/* One shot's share of the viewport in C-ProductPanel's stacked layout: the media
+   column is 1.55 of 1.55+1 from 768px, and the shot rail splits into two columns
+   from 1024px. */
+const SHOT_SIZES = "(min-width: 1024px) 31vw, (min-width: 768px) 61vw, 100vw";
+
+/* Gallery order per F-010: the video(s) first, then the images.
+   Each item carries both shapes the two panel layouts read. The beside layout
+   (MediaGallery) renders `src` and `poster` itself. The stacked layout renders
+   `node` in the stage and paints a string `thumb` in its thumb strip, so an item
+   without those comes out empty there. */
 function toMedia(product: Product): MediaItem[] {
+  const posterUrl = product.featuredImage?.url;
   const videos: MediaItem[] = product.videos.map((v): MediaItem => ({
     type: "video",
     src: v.url,
-    poster: product.featuredImage?.url,
+    poster: posterUrl,
     alt: product.title,
+    node: (
+      <video
+        src={v.url}
+        poster={sized(posterUrl, 1200)}
+        muted
+        loop
+        playsInline
+        autoPlay
+        // The poster paints the cell straight away and the file itself is never
+        // preloaded, so the video does not compete for LCP (F-010, B-011).
+        preload="none"
+        aria-label={product.title}
+      />
+    ),
+    thumb: sized(posterUrl, 200),
   }));
-  const images: MediaItem[] = product.images.map((img): MediaItem => ({
+  const images: MediaItem[] = product.images.map((img, i): MediaItem => ({
     type: "image",
     src: img.url,
     alt: img.altText ?? product.title,
+    node: (
+      <Image
+        src={img.url}
+        alt={img.altText ?? product.title}
+        fill
+        sizes={SHOT_SIZES}
+        // The first image is the largest thing above the fold (B-011).
+        priority={i === 0}
+        className="object-cover"
+      />
+    ),
+    thumb: sized(img.url, 200),
   }));
   return [...videos, ...images];
 }

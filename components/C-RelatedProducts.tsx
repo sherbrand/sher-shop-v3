@@ -61,7 +61,9 @@ const HEADING =
 /* ~2.2 cells so the next card is clipped as a scroll cue, then a static 4-up. */
 const RAIL = [
   "grid grid-flow-col auto-cols-[calc((100%-1.2*var(--space-4))/2.2)] gap-[var(--space-4)]",
-  "overflow-x-auto snap-x snap-mandatory pb-[var(--space-2)] overscroll-x-contain touch-pan-y",
+  /* No touch-action override: this rail has no pointer-drag fallback, so
+     pan-y would leave a horizontal swipe with nothing to scroll it. */
+  "overflow-x-auto snap-x snap-mandatory pb-[var(--space-2)] overscroll-x-contain",
   "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
   "[&>*]:snap-start [&>*]:min-w-0",
   "@min-[768px]:auto-cols-[calc((100%-1.2*var(--space-5))/2.2)] @min-[768px]:gap-[var(--space-5)]",
