@@ -158,10 +158,17 @@ export function Sticky({
     <header
       ref={rootRef}
       className={[
-        /* The header is fixed/sticky, so it sits outside every layout container.
-           It declares its own container here, so the hide queries below always
-           have something to measure. Its own width is the viewport width. */
-        "@container sticky top-0 z-[var(--z-header)]",
+        /* The header sits outside every layout container, so it declares its own
+           container here and the hide queries below always have something to
+           measure. It spans its containing block: the viewport in an app, or a
+           nearer ancestor that establishes one for fixed descendants. */
+        "@container top-0 z-[var(--z-header)]",
+        /* hiddenAtRest holds NO space in the flow, so the full-bleed first band
+           meets the top edge. The mode exists for that; a sticky root would
+           reserve its height and leave a blank strip above the band. Everywhere
+           else it stays sticky and reserves its height, so nothing jumps on the
+           Home handoff. */
+        hiddenAtRest ? "fixed inset-x-0" : "sticky",
         className,
       ].join(" ")}
     >
