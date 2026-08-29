@@ -56,7 +56,7 @@ export default async function HomePage(): Promise<ReactElement> {
           data-hero
           className="mt-[calc(-1*(var(--header-h)+var(--announce-h)))]"
         >
-          <HeroCarousel slides={HERO_SLIDES} />
+          <HeroCarousel slides={HERO_SLIDES} indicator="bars" />
         </div>
       )}
 
@@ -68,7 +68,9 @@ export default async function HomePage(): Promise<ReactElement> {
         description={slotText("s-001.2.subtitle")}
       />
 
-      <div className="mx-auto mt-[var(--space-5)] max-w-[var(--container-media)]">
+      {/* No top margin: C-HeroTitle's own padding sets the gap above and below
+          it, so one band owns that rhythm rather than two. */}
+      <div className="mx-auto max-w-[var(--container-media)]">
         <CategoryGrid
           items={HOME_CATEGORIES}
           cta={{ label: "Shop all Products", href: "/shop" }}
