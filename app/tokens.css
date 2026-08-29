@@ -126,7 +126,19 @@
   --size-hero-sm:      1.75rem; --size-hero-md:      2.1rem;  --size-hero-lg:      2.5rem;
   --size-section-sm:      1.5rem;  --size-section-md:      1.8rem;  --size-section-lg:      2.1rem;
   --size-title-sm:      1.35rem; --size-title-md:      1.55rem; --size-title-lg:      1.75rem;
+
+  /* Breadcrumb current-label behaviour. Real tokens with a system default, so a
+     narrow placement re-sets them in a scope instead of hardcoding a local value:
+     C-ProductPanel's centred panel sets wrap: normal so the product name keeps its
+     tail rather than ellipsis-trimming. */
+  --crumb-measure: 22ch;    /* @kind other */
+  --crumb-wrap:    nowrap;  /* @kind other */
 }
+
+/* Narrow placements re-set the crumb tokens in a scope, so the product name wraps
+   rather than ellipsis-trimming. Put data-crumb="wrap" on the crumb or an ancestor. */
+[data-crumb="wrap"] { --crumb-measure: none; /* @kind other */
+  --crumb-wrap: normal; /* @kind other */ }
 /* SHER — Spacing, radius, depth, layout tokens
    Spacing rhythm was open ("None yet"): proposed a 4px base, generous editorial
    scale — fashion layouts breathe. Radius character is "small". Depth is tonal:
@@ -159,6 +171,9 @@
   --thumb-h:      58px;  /* 44 x 3:4-ish, matching the shot ratio */
   --dot-sm:       8px;   /* carousel dot */
   --badge-sm:     30px;  /* play badge disc over a thumbnail */
+  /* Optical hedge: half the difference between the 44px control and its ~26px glyph.
+     Pulls header glyphs out to the page gutter. Derived, so not a 4px rung. */
+  --glyph-hedge:  9px;
 
   /* Radius — small, understated */
   --radius-none: 0;

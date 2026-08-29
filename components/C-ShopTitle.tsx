@@ -9,9 +9,9 @@ import { ButtonPill } from "@/components/ButtonPill";
 
 /* C-ShopTitle — the page header band for Shop and category pages: a breadcrumb, a
    heading, an optional description, and an optional row of filter pills. Heading
-   and description sizes step against the band's OWN width. The band caps itself at
-   the prose measure and centres in whatever the page gives it, so it owns its own
-   width rather than the page. */
+   and description sizes step against the band's OWN width. The band spans the page
+   so those steps can reach their large size; the readable cap sits on the
+   description alone. */
 
 export interface FilterPill {
   label: string;
@@ -25,7 +25,8 @@ export interface FilterPill {
 export interface ShopTitleProps {
   /** Breadcrumb trail. */
   breadcrumb?: Crumb[];
-  /** Page heading. Omit to leave the heading out. */
+  /** Page heading. Omit it and no heading tag is rendered at all, rather than an
+   *  empty one — same as C-HeroTitle. */
   heading?: string;
   /** HTML level (h1–h4) for the heading — changes the tag only, not the style. Default 1. */
   headingLevel?: HeadingLevel;
@@ -66,15 +67,22 @@ export function ShopTitle({
 
   return (
     <header
-      className={`@container flex max-w-[var(--container-prose)] flex-col items-stretch gap-[var(--space-3)] ${
-        start ? "ml-0 mr-0 text-left" : "mx-auto text-center"
-      } ${className}`}
+      /* w-full, not margin:auto. The root declares its own container, and an
+         inline-size container cannot take its width from its contents: as a
+         shrink-to-fit flex item it would collapse to one word per line. */
+      className={`@container w-full ${className}`}
     >
+      {/* The padding goes on this INNER element: the band root is the query
+          container, and an element cannot query its own container. */}
+      <div
+        className={`flex flex-col items-stretch gap-[var(--space-3)] @max-[639.98px]:px-[var(--space-4)] ${
+          start ? "text-left" : "text-center"
+        }`}
+      >
       {breadcrumb.length > 0 && (
         <Breadcrumb items={breadcrumb} className={start ? "justify-start" : "justify-center"} />
       )}
 
-      {/* Omitted rather than rendered empty when the slot has no row (F-008). */}
       {heading && (
         <Heading
           level={headingLevel}
@@ -123,6 +131,7 @@ export function ShopTitle({
           })}
         </div>
       )}
+      </div>
     </header>
   );
 }

@@ -104,7 +104,9 @@ const RAIL = [
   "grid grid-cols-1 gap-[2px]",
   "@max-[767.98px]:grid-flow-col @max-[767.98px]:grid-cols-none @max-[767.98px]:auto-cols-[100%]",
   "@max-[767.98px]:gap-0 @max-[767.98px]:overflow-x-auto @max-[767.98px]:snap-x @max-[767.98px]:snap-proximity",
-  "@max-[767.98px]:overscroll-x-contain @max-[767.98px]:touch-pan-y @max-[767.98px]:cursor-grab",
+  /* BOTH axes: the JS drag handles the POINTER only and declines touch, so native
+     panning is what moves this rail on a phone. pan-y alone would freeze it. */
+  "@max-[767.98px]:overscroll-x-contain @max-[767.98px]:[touch-action:pan-x_pan-y] @max-[767.98px]:cursor-grab",
   "@max-[767.98px]:[scrollbar-width:none] @max-[767.98px]:[&::-webkit-scrollbar]:hidden",
   "@max-[767.98px]:[&>*]:snap-start",
   "@max-[767.98px]:data-[drag=1]:cursor-grabbing @max-[767.98px]:data-[drag=1]:snap-none",
@@ -128,7 +130,7 @@ const DOTS = [
 const THUMBS = [
   "hidden @max-[767.98px]:flex flex-nowrap gap-[var(--space-2)]",
   "pl-[var(--space-2)] pt-[var(--space-3)] overflow-x-auto overscroll-x-contain",
-  "touch-pan-x cursor-grab [-webkit-overflow-scrolling:touch]",
+  "[touch-action:pan-x_pan-y] cursor-grab [-webkit-overflow-scrolling:touch]",
   "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden data-[drag=1]:cursor-grabbing",
   "[&>button]:relative [&>button]:shrink-0 [&>button]:grow-0 [&>button]:basis-auto",
   "[&>button]:h-[var(--thumb-h)] [&>button]:w-[var(--thumb-w)] [&>button]:cursor-pointer",
@@ -417,7 +419,12 @@ export function ProductPanel({
               centring. */}
           <div className="bg-[var(--surface-page)] @min-[768px]:sticky @min-[768px]:top-0 @min-[768px]:flex @min-[768px]:max-h-[100cqh] @min-[768px]:min-h-[100cqh] @min-[768px]:overflow-y-auto @min-[768px]:[align-items:safe_center]">
             <div className="mx-auto flex max-w-[60ch] flex-col items-center gap-[var(--space-5)] px-[var(--gutter)] py-[var(--space-8)] text-center @min-[768px]:p-[var(--space-8)]">
-              {breadcrumb.length > 0 && <Breadcrumb items={breadcrumb} className="justify-center" />}
+              {/* The centered panel is narrow, so the current crumb wraps instead of
+                  losing its tail — the product name is the longest and the most
+                  important part of the trail. */}
+              {breadcrumb.length > 0 && (
+                <Breadcrumb items={breadcrumb} wrap className="justify-center" />
+              )}
 
               <Heading level={headingLevel} className={`${HEADING} ${STEP_TITLE}`}>
                 {name}
