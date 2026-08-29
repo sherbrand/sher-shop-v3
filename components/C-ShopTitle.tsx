@@ -79,8 +79,14 @@ export function ShopTitle({
           start ? "text-left" : "text-center"
         }`}
       >
+      {/* mx-auto as well as justify-center: the trail caps its own width, so
+          justify-content only centres the crumbs inside that box. Without the auto
+          margins the box itself stays at the left of the band. */}
       {breadcrumb.length > 0 && (
-        <Breadcrumb items={breadcrumb} className={start ? "justify-start" : "justify-center"} />
+        <Breadcrumb
+          items={breadcrumb}
+          className={start ? "justify-start" : "mx-auto justify-center"}
+        />
       )}
 
       {heading && (

@@ -424,7 +424,7 @@ export function ProductPanel({
                 60ch at mid band widths. Cap against the track and the measure. */}
             <div className="mx-auto flex min-w-0 max-w-[min(60ch,100%)] flex-col items-center gap-[var(--space-5)] px-[var(--gutter)] py-[var(--space-8)] text-center @min-[768px]:p-[var(--space-8)]">
               {breadcrumb.length > 0 && (
-                <Breadcrumb items={breadcrumb} className="justify-center" />
+                <Breadcrumb items={breadcrumb} className="mx-auto justify-center" />
               )}
 
               <Heading level={headingLevel} className={`${HEADING} ${STEP_TITLE}`}>
