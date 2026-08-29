@@ -114,13 +114,15 @@ export default async function ProductPage({
   const product = await getProduct(handle);
   if (!product) notFound();
 
-  /* S-006.1 — Shop › Category › product. A product carries the all-products
-     collection as well as its category, so the category is picked out by handle.
-     One with no category falls back to Shop › product. */
+  /* S-006.1 — Category › product. A product carries the all-products collection
+     as well as its category, so the category is picked out by handle. One with
+     no category falls back to Shop › product, so the trail always has the two
+     crumbs a BreadcrumbList needs. */
   const category = categoryFor(product.collectionHandles);
   const breadcrumb: Crumb[] = [
-    { label: "Shop", href: "/shop" },
-    ...(category ? [{ label: category.label, href: category.href }] : []),
+    category
+      ? { label: category.label, href: category.href }
+      : { label: "Shop", href: "/shop" },
     { label: product.title },
   ];
   const path = `/products/${handle}`;
