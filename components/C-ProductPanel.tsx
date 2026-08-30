@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { CSSProperties, PointerEvent, MouseEvent, ReactElement, RefObject } from "react";
 import { Heading } from "@/components/Heading";
 import type { HeadingLevel } from "@/components/Heading";
@@ -73,6 +73,10 @@ export interface ProductPanelProps {
    *  `dots` or a draggable thumbnail strip. Default "dots". Ignored when layout
    *  is "beside". */
   indicator?: "dots" | "thumbs";
+  /** How a tapped dot or thumbnail reaches its shot. "slide" (default) scrolls the
+   *  rail there. "fade" crossfades straight to it, so shot 1 to shot 7 does not
+   *  drag the reader through five images. The swipe is native scroll either way. */
+  transition?: "slide" | "fade";
   /** Show the quantity stepper. Default true. */
   showQuantity?: boolean;
   /** Where Preorder points when every size is sold out. Default "/contact". */
@@ -103,12 +107,15 @@ const DRAWER_LINK =
 const RAIL = [
   "grid grid-cols-1 gap-[2px]",
   "@max-[767.98px]:grid-flow-col @max-[767.98px]:grid-cols-none @max-[767.98px]:auto-cols-[100%]",
-  "@max-[767.98px]:gap-0 @max-[767.98px]:overflow-x-auto @max-[767.98px]:snap-x @max-[767.98px]:snap-proximity",
+  "@max-[767.98px]:gap-0 @max-[767.98px]:overflow-x-auto @max-[767.98px]:snap-x @max-[767.98px]:snap-mandatory",
   /* BOTH axes: the JS drag handles the POINTER only and declines touch, so native
      panning is what moves this rail on a phone. pan-y alone would freeze it. */
   "@max-[767.98px]:overscroll-x-contain @max-[767.98px]:[touch-action:pan-x_pan-y] @max-[767.98px]:cursor-grab",
   "@max-[767.98px]:[scrollbar-width:none] @max-[767.98px]:[&::-webkit-scrollbar]:hidden",
-  "@max-[767.98px]:[&>*]:snap-start",
+  /* mandatory, not proximity: a drag that stops between two shots must settle
+     on one. snap-always then caps a hard throw at ONE shot however much
+     momentum it carries. */
+  "@max-[767.98px]:[&>*]:snap-start @max-[767.98px]:[&>*]:snap-always",
   "@max-[767.98px]:data-[drag=1]:cursor-grabbing @max-[767.98px]:data-[drag=1]:snap-none",
   "@min-[1024px]:grid-cols-2",
 ].join(" ");
@@ -125,6 +132,19 @@ const DOTS = [
   "[&>button]:border-0 [&>button]:p-0 [&>button]:rounded-[var(--radius-pill)]",
   "[&>button]:bg-[var(--border-strong)]",
   "[&>button[aria-current='true']]:bg-[var(--surface-inverse)]",
+].join(" ");
+
+// Fallback when --dur-med cannot be read, matching the token's own value.
+const FADE_FALLBACK = 240;
+
+/* The crossfade overlay. Hidden from 768px, where the shots are a column rather
+   than a carousel and there is nothing to jump between. */
+const XFADE = [
+  "pointer-events-none absolute inset-0 z-[2] overflow-hidden",
+  "transition-opacity duration-[var(--dur-med)] ease-[var(--ease-out)]",
+  "motion-reduce:duration-[1ms]",
+  "[&>*]:absolute [&>*]:inset-0 [&>*]:block [&>*]:h-full [&>*]:w-full [&>*]:object-cover",
+  "@min-[768px]:hidden",
 ].join(" ");
 
 const THUMBS = [
@@ -243,24 +263,65 @@ function PlayBadge(): ReactElement {
 function StackedGallery({
   media,
   indicator,
+  transition,
 }: {
   media: MediaItem[];
   indicator: "dots" | "thumbs";
+  transition: "slide" | "fade";
 }): ReactElement {
   const railRef = useRef<HTMLDivElement>(null);
   const thumbRef = useRef<HTMLDivElement>(null);
   const railDrag = useRailDrag(railRef, true);
   const thumbDrag = useRailDrag(thumbRef, false);
   const [shot, setShot] = useState(0);
+  // the shot being crossfaded to, or null when the overlay is not in play
+  const [xfade, setXfade] = useState<number | null>(null);
+  const [lit, setLit] = useState(false);
+  const fade = transition === "fade";
 
   const onScroll = (): void => {
     const el = railRef.current;
     if (el) setShot(Math.round(el.scrollLeft / el.clientWidth));
   };
 
+  /* The overlay is torn down by transitionend normally. A transition with no
+     duration never fires one, which would strand a full-size duplicate over the
+     rail, so a timer is the floor. It reads the token rather than hardcoding, and
+     sits just past the fade: when the fade IS skipped the timer becomes the whole
+     delay, and a generous floor would mean staring at the old shot. */
+  const finish = useCallback((): void => {
+    setXfade((cur) => {
+      if (cur == null) return null;
+      const el = railRef.current;
+      if (el) el.scrollTo({ left: cur * el.clientWidth, behavior: "auto" });
+      return null;
+    });
+    setLit(false);
+  }, []);
+
+  useEffect(() => {
+    if (xfade == null) return;
+    const el = railRef.current;
+    const raw = el ? getComputedStyle(el).getPropertyValue("--dur-med") : "";
+    const ms = /ms/.test(raw) ? parseFloat(raw) : parseFloat(raw) * 1000;
+    const floor = (Number.isFinite(ms) && ms > 0 ? ms : FADE_FALLBACK) + 60;
+    const timer = window.setTimeout(finish, floor);
+    return () => window.clearTimeout(timer);
+  }, [xfade, finish]);
+
   const goTo = (i: number): void => {
     const el = railRef.current;
-    if (el) el.scrollTo({ left: i * el.clientWidth, behavior: "smooth" });
+    if (!el) return;
+    if (!fade || i === shot) {
+      el.scrollTo({ left: i * el.clientWidth, behavior: fade ? "auto" : "smooth" });
+      return;
+    }
+    setXfade(i);
+    setShot(i);
+    /* Mount at opacity 0, then flip to 1 only once the browser has PAINTED the 0.
+       One rAF is not a paint boundary: the flip can land in the same frame as the
+       mount, leaving no start value, and the transition is skipped entirely. */
+    requestAnimationFrame(() => requestAnimationFrame(() => setLit(true)));
   };
 
   const shotLabel = (item: MediaItem, i: number): string =>
@@ -268,12 +329,26 @@ function StackedGallery({
 
   return (
     <div className="min-w-0">
-      <div ref={railRef} onScroll={onScroll} className={RAIL} {...railDrag}>
-        {media.map((item, i) => (
-          <div key={i} className={SHOT}>
-            {item.node}
+      <div className="relative">
+        <div ref={railRef} onScroll={onScroll} className={RAIL} {...railDrag}>
+          {media.map((item, i) => (
+            <div key={i} className={SHOT}>
+              {item.node}
+            </div>
+          ))}
+        </div>
+        {xfade != null && (
+          /* Sits over the rail while the rail jumps underneath with no animation,
+             so a tap moves shot 1 to shot 7 without scrolling through five. */
+          <div
+            aria-hidden
+            onTransitionEnd={finish}
+            style={{ opacity: lit ? 1 : 0 }}
+            className={XFADE}
+          >
+            {media[xfade]?.node}
           </div>
-        ))}
+        )}
       </div>
 
       {indicator === "dots" && (
@@ -340,6 +415,7 @@ export function ProductPanel({
   sizeChartLabel = "Sizing",
   layout = "beside",
   indicator = "dots",
+  transition = "slide",
   showQuantity = true,
   preorderHref = "/contact",
   stacked = false,
@@ -412,7 +488,7 @@ export function ProductPanel({
     return (
       <div className={`@container ${className}`}>
         <div className="grid grid-cols-1 items-start gap-0 @min-[768px]:grid-cols-[minmax(0,1.55fr)_minmax(0,1fr)]">
-          <StackedGallery media={media} indicator={indicator} />
+          <StackedGallery media={media} indicator={indicator} transition={transition} />
 
           {/* cqh needs a size container above (the page frame). Without one the
               declaration is dropped and the panel simply sticks without vertical

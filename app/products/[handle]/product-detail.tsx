@@ -70,6 +70,7 @@ export function ProductDetail(props: ProductDetailProps): ReactElement {
       <ProductPanel
         layout="stacked"
         indicator="thumbs"
+        transition="fade"
         showQuantity={false}
         breadcrumb={props.breadcrumb}
         name={props.name}

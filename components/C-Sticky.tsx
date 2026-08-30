@@ -41,6 +41,10 @@ export interface StickyProps {
    *  imagery that should meet the top edge. `reveal` decides how it comes back.
    *  Default false. */
   hiddenAtRest?: boolean;
+  /** HOW the header comes and goes, as distinct from `reveal`, which is WHEN.
+   *  "fade" (default) does not move: only opacity changes, so there is no travel
+   *  for the eye to follow. "slide" travels the bar's own height. */
+  motion?: "fade" | "slide";
   /** How the header returns. "direction" (default) reveals on an upward scroll
    *  and hides going down — with `hiddenAtRest` it stays hidden all the way down
    *  from the top, with no distance floor. "threshold" stays away until
@@ -65,12 +69,28 @@ export interface StickyProps {
   className?: string;
 }
 
+/* The away state, per motion and per breakpoint. Written out in full rather than
+   built from a template: Tailwind reads the source as text, so a class assembled
+   at run time is never generated. */
+const AWAY = {
+  slide: {
+    below: "@max-[1023.98px]:-translate-y-full",
+    from: "@min-[1024px]:-translate-y-full",
+  },
+  fade: {
+    below:
+      "@max-[1023.98px]:opacity-0 @max-[1023.98px]:pointer-events-none @max-[1023.98px]:invisible @max-[1023.98px]:delay-[var(--dur-med)]",
+    from: "@min-[1024px]:opacity-0 @min-[1024px]:pointer-events-none @min-[1024px]:invisible @min-[1024px]:delay-[var(--dur-med)]",
+  },
+} as const;
+
 export function Sticky({
   announcement,
   announcementTone = "light",
   onMenu,
   onCart,
   hiddenAtRest = false,
+  motion = "fade",
   reveal = "direction",
   revealTarget,
   revealRatio = 0.3,
@@ -181,16 +201,20 @@ export function Sticky({
           "bg-[var(--surface-page)] text-[var(--text-strong)]",
           /* Tailwind v4 puts translate-y on the standalone `translate` property, so that
              is what transitions. Naming `transform` here animates nothing. */
-          "motion-safe:transition-[translate] motion-safe:duration-[var(--dur-med)] motion-safe:ease-[var(--ease-out)]",
+          "motion-safe:transition-[translate,opacity] motion-safe:duration-[var(--dur-med)] motion-safe:ease-[var(--ease-out)]",
+          /* An opacity-0 bar still takes taps and is still read aloud, so the fade
+             also drops pointer-events and visibility. Visibility is delayed by the
+             fade so it cannot clip it. */
+          "motion-safe:transition-[visibility] motion-safe:delay-0",
           /* Below 1024px a hidden-at-rest header is away until the page has
              scrolled past the threshold, and away again once it scrolls back
              inside it. A swipeable gallery makes scroll direction unreliable,
              so distance decides. */
-          hiddenAtRest && !past ? "@max-[1023.98px]:-translate-y-full" : "",
+          hiddenAtRest && !past ? AWAY[motion].below : "",
           /* From 1024px direction decides, for both the plain and the
              hidden-at-rest header. Resolved against the header's OWN width: a
              viewport media query here fires inside narrow frames on a wide screen. */
-          away ? "@min-[1024px]:-translate-y-full" : "",
+          away ? AWAY[motion].from : "",
         ].join(" ")}
       >
         {showAnnouncement && (

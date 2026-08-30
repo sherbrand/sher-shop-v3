@@ -60,8 +60,10 @@ export function HoverMedia({
     }
   };
 
+  /* Slower than the drawers and the header, which are UI moving out of the way.
+     This is one picture becoming another, and at 240ms it read as a cut. */
   const FADE =
-    "object-cover transition-opacity duration-[var(--dur-med)] ease-[var(--ease-out)]";
+    "object-cover transition-opacity duration-[var(--dur-slow)] ease-[var(--ease-out)]";
 
   return (
     <div
