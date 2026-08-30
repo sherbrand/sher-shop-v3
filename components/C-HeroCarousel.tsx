@@ -78,10 +78,10 @@ export interface HeroCarouselProps {
    *  the band. Default "dots". */
   indicator?: "dots" | "bars";
   /** How one banner gives way to the next. "slide" (default) moves the whole track
-   *  sideways. "fade" crossfades in place: the slots never move, so there is no track
-   *  position to reset and the wrap is the same operation as every other step. A DRAG
-   *  is always a slide in both modes, because direct manipulation has to move with
-   *  the hand. */
+   *  sideways. "fade" crossfades in place and nothing translates, so there is no
+   *  track position to reset and the wrap is the same operation as every other step.
+   *  A drag follows the hand in both, on position in slide mode and on the crossfade
+   *  in fade mode, where distance drives the blend and direction picks the banner. */
   transition?: "slide" | "fade";
   /** Give each banner a full screen of height. DESKTOP ONLY, gated at 1024px, so it
    *  can never fire on mobile or tablet. It sets the height rather than capping it:
@@ -101,7 +101,6 @@ export function HeroCarousel({
   className = "",
 }: HeroCarouselProps): ReactElement {
   const [pos, setPos] = useState(0);
-  // in fade mode a drag settles by sliding one slot; step carries that, then re-bases
   /* FADE MODE IS ONE MECHANISM: a blend, and nothing else. `target` is the banner
      being faded TO (null when settled) and `blend` is how far that fade has got, 0
      to 1. Autoplay, an arrow, a dot and a drag all set a target and move the blend,
