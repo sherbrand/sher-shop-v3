@@ -12,10 +12,10 @@ url: /about
 - Eyebrow: {Our Philosophy}
 - H2: {Sensuality That Elevates}
 - Paragraph: {Sensual does not have to mean cheap. That line sits at the center of everything we make. We design clothes that show off the body with control, not with excess. The cut hints instead of shouts. The fit flatters instead of clings. A SHER piece makes a woman feel bold and sure of herself, and it reads elegant to everyone else. That is sensuality that elevates.}
-- Image#1: A woman in a SHER corset top, sensual and refined.
+- Image#1: {a woman in a SHER corset top in ivory, worn with jeans in a marble bathroom}
 
 `S-007.3: (Eyebrow / H2 / Paragraph) | Image#1`
 - Eyebrow: {Meet the Founder}
 - H2: {The Woman Behind It, Sherilyn}
 - Paragraph: {Sherilyn founded SHER to make the sensual, well-built clothing she could not find for herself. She leads the design of every piece, from the cut of a corset top to the drape of a dress. Her standard is simple: it has to look elegant, feel strong, and last. That standard runs through the whole SHER brand.}
-- Image#1: Sherilyn, founder of SHER, in the studio.
+- Image#1: {Sherilyn, founder of SHER, in the Silver Clara Set on a balcony at sunset}

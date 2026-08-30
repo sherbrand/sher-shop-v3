@@ -17,10 +17,10 @@ url: /
 - H2.3: Shop Cocktail Dresses
 - H2.4: Shop Beachwear
 - Btn: Shop all Products
-- Image Link#1: {a hand-boned corset top on a model, front view}
-- Image Link#2: {a matching corset top and trousers on a model, full length}
-- Image Link#3: {a satin cocktail dress on a model, catching the light}
-- Image Link#4: {a SHER bikini set on a model at the water's edge}
+- Image Link#1: {a SHER corset top in ivory, strapless with structured bust seaming, against a terracotta wall}
+- Image Link#2: {a SHER matching set: a watercolor-print halter top with wide-leg trousers, on a model walking beside a reflecting pool lined with statues}
+- Image Link#3: {a SHER cocktail dress in olive ribbed knit, on a model against a plain concrete wall}
+- Image Link#4: {SHER beachwear: a black lace one piece on a model on a boat's swim platform at golden hour}
 
 `S-001.4: H2 / (Image Link#1 <to product> [Title.1 <product name>] | Image Link#2 <to product> [Title.2 <product name>])`
 - H2: {Featured Products}

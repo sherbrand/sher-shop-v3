@@ -32,7 +32,6 @@ export type ProductDetailProps = {
   media: MediaItem[];
   sizes: SizeOption[];
   variants: VariantOption[];
-  attributeLabel?: string;
   attributeValue?: string;
   preorderHref: string;
 };
@@ -74,8 +73,6 @@ export function ProductDetail(props: ProductDetailProps): ReactElement {
         compareAt={props.compareAt}
         currency={props.currency}
         description={props.description}
-        attributeLabel={props.attributeLabel}
-        attributeValue={props.attributeValue}
         media={props.media}
         sizes={props.sizes}
         size={size}
@@ -90,14 +87,19 @@ export function ProductDetail(props: ProductDetailProps): ReactElement {
         preorderHref={props.preorderHref}
       />
 
-      {/* Empty chart until D-005 Product Data exists — no invented measurements. */}
+      {/* The type attribute is a titled section in the drawer, not an eyebrow in
+          the buy column, so the buy column stays price, size, then the buttons. */}
       <Details
         open={detailsOpen}
         onClose={() => setDetailsOpen(false)}
         productName={props.name}
         intro={props.description}
+        sections={
+          props.attributeValue ? [{ title: "Type", body: props.attributeValue }] : []
+        }
       />
 
+      {/* Empty chart until D-005 Product Data is wired — no invented measurements. */}
       <Sizing
         open={sizeChartOpen}
         onClose={() => setSizeChartOpen(false)}

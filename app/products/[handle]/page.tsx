@@ -136,7 +136,7 @@ export default async function ProductPage({
     /* C-ProductPanel carries its own gutters (its buy column pads to --gutter),
        so the band runs full-bleed and the gallery meets the screen edge. Only
        the related rail below takes the page container. */
-    <main className="flex flex-col gap-[var(--space-9)] pb-[var(--space-7)]">
+    <main className="flex flex-col gap-[var(--space-9)]">
       <JsonLd
         data={productLd({
           name: product.title,
@@ -171,20 +171,24 @@ export default async function ProductPage({
       />
       {/* S-006.2 — a swipe rail of three, with the two back buttons in its last
           cell. The first points at the product's own category, the second at the
-          whole shop; a product with no category shows only the second. */}
-      <div className="mx-auto flex w-full max-w-[var(--container)] flex-col px-[var(--gutter)]">
-      <RelatedProducts
-        products={related}
-        layout="stacked"
-        backVariant="tint"
-        subtitle={slotText("s-006.2.subtitle")}
-        backLabel={category ? `Back to ${category.label}` : undefined}
-        backHref={category?.href}
-      >
-        <Button as="a" href="/shop" variant="accent">
-          Back to All Products
-        </Button>
-      </RelatedProducts>
+          whole shop; a product with no category shows only the second.
+          The tint band is the page's, not the component's: C-RelatedProducts
+          paints no background of its own. */}
+      <div className="bg-[var(--surface-tint)]">
+        <div className="mx-auto flex w-full max-w-[var(--container)] flex-col px-[var(--gutter)] py-[var(--space-7)]">
+          <RelatedProducts
+            products={related}
+            layout="stacked"
+            backVariant="tint"
+            subtitle={slotText("s-006.2.subtitle")}
+            backLabel={category ? `Back to ${category.label}` : undefined}
+            backHref={category?.href}
+          >
+            <Button as="a" href="/shop" variant="accent">
+              Back to All Products
+            </Button>
+          </RelatedProducts>
+        </div>
       </div>
     </main>
   );

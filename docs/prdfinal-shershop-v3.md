@@ -120,7 +120,7 @@
   - S-001.1 → C-HeroCarousel [indicator=bars]
   - S-001.2 → C-HeroTitle [headingLevel=1]
   - S-001.3 → C-CategoryGrid [cta]
-  - S-001.4 → C-ProductGrid [showToolbar=false, columns=1/2/2]
+  - S-001.4 → C-ProductGrid [align=center, showToolbar=false, columns=1/2/2]
   - S-001.5 → C-HeroTitle [headingLevel=2]
 
 ### S-002 — All Products
@@ -202,7 +202,6 @@
 - **Feature:** F-001 Product Grid, F-004 Add to Cart, F-006 Checkout, F-007 Size Chart, F-009 Structured Data, F-010 Product Media Gallery, F-011 Size and Stock, F-013 Breadcrumb Trail
 - **Behavior:**
   - The header starts hidden so the first gallery shot meets the top edge. C-Sticky covers how it comes back.
-  - The type attribute (closure type, set type, length, or swim type) is a Shopify product metafield read through the Storefront API.
   - Add to Cart opens C-Cart. Buy Now goes straight to Shopify checkout.
   - The details link opens C-Details. The sizing link opens C-Sizing. The shipping link opens C-Shipping.
   - "You May Also Like" shows 3 random products from anywhere in the store, not just this product's category.
@@ -332,6 +331,7 @@
   - Opens from the Details link on the product page.
   - Closes on the close control or a tap outside the drawer.
   - Shows the product name and its description, read from D-001 Product.
+  - Shows the type attribute below the description, under the label "Type", read from D-001 Product.
 
 ### C-Sizing — Size Chart Drawer
 - **Component:** Refer to /components/C-Sizing.tsx
