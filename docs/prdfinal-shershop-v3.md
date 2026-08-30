@@ -60,7 +60,7 @@
 - **If something goes wrong:** If the checkout URL is missing, show an error and keep the cart as it is.
 
 ### F-007 — Size Chart
-- **What it does:** Builds a product's size chart from D-005 Product Data. Shows only the measurements that product defines, and works out the inches table from the cm values.
+- **What it does:** Builds a product's size chart from D-005 Product Data. Shows only the measurements that product defines, and works out the cm table from the inch values.
 - **When it appears:** In the size chart drawer (C-Sizing), opened from the product page.
 - **If something goes wrong:** If a product has no chart data, hide the size chart link.
 
@@ -101,7 +101,7 @@
 | D-002 | Collection | Shopify Storefront API | The all-products collection and the four category collections, plus which products belong to each. Powers the listing grids. |
 | D-003 | Cart | Shopify Storefront API, with the cart ID in a browser cookie | Line items, quantities, subtotal, and the checkout URL. |
 | D-004 | Media Slots | `/data/d-004_media.tsv` | Every image the site places by hand, on any screen. One row per slot. Columns: `page`, `slot`, `image`, `alt`, `href`. `page` is the screen or surface the slot appears on, like `/shop` or `Footer`; it is a label for filtering and the code does not read it. `slot` is the key. `href` is optional and makes that media a link. |
-| D-005 | Product Data | `/data/d-005_product-data.tsv` | Per-product data that is not in Shopify. One row per product, keyed by slug. Columns: which image to use as the grid thumbnail, and the cm measurements as one column per size (`bust_S`, `bust_M`, …). A product fills only the measurements it uses and leaves the rest blank. Inches are worked out from the cm values. |
+| D-005 | Product Data | `/data/d-005_product-data.tsv` | Per-product data that is not in Shopify. One row per product, keyed by slug. Columns: which image to use as the grid thumbnail, and the inch measurements as one column per size (`bust_S`, `bust_M`, …). A measurement can be a single number, a range like `30-31`, `FS` for free size, or two numbers like `9 / 14` where a set has a separate top and bottom length. A product fills only the measurements it uses and leaves the rest blank. Centimeters are worked out from the inch values. |
 | D-006 | Slot Values | `/data/d-006_slot-values.tsv` | Every value the site needs that is not an image and does not come from Shopify. One row per value. Columns: `page`, `slot`, `value`. `slot` is the key and the only column the code reads; `page` is the screen or surface the value appears on, like `/shop` or `Footer`, and is a label for filtering. |
 
 ## 5. Screens
@@ -340,7 +340,7 @@
   - Opens from the size chart link on the product page.
   - Closes on the close control or a tap outside the drawer.
   - Shows only the measurements a product defines. One it leaves out, say Hip on a corset top, is left out of the table.
-  - The cm values come from D-005 Product Data. The inches table is worked out from them.
+  - The inch values come from D-005 Product Data. The cm table is worked out from them.
 
 ### C-Shipping — Shipping & Returns Drawer
 - **Component:** Refer to /components/C-Shipping.tsx

@@ -14,9 +14,16 @@ export type Image = {
   height: number | null;
 };
 
+// One video, already resolved to a single playable file. `url` is an mp4, not
+// the HLS manifest Shopify lists first: a plain <video> cannot pick a rendition
+// out of a manifest, and left to itself it settles on the smallest one.
+// `previewImage` is a still from the clip, so the poster matches what plays.
 export type Video = {
   url: string;
   mimeType: string;
+  width: number | null;
+  height: number | null;
+  previewImage: Image | null;
 };
 
 export type SelectedOption = {

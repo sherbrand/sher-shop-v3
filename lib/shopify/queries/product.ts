@@ -21,8 +21,13 @@ export const PRODUCT_FRAGMENT = /* GraphQL */ `
     media(first: 10) {
       nodes {
         mediaContentType
+        # A video's own still frame. Without it the video has no picture of its
+        # own, and the product's featured image has to stand in for it.
+        previewImage { url altText width height }
         ... on Video {
-          sources { url mimeType }
+          # format and the dimensions tell an mp4 rendition apart from the HLS
+          # manifest, which is the first source Shopify returns.
+          sources { url mimeType format width height }
         }
       }
     }
