@@ -1,42 +1,82 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import type {
-  CSSProperties,
-  MouseEvent,
-  PointerEvent,
-  ReactElement,
-  TransitionEvent,
-} from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { CSSProperties, PointerEvent, ReactElement } from "react";
 import { IconButton } from "@/components/IconButton";
 import { Icon } from "@/components/Icon";
 
-/* C-HeroCarousel — the Home hero band. A sliding "peek" carousel: one banner on
-   mobile, two at 50% each from 768px. Banners are fixed portrait crops (2:3 on
-   mobile and tablet, 4:5 from 1024px). Auto-advances by one banner with wrap;
-   prev/next arrows and dots page by one. Each banner takes a solid tone (`bg`) or
-   an image under a scrim, and an optional `href` that makes the whole banner a link.
-   The CELL WIDTH is a container query on the band's own width; the track shifts by
-   --pos and the query supplies the matching percentage, so JS never needs to know
-   how many banners are on screen.
+/* C-HeroCarousel — the Home hero band (F-008), on a NATIVE SCROLL-SNAP RAIL.
 
-   DRAG GUARD: the anchor covers the whole banner, so a pointer gesture that the
-   user means as a swipe would otherwise land as a click and navigate. Pointer-down
-   records the start point; a click that moved more than DRAG_SLOP px in either axis
-   is cancelled with preventDefault. Native image and link dragging is off
-   (draggable={false}) so the anchor cannot start a ghost-drag either. */
+   BANNERS COME IN PAIRS, and the PAIR is the page at every width: ten banners are
+   five pages on desktop (five pages of two) and five on mobile (five pages of one,
+   showing the LEFT of each pair). The right-hand banner is not rendered below
+   768px. That keeps the page count and the dot count the same everywhere, and the
+   last page is 9+10 rather than 10+1, so a page never pairs the end with the start.
 
-// px of pointer travel past which a click counts as a drag, not a tap
-const DRAG_SLOP = 10;
-// slots rendered in fade mode: up to two are on screen, the last is the drag reveal
-// two slots: the two-up peek from 768px, one banner below it. Layout only.
-const FADE_SLOTS = 2;
-// used only if the blend layer's own duration is unreadable (mounted before the CSS)
-const BLEND_FALLBACK = 360;
+   Both halves are CSS, set per cell where Tailwind can see them: only an element
+   with scroll-snap-align creates a snap position, so the left of each pair carries
+   it and the right rides along, and below 768px the right is display:none. The
+   browser does the paging.
+
+   PAIRING IS A CONTENT RULE the component cannot enforce. With an odd number of
+   banners the last page is a lone banner beside empty band. Give a hero an even
+   number.
+
+   NEVER SMOOTH-SCROLL MORE THAN ONE PAGE. scroll-snap-stop: always makes the
+   browser halt at every snap point it crosses, so a multi-page programmatic scroll
+   cannot complete: it is pinned at the adjacent snap point and gives up. The
+   property that makes one swipe move exactly one page is the same property that
+   forbids a scripted multi-page scroll. So every move past a neighbour, both wraps
+   and every dot tap, goes through the overlay instead: fade a copy in, jump with
+   behavior "auto" underneath, fade out.
+
+   BOTH WRAPS crossfade, and the condition is page arithmetic, forward when
+   active === pages - 1 and backward when active === 0. Never an intersection
+   ratio: after a smooth scroll or a momentum flick a ratio has often not settled
+   when a tick lands, and the wrap would be skipped for a rail-long scroll. */
+
+// px of pointer travel past which a mouse gesture counts as a drag, not a click
+const DRAG_SLOP = 4;
+// px/ms past which a short flick still advances a whole page
+const FLICK_V = 0.4;
+// used only if the overlay's own duration is unreadable (mounted before the CSS)
+const FADE_FALLBACK = 360;
+// ms of quiet after the last scroll event before the rail counts as settled
+const SCROLL_IDLE = 140;
+// used only if --swipe-commit is unreadable; the same token every rail commits at
+const COMMIT_FALLBACK = 56;
 
 const mod = (a: number, n: number): number => ((a % n) + n) % n;
-// Used when --swipe-commit cannot be read. Matches the token's own value.
-const COMMIT_FALLBACK = 56;
+
+const lessMotion = (): boolean =>
+  typeof window !== "undefined" &&
+  typeof window.matchMedia === "function" &&
+  window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* The rail. The snap points and the hidden half of each pair are set per cell, not
+   here. A lazy image inside display:none is never fetched, so the banners a phone
+   does not show cost it nothing. touch-action keeps vertical panning with the page. */
+const RAIL = [
+  "flex overflow-x-auto overflow-y-hidden snap-x snap-mandatory overscroll-x-contain",
+  "[touch-action:pan-x_pan-y] [-webkit-overflow-scrolling:touch]",
+  "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+  "[&>*]:snap-always",
+  // snap off while a mouse drag writes scrollLeft, so the two do not fight
+  "data-[drag]:snap-none data-[drag]:[scroll-behavior:auto]",
+  "@min-[1024px]:cursor-grab @min-[1024px]:data-[drag]:cursor-grabbing",
+  "motion-reduce:[scroll-behavior:auto]",
+].join(" ");
+
+/* The crossfade overlay, for a dot tap and for either wrap. It covers the band
+   exactly, so the rail's instant jump underneath is invisible, and it never takes
+   pointer events so a swipe begun during the fade still reaches the rail. ONLY this
+   layer fades: the rail beneath stays opaque, because two half-transparent layers
+   composite to about 75% and the band would show through at the midpoint. */
+const XFADE = [
+  "pointer-events-none absolute inset-0 z-[2] flex overflow-hidden",
+  "transition-opacity duration-[var(--dur-slow)] ease-[var(--ease-out)]",
+  "motion-reduce:duration-[1ms]",
+].join(" ");
 
 /* Arrow disc. Hidden below 1024px, and above it revealed by hover or focus-within
    on the band. Left/right insets are set per arrow at the call site. */
@@ -54,39 +94,24 @@ const ARROW = [
 /* Banners carry no overlay text — Home's headline lives in the C-HeroTitle band
    below the carousel. */
 export interface HeroSlide {
-  /** Solid banner tone (token or color) when no image. */
+  /** Solid tone, painted behind the image so a banner has colour before it lands. */
   bg?: string;
-  /** Background image URL (cover). Overrides bg. */
+  /** Banner image. */
   image?: string;
-  /** Accessible name for the banner. On a plain slide it sets role="img" and
-   *  aria-label on the media layer; on a linked slide it names the link, so a
-   *  slide with `href` must carry it. Leave unset for a decorative banner. */
+  /** Names the banner wherever it can be held: the img, the anchor, or the tone. */
   alt?: string;
-  /** Makes the whole banner a link to this target — the media layer is wrapped
-   *  in an anchor, so the full area is clickable. A drag does not navigate. */
+  /** Makes the whole banner a link. A linked slide must carry `alt`. */
   href?: string;
 }
 
 export interface HeroCarouselProps {
   slides?: HeroSlide[];
-  /** Auto-advance interval in ms. Default 6000. */
+  /** Auto-advance delay in ms. Default 6000. */
   interval?: number;
-  /** Auto-advance on/off. Default true. */
   autoPlay?: boolean;
-  /** Position indicator treatment: "dots" (pill dots, active stretches) or "bars"
-   *  (equal hairline bars, active brightens). Both sit centred at the bottom of
-   *  the band. Default "dots". */
+  /** Position indicator. Default "dots". */
   indicator?: "dots" | "bars";
-  /** How one banner gives way to the next. "slide" (default) moves the whole track
-   *  sideways. "fade" crossfades in place and nothing translates, so there is no
-   *  track position to reset and the wrap is the same operation as every other step.
-   *  A drag follows the hand in both, on position in slide mode and on the crossfade
-   *  in fade mode, where distance drives the blend and direction picks the banner. */
-  transition?: "slide" | "fade";
-  /** Give each banner a full screen of height. DESKTOP ONLY, gated at 1024px, so it
-   *  can never fire on mobile or tablet. It sets the height rather than capping it:
-   *  a cap only bites where the banner is already taller than a screen. The image
-   *  covers, so it crops top and bottom rather than letterboxing. Default false. */
+  /** One screen tall, desktop only. */
   fillScreen?: boolean;
   className?: string;
 }
@@ -96,45 +121,124 @@ export function HeroCarousel({
   interval = 6000,
   autoPlay = true,
   indicator = "dots",
-  transition = "slide",
   fillScreen = false,
   className = "",
 }: HeroCarouselProps): ReactElement {
-  const [pos, setPos] = useState(0);
-  /* FADE MODE IS ONE MECHANISM: a blend, and nothing else. `target` is the banner
-     being faded TO (null when settled) and `blend` is how far that fade has got, 0
-     to 1. Autoplay, an arrow, a dot and a drag all set a target and move the blend,
-     and differ only in what moves it: a transition for the first three, the pointer
-     for the fourth. Nothing translates, so there is no track position to re-base and
-     no second mechanism to hand back to. Committing is invisible by construction: at
-     blend 1 the incoming layer already covers the outgoing one, so adopting it
-     changes no pixel. */
-  const [target, setTarget] = useState<number | null>(null);
-  const [blend, setBlend] = useState(0);
-  /* Bumped by any DELIBERATE move: a dot, an arrow, a completed drag. It sits in the
-     interval's deps, so the clock restarts and a pending tick never lands on top of
-     the reader's own move, which reads as skipping two banners. */
-  const [nudge, setNudge] = useState(0);
-  const [animate, setAnimate] = useState(true);
-  const [dragging, setDragging] = useState(false);
   const count = slides.length || 1;
-  const fade = transition === "fade";
+  // the pair is the page at both widths, so the dot count never changes with width
+  const pages = Math.ceil(count / 2);
 
-  /* Preload the window plus one, so a crossfade never runs on a banner whose image
-     has not arrived: the layer would fade in on its tone and the photograph would
-     pop, which reads as a blink rather than a fade. Cost in requests is unchanged
-     over a loop, since each banner is still fetched once and only as the carousel
-     approaches it. Nothing extra is held in the DOM. */
+  const railRef = useRef<HTMLDivElement>(null);
+  const cellRefs = useRef<(HTMLDivElement | null)[]>([]);
+  const overlayRef = useRef<HTMLDivElement>(null);
+
+  const [active, setActive] = useState(0); // active PAGE, not banner
+  const [xfade, setXfade] = useState<number | null>(null);
+  const [lit, setLit] = useState(false);
+  // a deliberate move restarts the clock, so a pending tick never lands on top of it
+  const [nudge, setNudge] = useState(0);
+
+  const activeRef = useRef(0);
+  const xfadeRef = useRef<number | null>(null);
+  const busyRef = useRef(false); // pointer down or scroll in flight
+  useEffect(() => {
+    activeRef.current = active;
+  }, [active]);
+  useEffect(() => {
+    xfadeRef.current = xfade;
+  }, [xfade]);
+
+  const commitDistance = (): number => {
+    const rail = railRef.current;
+    if (!rail) return COMMIT_FALLBACK;
+    const v = parseFloat(getComputedStyle(rail).getPropertyValue("--swipe-commit"));
+    return Number.isFinite(v) && v > 0 ? v : COMMIT_FALLBACK;
+  };
+
+  /* Which PAGE is showing, without measuring anything: the observer watches only the
+     snap cells, the left of each pair, so a page is what it reports at both widths.
+     It reports POSITION only. The wrap is page arithmetic in stepPage. */
+  useEffect(() => {
+    const rail = railRef.current;
+    if (!rail) return;
+    const leads: HTMLDivElement[] = [];
+    for (let p = 0; p < pages; p++) {
+      const el = cellRefs.current[p * 2];
+      if (el) leads.push(el);
+    }
+    if (!leads.length) return;
+    const seen = new Map<Element, number>();
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const e of entries) seen.set(e.target, e.intersectionRatio);
+        let best = -1;
+        let bestRatio = 0;
+        leads.forEach((c, i) => {
+          const r = seen.get(c) || 0;
+          if (r > bestRatio + 0.01) {
+            bestRatio = r;
+            best = i;
+          }
+        });
+        if (best >= 0) setActive(best);
+      },
+      { root: rail, threshold: [0, 0.25, 0.5, 0.75, 0.99, 1] },
+    );
+    leads.forEach((c) => io.observe(c));
+    return () => io.disconnect();
+  }, [pages]);
+
+  // pointer down and scroll-in-flight both make the rail busy, so autoplay yields
+  useEffect(() => {
+    const rail = railRef.current;
+    if (!rail) return;
+    let idle = 0;
+    const settle = (): void => {
+      window.clearTimeout(idle);
+      idle = window.setTimeout(() => {
+        busyRef.current = false;
+      }, SCROLL_IDLE);
+    };
+    const onScroll = (): void => {
+      busyRef.current = true;
+      settle();
+    };
+    const down = (): void => {
+      busyRef.current = true;
+    };
+    rail.addEventListener("scroll", onScroll, { passive: true });
+    rail.addEventListener("pointerdown", down);
+    window.addEventListener("pointerup", settle);
+    window.addEventListener("pointercancel", settle);
+    return () => {
+      window.clearTimeout(idle);
+      rail.removeEventListener("scroll", onScroll);
+      rail.removeEventListener("pointerdown", down);
+      window.removeEventListener("pointerup", settle);
+      window.removeEventListener("pointercancel", settle);
+    };
+  }, []);
+
+  /* Preload the banners a reader is about to reach, so a crossfade always has a
+     loaded image. It asks the DOM whether the passenger cell is DISPLAYED rather
+     than measuring a width, so the container query stays the single source of the
+     breakpoint: below 768px only the odd banners are ever shown, and preloading the
+     hidden half would undo the saving that hiding them buys. The second banner
+     takes high priority at 2-up, where it is an LCP candidate and no longer eager. */
   const readyRef = useRef<Set<number> | null>(null);
   if (readyRef.current === null) readyRef.current = new Set();
-  const [, bumpReady] = useState(0);
   useEffect(() => {
-    if (!fade) return;
-    // starts at -1: a backward drag blends towards the banner behind
-    for (let i = -1; i <= FADE_SLOTS; i++) {
-      const k = mod(pos + i, count);
+    const passenger = cellRefs.current[1];
+    const twoUp = Boolean(passenger && passenger.offsetParent !== null);
+    const want: number[] = [];
+    for (let p = -1; p <= 2; p++) {
+      const page = mod(active + p, pages);
+      want.push(page * 2);
+      if (twoUp) want.push(page * 2 + 1);
+    }
+    for (const k of want) {
+      if (k >= count) continue;
       const slide = slides[k];
-      // a tone-only banner has nothing to wait for
       if (!slide || !slide.image) {
         readyRef.current?.add(k);
         continue;
@@ -142,239 +246,238 @@ export function HeroCarousel({
       if (readyRef.current?.has(k)) continue;
       const probe = new window.Image();
       probe.decoding = "async";
+      if (twoUp && k === 1) probe.fetchPriority = "high";
+      // a banner that will not load must not hold the carousel up for ever
       const done = (): void => {
         readyRef.current?.add(k);
-        bumpReady((v) => v + 1);
       };
       probe.onload = done;
-      // a banner that will not load must not stall the carousel for ever
       probe.onerror = done;
       probe.src = slide.image;
     }
-  }, [fade, pos, count, slides]);
+  }, [active, pages, count, slides]);
 
-  /* How many ticks in a row have been held waiting for an image. Capped, so a banner
-     that never loads cannot freeze the carousel. */
-  const held = useRef(0);
-  const trackRef = useRef<HTMLDivElement>(null);
-  const drag = useRef<{ x: number; dx: number } | null>(null);
-  const [down, setDown] = useState<{ x: number; y: number } | null>(null);
-
-  // The live finger offset rides on the track as a custom property, so the
-  // transform stays in CSS and React re-renders nothing while the finger moves.
-  const setOffset = (px: number): void => {
-    trackRef.current?.style.setProperty("--drag", `${px}px`);
+  /* Scroll to a PAGE by its lead cell's own offsetLeft: a position, not a width, so
+     this is right at 1-up and 2-up without the JS knowing which. */
+  const railTo = (p: number, behavior: ScrollBehavior): void => {
+    const rail = railRef.current;
+    const cell = cellRefs.current[mod(p, pages) * 2];
+    if (!rail || !cell) return;
+    rail.scrollTo({ left: cell.offsetLeft, behavior });
   };
 
-  // The commit distance is a TOKEN read, not a layout measurement.
-  const commitDistance = (): number => {
-    const el = trackRef.current;
-    if (!el) return COMMIT_FALLBACK;
-    const v = parseFloat(getComputedStyle(el).getPropertyValue("--swipe-commit"));
-    return Number.isFinite(v) && v > 0 ? v : COMMIT_FALLBACK;
-  };
+  /* MOUSE DRAG. Touch is native scrolling and needs nothing, but a mouse cannot
+     scroll a scroller at all, so without this the band swipes on a phone and is
+     inert under a cursor. It only ever writes scrollLeft, so the real scroller
+     moves and snap, the observer and the wrap logic all carry on working. */
+  const mdrag = useRef<{
+    x: number;
+    left: number;
+    moved: boolean;
+    lastX: number;
+    lastT: number;
+    prevX: number;
+    prevT: number;
+  } | null>(null);
 
-  const onDragStart = (e: PointerEvent<HTMLDivElement>): void => {
-    if (count <= 1 || !e.isPrimary) return;
-    drag.current = { x: e.clientX, dx: 0 };
-    setDragging(true);
-    try {
-      trackRef.current?.setPointerCapture(e.pointerId);
-    } catch {
-      // Capture is a nicety: without it the gesture still ends on pointerup.
-    }
-  };
-
-  /* Coalesce pointer moves into one update per frame. Slide mode writes a CSS
-     variable and needs no render; the blend is React state, so without this a 60Hz
-     drag re-renders sixty times a second. */
-  const onDragMove = (e: PointerEvent<HTMLDivElement>): void => {
-    const d = drag.current;
-    if (!d) return;
-    d.dx = e.clientX - d.x;
-    if (!fade) {
-      setOffset(d.dx);
-      return;
-    }
-    if (raf.current) return;
-    raf.current = requestAnimationFrame(() => {
-      raf.current = 0;
-      const g = drag.current;
-      if (!g) return;
-      // direction decides WHICH banner is next; distance decides how far the blend got
-      const dir = g.dx < 0 ? 1 : -1;
-      setTarget(mod(posRef.current + dir, count));
-      setBlend(Math.min(1, Math.abs(g.dx) / commitDistance()));
-    });
-  };
-
-  const endDrag = (commit: boolean): void => {
-    const d = drag.current;
-    drag.current = null;
-    if (raf.current) {
-      cancelAnimationFrame(raf.current);
-      raf.current = 0;
-    }
-    setDragging(false);
-    if (!fade) {
-      setOffset(0);
-      if (!d) return;
-      if (commit && Math.abs(d.dx) > commitDistance()) {
-        setPos((p) => p + (d.dx < 0 ? 1 : -1));
-        setNudge((v) => v + 1);
+  const releaseDrag = (settle: boolean): void => {
+    const rail = railRef.current;
+    const d = mdrag.current;
+    mdrag.current = null;
+    if (!rail) return;
+    rail.removeAttribute("data-drag");
+    if (!d || !settle) return;
+    // nearest PAGE by its lead cell's position, with a flick bias. No width arithmetic.
+    const v = (d.lastX - d.prevX) / Math.max(1, d.lastT - d.prevT);
+    let p = 0;
+    let best = Infinity;
+    for (let i = 0; i < pages; i++) {
+      const c = cellRefs.current[i * 2];
+      if (!c) continue;
+      const gap = Math.abs(c.offsetLeft - rail.scrollLeft);
+      if (gap < best) {
+        best = gap;
+        p = i;
       }
-      return;
     }
-    if (!d) return;
-    const through = commit && Math.abs(d.dx) > commitDistance();
-    if (!through) {
-      // reverse: back to the banner the reader started on
-      if (bRef.current === 0) setTarget(null);
-      else setBlend(0);
-      return;
-    }
+    // a fast flick that has not yet travelled half a page should still advance
+    if (Math.abs(v) > FLICK_V) p = Math.max(0, Math.min(pages - 1, p + (v < 0 ? 1 : -1)));
+    railTo(p, lessMotion() ? "auto" : "smooth");
+    setNudge((x) => x + 1);
+  };
+
+  const railDrag = {
+    onPointerDown: (e: PointerEvent<HTMLDivElement>): void => {
+      const rail = railRef.current;
+      if (!rail || e.pointerType === "touch" || rail.scrollWidth <= rail.clientWidth) return;
+      const t = performance.now();
+      mdrag.current = {
+        x: e.clientX,
+        left: rail.scrollLeft,
+        moved: false,
+        lastX: e.clientX,
+        lastT: t,
+        prevX: e.clientX,
+        prevT: t,
+      };
+      // suspending snap for the drag stops CSS fighting the scrollLeft writes
+      rail.setAttribute("data-drag", "");
+    },
+    onPointerMove: (e: PointerEvent<HTMLDivElement>): void => {
+      const rail = railRef.current;
+      const d = mdrag.current;
+      if (!rail || !d) return;
+      const dx = e.clientX - d.x;
+      if (Math.abs(dx) > DRAG_SLOP) d.moved = true;
+      d.prevX = d.lastX;
+      d.prevT = d.lastT;
+      d.lastX = e.clientX;
+      d.lastT = performance.now();
+      rail.scrollLeft = d.left - dx;
+    },
+    onPointerUp: (): void => releaseDrag(true),
+    onPointerLeave: (): void => releaseDrag(false),
+    // a drag that ends on a linked banner must not navigate
+    onClickCapture: (e: React.MouseEvent): void => {
+      if (mdrag.current && mdrag.current.moved) e.stopPropagation();
+    },
+  };
+
+  /* Crossfade to a PAGE: overlay it, fade it in, then move the rail underneath with
+     no animation while the overlay still covers it. */
+  const fadeTo = (p: number): void => {
+    const k = mod(p, pages);
+    if (k === activeRef.current) return;
     setNudge((v) => v + 1);
-    /* A drag that already reached the far end has nothing left to animate, so no
-       transitionend would ever arrive to finish it. */
-    if (bRef.current >= 1) commitBlend();
-    else setBlend(1);
+    setXfade(k);
+    /* Two nested rAFs: the first schedules a frame, the second runs AFTER the
+       browser has painted the mount at opacity 0, which is what gives the
+       transition a start value. One rAF is not a paint boundary. */
+    requestAnimationFrame(() => requestAnimationFrame(() => setLit(true)));
   };
 
-  const onPointerDown = (e: PointerEvent<HTMLAnchorElement>): void =>
-    setDown({ x: e.clientX, y: e.clientY });
-  const onLinkClick = (e: MouseEvent<HTMLAnchorElement>): void => {
-    if (!down) return;
-    if (Math.abs(e.clientX - down.x) > DRAG_SLOP || Math.abs(e.clientY - down.y) > DRAG_SLOP) {
-      e.preventDefault();
-    }
-  };
-
-  useEffect(() => {
-    if (!autoPlay || count <= 1 || dragging) return;
-    const timer = setInterval(() => {
-      // A hidden tab throttles timers and batches the catch-up ticks, which is how
-      // pos used to climb past the slide count faster than transitionend could
-      // reset it. Not advancing a carousel nobody can see is right anyway.
-      if (document.hidden) return;
-      if (fade) {
-        const next = mod(posRef.current + 1, count);
-        if (!readyRef.current?.has(next) && held.current < 2) {
-          held.current += 1;
-          return;
-        }
-        held.current = 0;
-        // the same operation a drag performs, started by the clock instead of a finger
-        setTarget(next);
-        setBlend(1);
-        return;
-      }
-      setPos((p) => p + 1);
-    }, interval);
-    return () => clearInterval(timer);
-  }, [autoPlay, interval, count, dragging, fade, nudge]);
-
-  // Re-enable the transition on the frame after the silent wrap-around jump.
-  useEffect(() => {
-    if (!animate) requestAnimationFrame(() => setAnimate(true));
-  }, [animate]);
-
-  const extended = [...slides, ...slides.slice(0, 2)];
-  const active = ((pos % count) + count) % count;
-  /* A dot or an arrow is the same operation as a drag: name a target and run the
-     blend. A distant dot therefore crossfades straight to that banner rather than
-     travelling through the ones between. */
-  const go = (k: number): void => {
-    const t = mod(k, count);
-    setNudge((v) => v + 1);
-    if (!fade) {
-      setPos(t);
+  /* Move one page, or WRAP by crossfade. A wrap is a multi-page move, and a
+     multi-page programmatic scroll cannot complete on this rail, so both ends route
+     through the overlay instead. */
+  const stepPage = (dir: number): void => {
+    const p = activeRef.current;
+    if (dir > 0 && p >= pages - 1) {
+      fadeTo(0);
       return;
     }
-    if (t === posRef.current) return;
-    setTarget(t);
-    setBlend(1);
+    if (dir < 0 && p <= 0) {
+      fadeTo(pages - 1);
+      return;
+    }
+    // never more than one page: see the scroll-snap-stop note at the top of the file
+    railTo(p + dir, lessMotion() ? "auto" : "smooth");
+    setNudge((v) => v + 1);
   };
 
-  const posRef = useRef(0);
-  useEffect(() => {
-    posRef.current = pos;
-  }, [pos]);
-  const tRef = useRef<number | null>(null);
-  useEffect(() => {
-    tRef.current = target;
-  }, [target]);
-  const bRef = useRef(0);
-  useEffect(() => {
-    bRef.current = blend;
-  }, [blend]);
-  const blendRef = useRef<HTMLDivElement>(null);
-  const raf = useRef(0);
+  const finish = useCallback((): void => {
+    const k = xfadeRef.current;
+    if (k == null) return;
+    const rail = railRef.current;
+    const cell = cellRefs.current[k * 2];
+    if (rail && cell) rail.scrollTo({ left: cell.offsetLeft, behavior: "auto" });
+    setLit(false);
+    setXfade(null);
+  }, []);
 
-  /* Adopt the target as the current banner. Invisible: at blend 1 the incoming layer
-     already covers the outgoing one, so this changes no pixel. */
-  const commitBlend = (): void => {
-    if (tRef.current == null) return;
-    setAnimate(false);
-    setPos(tRef.current);
-    setTarget(null);
-    setBlend(0);
-  };
-  /* A floor under the transition: a blend set to a value it already holds fires no
-     transitionend and would strand the fade. Read off the blend layer itself, so
-     retuning the duration in the markup cannot leave a stale number here. */
+  /* transitionend is the normal path; the timer is the floor for a transition with
+     no duration, which fires no event and would strand the overlay. */
   useEffect(() => {
-    if (!fade || target == null || dragging || blend !== 1) return;
-    const el = blendRef.current;
+    if (xfade == null) return;
+    const el = overlayRef.current;
     const raw = el ? getComputedStyle(el).transitionDuration : "";
     const first = String(raw).split(",")[0].trim();
     const ms = /ms$/.test(first) ? parseFloat(first) : parseFloat(first) * 1000;
-    const floor = (Number.isFinite(ms) && ms > 0 ? ms : BLEND_FALLBACK) + 60;
-    const id = window.setTimeout(commitBlend, floor);
+    const floor = (Number.isFinite(ms) && ms > 0 ? ms : FADE_FALLBACK) + 60;
+    const id = window.setTimeout(finish, floor);
     return () => window.clearTimeout(id);
+  }, [xfade, finish]);
+
+  /* EDGE SWIPE — the wrap by finger. At either end the rail has nowhere left to
+     scroll, so a swipe outward produces no scroll event and the gesture would die.
+     Touch only, and only while the rail is already parked at that end. It is not a
+     drag: nothing follows the finger, it is one threshold firing one crossfade. */
+  useEffect(() => {
+    const rail = railRef.current;
+    if (!rail || pages <= 1) return;
+    let g: { x: number; atStart: boolean; atEnd: boolean; done: boolean } | null = null;
+    const start = (e: TouchEvent): void => {
+      if (e.touches.length !== 1) {
+        g = null;
+        return;
+      }
+      const atStart = rail.scrollLeft <= 1;
+      const atEnd = rail.scrollLeft >= rail.scrollWidth - rail.clientWidth - 1;
+      g =
+        atStart || atEnd
+          ? { x: e.touches[0]?.clientX ?? 0, atStart, atEnd, done: false }
+          : null;
+    };
+    const move = (e: TouchEvent): void => {
+      if (!g || g.done || xfadeRef.current != null) return;
+      const dx = (e.touches[0]?.clientX ?? 0) - g.x;
+      const commit = commitDistance();
+      // pulling right at the start reaches the last page; left at the end reaches the first
+      if (g.atStart && dx > commit) {
+        g.done = true;
+        fadeTo(pages - 1);
+      } else if (g.atEnd && dx < -commit) {
+        g.done = true;
+        fadeTo(0);
+      }
+    };
+    const end = (): void => {
+      g = null;
+    };
+    rail.addEventListener("touchstart", start, { passive: true });
+    rail.addEventListener("touchmove", move, { passive: true });
+    rail.addEventListener("touchend", end, { passive: true });
+    rail.addEventListener("touchcancel", end, { passive: true });
+    return () => {
+      rail.removeEventListener("touchstart", start);
+      rail.removeEventListener("touchmove", move);
+      rail.removeEventListener("touchend", end);
+      rail.removeEventListener("touchcancel", end);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [fade, target, blend, dragging]);
+  }, [pages]);
 
-  const onEnd = (): void => {
-    const p = posRef.current;
-    if (p >= count) {
-      setAnimate(false);
-      setPos(p % count);
-    }
-  };
+  useEffect(() => {
+    if (!autoPlay || pages <= 1) return;
+    const t = window.setInterval(() => {
+      // never fight the reader, and never advance a tab nobody is looking at
+      if (document.hidden || busyRef.current || xfadeRef.current != null) return;
+      // one page, or a crossfade at the wrap. stepPage owns that decision, so the
+      // tick and the arrows cannot diverge.
+      stepPage(1);
+    }, interval);
+    return () => window.clearInterval(t);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoPlay, interval, pages, nudge]);
 
-  /* The blend layer finished. Past the far end it becomes the current banner; short
-     of it the fade simply reverses and there is nothing to adopt. */
-  const onBlendEnd = (event: TransitionEvent<HTMLDivElement>): void => {
-    if (event.propertyName !== "opacity") return;
-    if (bRef.current >= 1) commitBlend();
-    else setTarget(null);
-  };
-
-
+  /* The pairing, per cell rather than as an nth-child selector: Tailwind reads the
+     source as text, and a container-query variant stacked on an arbitrary variant
+     is not generated. The LEFT of each pair carries the snap point, so a page is a
+     pair at 2-up; the RIGHT is not rendered below 768px, so a page is one banner
+     there and the dot count never changes with the viewport. */
   const cellClass = [
     "relative shrink-0 grow-0 basis-full overflow-hidden",
     "aspect-[var(--ratio-2-3)] @min-[768px]:basis-1/2",
-    /* The two arms are exclusive on purpose. Emitting both an aspect ratio and
-       aspect-auto for the same query would leave the winner to whichever Tailwind
-       happens to print last. 100cqh resolves against the nearest size container,
-       the viewport here, since the band is inline-size only. */
     fillScreen
       ? "@min-[1024px]:aspect-auto @min-[1024px]:h-[100cqh]"
       : "@min-[1024px]:aspect-[var(--ratio-4-5)]",
   ].join(" ");
 
-  /* One banner, shared by both modes. `muted` is a duplicate copy shown elsewhere,
-     so it is kept out of the a11y tree and the tab order. `eager` is "high" for the
-     LCP candidate, true for the one after it, false beyond. */
-  const banner = (
-    slide: HeroSlide,
-    muted: boolean,
-    eager: "high" | boolean,
-  ): ReactElement => {
-    /* A tone-only banner has no <img> to carry the alt, so the tone layer takes the
-       name instead. A linked slide is named by its anchor, an imaged one by its <img>. */
+  /* One banner. `muted` is a copy shown elsewhere, kept out of the a11y tree and
+     the tab order. Only the very first banner is eager: every other is lazy, and a
+     lazy image inside display:none is not fetched at all, so the hidden half of
+     each pair costs a phone nothing. */
+  const banner = (slide: HeroSlide, muted: boolean, eager: "high" | boolean): ReactElement => {
     const named = !slide.image && !slide.href && !!slide.alt && !muted;
-    /* Tone first, image over it, so a banner has its colour before its image lands. */
     const media = (
       <>
         <div
@@ -390,16 +493,10 @@ export function HeroCarousel({
             alt={muted ? "" : slide.alt || ""}
             draggable={false}
             decoding="async"
-            /* The first two are eager: from 768px the band shows two banners at rest,
-               so slide 2 is an LCP candidate there, and on mobile it is the very next
-               banner. `loading` cannot vary by breakpoint, so this is one choice for
-               every width. Only slide 1 takes priority, so slide 2 does not compete. */
             loading={eager ? "eager" : "lazy"}
             // camelCase here: React 19 types and accepts it. The export writes it
-            // lowercase because its own preview runs React 18, which warns on the
-            // camelCase spelling. Same attribute either way.
+            // lowercase because its own preview runs React 18, which warns.
             fetchPriority={eager === "high" ? "high" : undefined}
-            /* Below 640 the crop shifts down so the subject sits lower in the frame. */
             className="absolute inset-0 block h-full w-full object-cover object-[center_40%] @min-[640px]:object-center"
           />
         )}
@@ -412,8 +509,6 @@ export function HeroCarousel({
         aria-hidden={muted ? true : undefined}
         tabIndex={muted ? -1 : undefined}
         draggable={false}
-        onPointerDown={onPointerDown}
-        onClick={onLinkClick}
         className="absolute inset-0 block no-underline"
       >
         {media}
@@ -423,6 +518,10 @@ export function HeroCarousel({
     );
   };
 
+  const scrim = (
+    <div className="pointer-events-none absolute inset-0 bg-[image:var(--overlay-hero)]" />
+  );
+
   const bars = indicator === "bars";
 
   return (
@@ -430,109 +529,76 @@ export function HeroCarousel({
       className={`group/hero @container relative w-full overflow-hidden bg-[var(--surface-inverse)] ${className}`}
       aria-roledescription="carousel"
     >
-      {/* Both modes drive the SAME transform, --pos times the cell width. "slide"
-          grows --pos; "fade" leaves it at 0 and uses it only while settling a drag,
-          so the cell width stays a container query and JS never counts banners. */}
-      {/* The two modes share nothing. "slide" moves the track by --pos times the
-          cell width; "fade" never transforms at all, so its slots are layout only
-          and every pixel of motion is the blend layer's opacity. */}
-      <div
-        ref={trackRef}
-        onTransitionEnd={fade ? undefined : onEnd}
-        onPointerDown={onDragStart}
-        onPointerMove={onDragMove}
-        onPointerUp={() => endDrag(true)}
-        onPointerCancel={() => endDrag(false)}
-        className={[
-          "flex touch-pan-y",
-          fade
-            ? ""
-            : "translate-x-[calc(var(--pos,0)*-100%+var(--drag,0px))] @min-[768px]:translate-x-[calc(var(--pos,0)*-50%+var(--drag,0px))]",
-          fade
-            ? ""
-            : animate && !dragging
-              ? "transition-transform duration-[var(--dur-slow)] ease-[var(--ease-out)]"
-              : "transition-none",
-        ].join(" ")}
-        style={fade ? undefined : ({ "--pos": pos } as CSSProperties)}
-      >
-        {fade
-          ? Array.from({ length: FADE_SLOTS }, (_, i) => {
-              const current = slides[mod(pos + i, count)];
-              const next = target == null ? null : slides[mod(target + i, count)];
-              /* The second slot is off screen at 1-up and visible at 2-up. Only a
-                 settled banner in an on-screen slot is announced, and the blend
-                 layer is always a second copy of one named elsewhere. */
-              const off = i > 0;
-              return (
-                <div key={i} className={cellClass}>
-                  {current && (
-                    <div className="absolute inset-0 overflow-hidden">
-                      {banner(current, off, i === 0 ? "high" : true)}
-                    </div>
-                  )}
-                  {next && (
-                    <div
-                      ref={i === 0 ? blendRef : undefined}
-                      onTransitionEnd={i === 0 ? onBlendEnd : undefined}
-                      aria-hidden
-                      style={{ opacity: blend }}
-                      className={[
-                        "absolute inset-0 overflow-hidden",
-                        /* The pointer drives the blend directly, so a drag must not
-                           also be easing towards where the finger already is. */
-                        dragging || !animate
-                          ? "transition-none"
-                          : "transition-opacity duration-[var(--dur-slow)] ease-[var(--ease-out)]",
-                      ].join(" ")}
-                    >
-                      {banner(next, true, true)}
-                    </div>
-                  )}
-                  <div className="pointer-events-none absolute inset-0 bg-[image:var(--overlay-hero)]" />
-                </div>
-              );
-            })
-          : extended.map((slide, k) => (
-              <div key={k} className={cellClass}>
-                {/* The trailing cells are wrap clones: out of the a11y tree and the
-                    tab order, so a link is not announced or tabbed to twice. */}
-                {banner(slide, k >= count, k === 0 ? "high" : k === 1)}
-                <div className="pointer-events-none absolute inset-0 bg-[image:var(--overlay-hero)]" />
-              </div>
-            ))}
+      <div ref={railRef} className={RAIL} {...railDrag}>
+        {slides.map((slide, k) => (
+          <div
+            key={k}
+            ref={(el) => {
+              cellRefs.current[k] = el;
+            }}
+            className={`${cellClass} ${
+              k % 2 === 0 ? "snap-start" : "@max-[767.98px]:hidden"
+            }`}
+          >
+            {banner(slide, false, k === 0 ? "high" : false)}
+            {scrim}
+          </div>
+        ))}
       </div>
 
-      {count > 1 && (
+      {/* The overlay mirrors a PAGE, the pair, so the two-up peek is covered too and
+          not just the leading cell. Its even child hides below 768px by the same rule
+          as the rail's, so it always covers exactly what the rail shows. */}
+      {xfade != null && (
+        <div
+          ref={overlayRef}
+          aria-hidden
+          onTransitionEnd={(e) => {
+            if (e.propertyName === "opacity") finish();
+          }}
+          style={{ opacity: lit ? 1 : 0 } as CSSProperties}
+          className={XFADE}
+        >
+          {[0, 1].map((i) => {
+            const slide = slides[xfade * 2 + i];
+            if (!slide) return null;
+            return (
+              <div
+                key={i}
+                className={`${cellClass} ${i === 1 ? "@max-[767.98px]:hidden" : ""}`}
+              >
+                {banner(slide, true, true)}
+                {scrim}
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {pages > 1 && (
         <>
-          {/* Desktop only, and hidden until the reader reaches for them. Below
-              1024px nothing is drawn over the photograph: the banner is swiped and
-              the dots carry position. The arrow is a light disc with a dark glyph,
-              the same shape as the play badge, so it supplies its own contrast
-              against any part of the image. focus-within matters as much as hover:
-              hiding an affordance must not hide it from the keyboard. */}
-          <div className={ARROW + " @min-[1024px]:left-[var(--space-6)]"}>
-            <IconButton label="Previous slide" onClick={() => go(active - 1)}>
+          <div className={`${ARROW} left-[var(--space-6)]`}>
+            <IconButton label="Previous banners" onClick={() => stepPage(-1)}>
               <Icon name="chevron-left" size={26} />
             </IconButton>
           </div>
-          <div className={ARROW + " @min-[1024px]:right-[var(--space-6)]"}>
-            <IconButton label="Next slide" onClick={() => go(active + 1)}>
+          <div className={`${ARROW} right-[var(--space-6)]`}>
+            <IconButton label="Next banners" onClick={() => stepPage(1)}>
               <Icon name="chevron-right" size={26} />
             </IconButton>
           </div>
 
           <div
             className={[
-              "absolute left-0 right-0 flex justify-center gap-[var(--space-2)]",
+              "absolute left-0 right-0 z-[3] flex justify-center gap-[var(--space-2)]",
               bars ? "bottom-[var(--space-4)]" : "bottom-[var(--space-5)]",
             ].join(" ")}
           >
-            {slides.map((_, k) => (
+            {Array.from({ length: pages }, (_, k) => (
               <button
                 key={k}
-                aria-label={`Go to slide ${k + 1}`}
-                onClick={() => go(k)}
+                aria-label={`Go to page ${k + 1} of ${pages}`}
+                onClick={() => fadeTo(k)}
                 className={[
                   "cursor-pointer border-none p-0",
                   bars
