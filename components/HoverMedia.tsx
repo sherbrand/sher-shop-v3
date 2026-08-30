@@ -60,8 +60,11 @@ export function HoverMedia({
     }
   };
 
-  /* Slower than the drawers and the header, which are UI moving out of the way.
-     This is one picture becoming another, and at 240ms it read as a cut. */
+  /* Only the TOP layer fades. Fading both at once looks right and is not: two
+     half-transparent layers composite to about 75%, so a quarter of the card's
+     own background shows through at the midpoint and the swap flashes lighter.
+     The picture underneath stays fully opaque and the new one arrives over it,
+     so the card is never less than solid. */
   const FADE =
     "object-cover transition-opacity duration-[var(--dur-slow)] ease-[var(--ease-out)]";
 
@@ -78,7 +81,7 @@ export function HoverMedia({
         alt={alt}
         fill
         sizes={sizes}
-        className={`${FADE} ${active ? "opacity-0" : "opacity-100"}`}
+        className="object-cover"
       />
       {playing ? (
         <video

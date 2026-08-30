@@ -78,9 +78,11 @@ const AWAY = {
     from: "@min-[1024px]:-translate-y-full",
   },
   fade: {
+    /* Visibility is delayed by the fade so it cannot clip it, which needs
+       per-property timing and so the shorthand again. */
     below:
-      "@max-[1023.98px]:opacity-0 @max-[1023.98px]:pointer-events-none @max-[1023.98px]:invisible @max-[1023.98px]:delay-[var(--dur-med)]",
-    from: "@min-[1024px]:opacity-0 @min-[1024px]:pointer-events-none @min-[1024px]:invisible @min-[1024px]:delay-[var(--dur-med)]",
+      "@max-[1023.98px]:opacity-0 @max-[1023.98px]:pointer-events-none @max-[1023.98px]:invisible @max-[1023.98px]:[transition:opacity_var(--dur-med)_var(--ease-out),visibility_0s_linear_var(--dur-med)]",
+    from: "@min-[1024px]:opacity-0 @min-[1024px]:pointer-events-none @min-[1024px]:invisible @min-[1024px]:[transition:opacity_var(--dur-med)_var(--ease-out),visibility_0s_linear_var(--dur-med)]",
   },
 } as const;
 
@@ -201,11 +203,12 @@ export function Sticky({
           "bg-[var(--surface-page)] text-[var(--text-strong)]",
           /* Tailwind v4 puts translate-y on the standalone `translate` property, so that
              is what transitions. Naming `transform` here animates nothing. */
-          "motion-safe:transition-[translate,opacity] motion-safe:duration-[var(--dur-med)] motion-safe:ease-[var(--ease-out)]",
-          /* An opacity-0 bar still takes taps and is still read aloud, so the fade
-             also drops pointer-events and visibility. Visibility is delayed by the
-             fade so it cannot clip it. */
-          "motion-safe:transition-[visibility] motion-safe:delay-0",
+          /* The full shorthand as one arbitrary property, not three utilities.
+             `transition-property` is a single property, so a second transition-*
+             class silently replaces the first, and visibility alone is a step
+             function: the bar would blink rather than fade. Per-property timing is
+             the point here, and no utility can express it. */
+          "motion-safe:[transition:translate_var(--dur-med)_var(--ease-out),opacity_var(--dur-med)_var(--ease-out),visibility_0s_linear_0s]",
           /* Below 1024px a hidden-at-rest header is away until the page has
              scrolled past the threshold, and away again once it scrolls back
              inside it. A swipeable gallery makes scroll direction unreliable,
