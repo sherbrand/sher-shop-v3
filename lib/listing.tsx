@@ -3,7 +3,7 @@ import type { Product } from "@/lib/shopify/types";
 import type { GridProduct } from "@/components/C-ProductGrid";
 import type { ListingItem } from "@/components/ShopListing";
 import { categoryFor } from "@/lib/categories";
-import { thumbIndex } from "@/lib/product-data";
+import { hoverIndex, thumbIndex } from "@/lib/product-data";
 
 /* Data mapping for the listing pages (B-004): Shopify Product -> the flat
    GridProduct / ListingItem shapes the grid and filter consume.
@@ -12,9 +12,10 @@ import { thumbIndex } from "@/lib/product-data";
    it. A product with no row, or a number past the end, falls back to the
    featured image (F-001).
 
-   On hover, or a touch-hold, the card moves to the product's first media, or
-   its second where the first is already the card's own. A video there plays; an
-   image just swaps in. A product with nothing else to show never swaps.
+   On hover, or a touch-hold, the card moves to the media D-005's hover column
+   picks. Left blank it takes the first media that is not the card's own, which
+   is what most products want. A video there plays; an image just swaps in. A
+   product with nothing else to show never swaps.
 
    The card's category eyebrow comes from the product's own collections. A
    product in no category simply has no eyebrow, and the card closes up. */
@@ -37,15 +38,26 @@ export function toGridProduct(product: Product): GridProduct {
   }
   const thumb = (picked?.kind === "image" ? picked.image?.url : undefined) ?? featured;
 
-  /* Hover moves to the product's first media, or its second where the first is
-     already the card's. A video there plays; an image just swaps in. Its
-     picture comes along either way, since a video that cannot stream still
-     shows its own still frame. */
+  /* The hover media. A stated position wins; blank falls back to the first
+     media that is not the card's own. Its picture comes along either way, since
+     a video that cannot stream still shows its own still frame. */
   const thumbAt =
     picked?.kind === "image"
       ? index - 1
       : product.media.findIndex((entry) => entry.image?.url === thumb);
-  const hover = product.media.find((_, i) => i !== thumbAt);
+  const wanted = hoverIndex(product.handle);
+  if (wanted > 0 && wanted > product.media.length) {
+    console.warn(
+      `[D-005] "${product.handle}" hover=${wanted} is past its ${product.media.length} media — no swap.`,
+    );
+  }
+  const hover =
+    wanted > 0
+      ? // A hover that points at the card's own media leaves nothing to swap to.
+        wanted - 1 === thumbAt
+        ? undefined
+        : product.media[wanted - 1]
+      : product.media.find((_, i) => i !== thumbAt);
 
   return {
     id: product.id,
