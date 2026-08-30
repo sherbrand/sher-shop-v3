@@ -15,19 +15,19 @@ url: /beachwear
 - Eyebrow: {What is Beachwear?}
 - H2: {Swimwear Shaped to Hold You, Not Just Cover You}
 - Paragraph: {Beachwear is swimwear made for the water and for everywhere around it. SHER cuts it with the same shaping as the rest of the range, so it holds the body instead of hanging on it. A One Piece joins the top and bottom into one. A Bikini keeps them separate and sells them together as a set. Both read elegant, never cheap.}
-- Image#1: A SHER one piece on a model at the water, showing its shaped waist seams.
+- Image#1: {SHER beachwear: a black lace one piece on a model beside an ancient pool, showing its shaped waist seams}
 
 `S-012.4: (Eyebrow / H2 / Paragraph) | Image#1`
 - Eyebrow: {Pick your Swim Type}
 - H2: {Each Swim Type Built for a Different Line}
 - Paragraph: {The One Piece joins the top and bottom into a single piece. It holds the middle and draws one long line from shoulder to hip. Pick this one for coverage and shape together. The Bikini is a separate top and bottom, sold as a set. It shows more skin and gives you two pieces to move between through the day. Pick this one for the freedom to change what you show.}
-- Image#1: A SHER one piece and a SHER bikini set shown side by side on models.
+- Image#1: {SHER beachwear: a black lace one piece on a model on a rooftop terrace}
 
 `S-012.5: Image#1 | (Eyebrow / H2 / Paragraph)`
 - Eyebrow: {Quality from Inside Out}
 - H2: {Lined So Nothing Shows, Wet or Dry}
 - Paragraph: {Thin swimwear turns sheer the moment it gets wet. Ours is lined front and back, so it stays opaque either way. The bust cups are shaped to hold their form after washing, not flatten out by the third wear. Every seam is sewn flat, so nothing digs in and nothing prints a line under the fabric. The swim fabric holds its shape wet and dries fast. You can swim in it, then walk off the beach in it.}
-- Image#1: Inside of a SHER one piece showing the full lining, shaped bust cups, and flat seams.
+- Image#1: {SHER beachwear: a black lace one piece on a model on a balcony over the river}
 
 `S-012.6: H2 | Accordion [H3.1 / Paragraph.1 / H3.2 / Paragraph.2 / H3.3 / Paragraph.3 / H3.4 / Paragraph.4 / H3.5 / Paragraph.5 / H3.6 / Paragraph.6]`
 - H2: Frequently Asked Questions

@@ -15,19 +15,19 @@ url: /matching-sets
 - Eyebrow: {What is a Matching Set?}
 - H2: {One Look, Two Pieces That Belong Together}
 - Paragraph: {A matching set is a top and a bottom made from the same fabric to be worn together. Some call it a co-ord or a two-piece set. The two pieces share the same color, cut, and finish, so they read as one outfit, not two separate items. You put on both and the look is complete, with nothing left to match.}
-- Image#1: A SHER matching set on a model, showing the top and bottom worn as one look.
+- Image#1: {a SHER matching set on a model, a silver brocade top with a matching mini skirt worn as one look, in a hotel corridor}
 
 `S-004.4: (Eyebrow / H2 / Paragraph) | Image#1`
 - Eyebrow: {Pick your Matching Set Type}
 - H2: {Each Set Built for a Different Look}
 - Paragraph: {The Skirt Set pairs the top with a matching skirt. It gives a soft, feminine line that moves as you walk. Pick this one for a look that feels dressed up without effort, day or evening. The Trouser Set pairs the top with matching trousers. It gives a longer, sharper line and reads a little bolder. Pick this one when you want to look put together and ready for anything.}
-- Image#1: A SHER Skirt Set and Trouser Set side by side on models, showing both set types.
+- Image#1: {a SHER matching set in silver metallic, a halter top with matching trousers, on steps above the sea}
 
 `S-004.5: Image#1 | (Eyebrow / H2 / Paragraph)`
 - Eyebrow: {Quality from Inside Out}
 - H2: {Cut to Sit Right Together}
 - Paragraph: {We cut both pieces to work as a pair. The top ends where the bottom begins, so the hems meet with no gap and no overlap. The color is dyed in the same run, so the two pieces never look off. Each set is made together, checked together, and sold together. That is why a SHER set sits right the moment you put it on. The quality shows up close. Both pieces use the same soft, weighted fabric that holds its shape and drapes clean. Seams are finished so nothing frays, and the color is set to fade evenly over time. Zips and closures are chosen to last. Made this way, the set keeps looking like new wash after wash.}
-- Image#1: Close view of a SHER matching set showing the top hem meeting the waistband, with inside seams and fabric detail.
+- Image#1: {a SHER matching set: a watercolor-print halter top with wide-leg trousers, on a rooftop terrace}
 
 `S-004.6: H2 | Accordion [H3.1 / Paragraph.1 / H3.2 / Paragraph.2 / H3.3 / Paragraph.3 / H3.4 / Paragraph.4 / H3.5 / Paragraph.5 / H3.6 / Paragraph.6]`
 - H2: Frequently Asked Questions

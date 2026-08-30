@@ -15,19 +15,19 @@ url: /corset-tops
 - Eyebrow: {What is a Corset Top?}
 - H2: {Structured Boning That Commands the Silhouette}
 - Paragraph: {A corset top is a fitted top built on corsetry. Thin bones run through the fabric to shape the waist and support the bust. Unlike a plain top, it holds its structure and stays put as you move. The look is firm but not stiff. SHER makes each corset top to be worn on its own, as the piece people notice first.}
-- Image#1: A SHER corset top on a model, showing its shaped waist and structured bust.
+- Image#1: {a SHER corset top in a floral print, the Floral Francia, worn with satin trousers beside a pool}
 
 `S-003.4: (Eyebrow / H2 / Paragraph) | Image#1`
 - Eyebrow: {Pick your Corset Closure Type}
 - H2: {Each Corset Closure Designed for a Different Priority}
 - Paragraph: {The Lace Closure laces up the back through metal eyelets. Pull the cord tighter or looser to set the fit yourself. Pick this one if you want control over how firm it feels. The Zip Closure uses a separating zip. Step in, zip up, and you are done. The fit is fixed, so there is nothing to adjust. Pick this one if you want the fastest way in and out with the same clean shape.}
-- Image#1: A SHER corset top shown from both sides, with back lacing on one and a separating zip on the other.
+- Image#1: {a SHER corset top in ivory, showing its shaped waist and structured bust, at a beach club at golden hour}
 
 `S-003.5: Image#1 | (Eyebrow / H2 / Paragraph)`
 - Eyebrow: {Quality from Inside Out}
 - H2: {Each Bone Set by Hand, Not by Machine}
 - Paragraph: {Most brands lay the boning flat with a machine. We do it by hand. Each bone is set one at a time on a mannequin, so it follows the curve of a real body. This takes longer, but the fit is better. The top shapes you where it should and stays smooth where it should. That hand-set boning is why a SHER corset top reads elegant, never cheap. The care shows on the inside. A satin lining sits against the skin, so the top feels smooth and holds its shape. Structured bust cups keep the front clean. On lace styles, the lace is cut and placed by hand so the pattern runs true. Strong thread and finished seams mean it lasts. You can tell the quality from across the room.}
-- Image#1: Inside of a SHER corset top showing hand-set boning channels, satin lining, and structured bust cups.
+- Image#1: {a close view of a SHER corset top in a floral print, showing its shaped bust cups and pleated waist}
 
 `S-003.6: H2 | Accordion [H3.1 / Paragraph.1 / H3.2 / Paragraph.2 / H3.3 / Paragraph.3 / H3.4 / Paragraph.4 / H3.5 / Paragraph.5 / H3.6 / Paragraph.6]`
 - H2: Frequently Asked Questions

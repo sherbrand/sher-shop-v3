@@ -120,7 +120,7 @@
   - S-001.1 → C-HeroCarousel [indicator=bars]
   - S-001.2 → C-HeroTitle [headingLevel=1]
   - S-001.3 → C-CategoryGrid [cta]
-  - S-001.4 → C-ProductGrid [showToolbar=false, columns=1/2/2]
+  - S-001.4 → C-ProductGrid [align=center, showToolbar=false, columns=1/2/2]
   - S-001.5 → C-HeroTitle [headingLevel=2]
 
 ### S-002 — All Products
