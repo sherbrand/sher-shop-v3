@@ -60,8 +60,13 @@ export function HoverMedia({
     }
   };
 
+  /* Only the TOP layer fades. Fading both at once looks right and is not: two
+     half-transparent layers composite to about 75%, so a quarter of the card's
+     own background shows through at the midpoint and the swap flashes lighter.
+     The picture underneath stays fully opaque and the new one arrives over it,
+     so the card is never less than solid. */
   const FADE =
-    "object-cover transition-opacity duration-[var(--dur-med)] ease-[var(--ease-out)]";
+    "object-cover transition-opacity duration-[var(--dur-slow)] ease-[var(--ease-out)]";
 
   return (
     <div
@@ -76,7 +81,7 @@ export function HoverMedia({
         alt={alt}
         fill
         sizes={sizes}
-        className={`${FADE} ${active ? "opacity-0" : "opacity-100"}`}
+        className="object-cover"
       />
       {playing ? (
         <video

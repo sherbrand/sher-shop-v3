@@ -65,7 +65,9 @@ const RAIL = [
      pan-y would leave a horizontal swipe with nothing to scroll it. */
   "overflow-x-auto snap-x snap-mandatory pb-[var(--space-2)] overscroll-x-contain",
   "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
-  "[&>*]:snap-start [&>*]:min-w-0",
+  /* snap-always caps a hard flick at one cell. The narrow cells hide it, but
+     without it a throw still skips past a card. */
+  "[&>*]:snap-start [&>*]:snap-always [&>*]:min-w-0",
   "@min-[768px]:auto-cols-[calc((100%-1.2*var(--space-5))/2.2)] @min-[768px]:gap-[var(--space-5)]",
   "@min-[1024px]:grid-flow-row @min-[1024px]:auto-cols-auto @min-[1024px]:grid-cols-4",
   "@min-[1024px]:overflow-x-visible @min-[1024px]:snap-none @min-[1024px]:pb-0",

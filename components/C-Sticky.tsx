@@ -41,6 +41,10 @@ export interface StickyProps {
    *  imagery that should meet the top edge. `reveal` decides how it comes back.
    *  Default false. */
   hiddenAtRest?: boolean;
+  /** HOW the header comes and goes, as distinct from `reveal`, which is WHEN.
+   *  "fade" (default) does not move: only opacity changes, so there is no travel
+   *  for the eye to follow. "slide" travels the bar's own height. */
+  motion?: "fade" | "slide";
   /** How the header returns. "direction" (default) reveals on an upward scroll
    *  and hides going down — with `hiddenAtRest` it stays hidden all the way down
    *  from the top, with no distance floor. "threshold" stays away until
@@ -65,12 +69,30 @@ export interface StickyProps {
   className?: string;
 }
 
+/* The away state, per motion and per breakpoint. Written out in full rather than
+   built from a template: Tailwind reads the source as text, so a class assembled
+   at run time is never generated. */
+const AWAY = {
+  slide: {
+    below: "@max-[1023.98px]:-translate-y-full",
+    from: "@min-[1024px]:-translate-y-full",
+  },
+  fade: {
+    /* Visibility is delayed by the fade so it cannot clip it, which needs
+       per-property timing and so the shorthand again. */
+    below:
+      "motion-reduce:[transition-duration:1ms] motion-reduce:[transition-delay:0s] @max-[1023.98px]:opacity-0 @max-[1023.98px]:pointer-events-none @max-[1023.98px]:invisible @max-[1023.98px]:[transition:opacity_var(--dur-slow)_var(--ease-out),visibility_0s_linear_var(--dur-slow)]",
+    from: "motion-reduce:[transition-duration:1ms] motion-reduce:[transition-delay:0s] @min-[1024px]:opacity-0 @min-[1024px]:pointer-events-none @min-[1024px]:invisible @min-[1024px]:[transition:opacity_var(--dur-slow)_var(--ease-out),visibility_0s_linear_var(--dur-slow)]",
+  },
+} as const;
+
 export function Sticky({
   announcement,
   announcementTone = "light",
   onMenu,
   onCart,
   hiddenAtRest = false,
+  motion = "fade",
   reveal = "direction",
   revealTarget,
   revealRatio = 0.3,
@@ -181,16 +203,21 @@ export function Sticky({
           "bg-[var(--surface-page)] text-[var(--text-strong)]",
           /* Tailwind v4 puts translate-y on the standalone `translate` property, so that
              is what transitions. Naming `transform` here animates nothing. */
-          "motion-safe:transition-[translate] motion-safe:duration-[var(--dur-med)] motion-safe:ease-[var(--ease-out)]",
+          /* The full shorthand as one arbitrary property, not three utilities.
+             `transition-property` is a single property, so a second transition-*
+             class silently replaces the first, and visibility alone is a step
+             function: the bar would blink rather than fade. Per-property timing is
+             the point here, and no utility can express it. */
+          "motion-safe:[transition:translate_var(--dur-slow)_var(--ease-out),opacity_var(--dur-slow)_var(--ease-out),visibility_0s_linear_0s]",
           /* Below 1024px a hidden-at-rest header is away until the page has
              scrolled past the threshold, and away again once it scrolls back
              inside it. A swipeable gallery makes scroll direction unreliable,
              so distance decides. */
-          hiddenAtRest && !past ? "@max-[1023.98px]:-translate-y-full" : "",
+          hiddenAtRest && !past ? AWAY[motion].below : "",
           /* From 1024px direction decides, for both the plain and the
              hidden-at-rest header. Resolved against the header's OWN width: a
              viewport media query here fires inside narrow frames on a wide screen. */
-          away ? "@min-[1024px]:-translate-y-full" : "",
+          away ? AWAY[motion].from : "",
         ].join(" ")}
       >
         {showAnnouncement && (
