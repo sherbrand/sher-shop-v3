@@ -75,9 +75,9 @@
 - **If something goes wrong:** If a field is missing, skip that field and still render the page.
 
 ### F-010 — Product Media Gallery
-- **What it does:** Shows a main viewer with a thumbnail strip. The order is fixed: the video first, then the images. The video thumbnail carries a play icon, and picking any thumbnail sets the main viewer. On load the main viewer shows the first image while the video loads. Once the video is ready the viewer switches to it and plays it muted, looped, and inline. With reduced motion turned on, there is no auto-switch and no autoplay.
+- **What it does:** Shows the product's shots, the video first, then the images in the order Shopify gives them. On mobile the shots run as a full-bleed swipe carousel, one per view, with a thumbnail strip below it. The video's thumbnail carries a play icon, and picking any thumbnail moves the carousel to that shot. On tablet and desktop there is no strip: the shots stack in one column on tablet and two on desktop, and the customer scrolls the page to see them. The video cell shows a still from the clip straight away. The file waits until the browser goes idle, then plays muted, looped, and inline.
 - **When it appears:** At the top of the Product Detail page (S-006).
-- **If something goes wrong:** If the video fails to load, the viewer stays on the first image. If an image fails, its thumbnail is left out.
+- **If something goes wrong:** If the video fails to load, its cell keeps showing the still.
 
 ### F-011 — Size and Stock
 - **What it does:** Lists the product's sizes and lets the customer pick one. Sold-out sizes still show but cannot be picked. When every size is sold out, the Add to Cart and Buy Now buttons swap to a Preorder link to S-008 Contact.
