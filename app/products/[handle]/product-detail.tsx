@@ -8,6 +8,7 @@ import type { SizeOption } from "@/components/SizeSelector";
 import type { MediaItem } from "@/components/MediaGallery";
 import { Details } from "@/components/C-Details";
 import { Sizing } from "@/components/C-Sizing";
+import type { SizeChart } from "@/components/C-Sizing";
 import { Shipping } from "@/components/C-Shipping";
 import { useCart } from "@/components/CartProvider";
 
@@ -23,6 +24,9 @@ export type ProductDetailProps = {
   /** S-009 copy for the shipping drawer. The slot files are read on the server,
    *  so the page passes it in rather than this client island reading D-006. */
   shippingSections?: { title: string; body: string }[];
+  /** D-005 size chart. Read on the server for the same reason as the shipping
+   *  copy: the TSV files are read from disk, not from this client island. */
+  sizeChart?: SizeChart;
   name: string;
   price: number;
   compareAt?: number;
@@ -99,12 +103,13 @@ export function ProductDetail(props: ProductDetailProps): ReactElement {
         }
       />
 
-      {/* Empty chart until D-005 Product Data is wired — no invented measurements. */}
+      {/* An empty chart rather than C-Sizing's own default, which is sample
+          measurements. A product D-005 has no row for shows no table. */}
       <Sizing
         open={sizeChartOpen}
         onClose={() => setSizeChartOpen(false)}
         productName={props.name}
-        chart={{ measures: [], rows: [] }}
+        chart={props.sizeChart ?? { measures: [], rows: [] }}
       />
       <Shipping
         open={shippingOpen}

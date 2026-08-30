@@ -6,9 +6,11 @@ import type { HeadingLevel } from "@/components/Heading";
 import { IconButton } from "@/components/IconButton";
 import { Icon } from "@/components/Icon";
 
-/* C-Sizing — the size-chart drawer. Renders only the measurements a product
-   defines; the inches table is worked out from the cm values. Slides from the
-   right. */
+/* C-Sizing — the size-chart drawer. Inches are the source: the product data
+   carries inch values as text, because a measurement is not always a number. It
+   can be a single number, a range, a free size, or two numbers for a set. The
+   centimetres table is worked out from the inches. Renders only the
+   measurements a product defines. Slides from the right. */
 
 export interface SizeMeasure {
   key: string;
@@ -17,7 +19,8 @@ export interface SizeMeasure {
 
 export interface SizeRow {
   size: string;
-  cm: Record<string, number>;
+  /** Inch values as text: "32", a range "30-31", "FS", or a set "9 / 14". */
+  in: Record<string, string>;
 }
 
 export interface SizeChart {
@@ -31,7 +34,7 @@ export interface SizingProps {
   /** HTML level (h1–h4) for the "Size Chart" heading — tag only, not style. Default 2. */
   headingLevel?: HeadingLevel;
   productName?: string;
-  /** Measures + per-size cm rows. Omitted measures are dropped from the table. */
+  /** Measures + per-size inch rows (D-005). Omitted measures are dropped from the table. */
   chart?: SizeChart;
   className?: string;
 }
@@ -43,11 +46,11 @@ const DEFAULT_CHART: SizeChart = {
     { key: "length", label: "Length" },
   ],
   rows: [
-    { size: "XS", cm: { bust: 78, waist: 60, length: 38 } },
-    { size: "S", cm: { bust: 82, waist: 64, length: 39 } },
-    { size: "M", cm: { bust: 87, waist: 69, length: 40 } },
-    { size: "L", cm: { bust: 93, waist: 75, length: 41 } },
-    { size: "XL", cm: { bust: 99, waist: 81, length: 42 } },
+    { size: "XS", in: { bust: "30-31", waist: "23-24", length: "15" } },
+    { size: "S", in: { bust: "32-33", waist: "25-26", length: "15.5" } },
+    { size: "M", in: { bust: "34-35", waist: "27-28", length: "16" } },
+    { size: "L", in: { bust: "36-38", waist: "29-31", length: "16.5" } },
+    { size: "XL", in: { bust: "39-41", waist: "32-34", length: "17" } },
   ],
 };
 
@@ -62,7 +65,12 @@ const CELL =
   "border-b border-[var(--border-default)] px-[var(--space-3)] py-[var(--pad-pill-y)] text-left font-[family-name:var(--font-body)] text-[length:var(--size-sm)]";
 const HEAD = `${CELL} text-[length:var(--size-xs)] uppercase tracking-[var(--tracking-label)] text-[var(--text-meta)]`;
 
-const toInch = (cm: number): number => Math.round((cm / 2.54) * 10) / 10;
+/* Inches to whole centimetres, value by value. Every number inside the string is
+   converted and rounded; everything else, the hyphen of a range, the " / " of a
+   set, a word like FS, is passed through untouched. So "30-31" becomes "76-79",
+   "9 / 14" becomes "23 / 36", and "FS" stays "FS", with no per-shape branching. */
+const toCm = (value: string): string =>
+  value.replace(/\d+(?:\.\d+)?/g, (n) => String(Math.round(parseFloat(n) * 2.54)));
 
 function Table({
   measures,
@@ -89,14 +97,17 @@ function Table({
         {rows.map((row) => (
           <tr key={row.size}>
             <td className={`${CELL} text-[var(--text-strong)]`}>{row.size}</td>
-            {measures.map((measure) => (
-              <td
-                key={measure.key}
-                className={`${CELL} text-right tabular-nums text-[var(--text-default)]`}
-              >
-                {unit === "in" ? toInch(row.cm[measure.key]) : row.cm[measure.key]}
-              </td>
-            ))}
+            {measures.map((measure) => {
+              const value = row.in[measure.key] ?? "";
+              return (
+                <td
+                  key={measure.key}
+                  className={`${CELL} text-right tabular-nums text-[var(--text-default)]`}
+                >
+                  {unit === "cm" ? toCm(value) : value}
+                </td>
+              );
+            })}
           </tr>
         ))}
       </tbody>
@@ -114,7 +125,7 @@ export function Sizing({
 }: SizingProps): ReactElement {
   // Keep only measures that at least one row actually defines.
   const measures = chart.measures.filter((measure) =>
-    chart.rows.some((row) => row.cm[measure.key] != null),
+    chart.rows.some((row) => row.in[measure.key] != null),
   );
 
   return (
@@ -163,10 +174,12 @@ export function Sizing({
             This guide is measurements-based and varies by style. Every piece can be tailored —
             reach out if you&apos;re unsure and we&apos;ll help you choose.
           </p>
-          <p className={`mb-[var(--space-2)] mt-[var(--space-5)] ${EYEBROW}`}>Centimetres</p>
-          <Table measures={measures} rows={chart.rows} unit="cm" />
-          <p className={`mb-[var(--space-2)] mt-0 ${EYEBROW}`}>Inches</p>
+          {/* Inches first: they are the source values the product data carries.
+              Centimetres follow, worked out from them. */}
+          <p className={`mb-[var(--space-2)] mt-[var(--space-5)] ${EYEBROW}`}>Inches</p>
           <Table measures={measures} rows={chart.rows} unit="in" />
+          <p className={`mb-[var(--space-2)] mt-0 ${EYEBROW}`}>Centimetres</p>
+          <Table measures={measures} rows={chart.rows} unit="cm" />
         </div>
       </aside>
     </div>

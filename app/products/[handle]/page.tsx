@@ -17,6 +17,7 @@ import { breadcrumbLd, pageMetadata, productLd } from "@/lib/seo";
 import { ProductDetail } from "./product-detail";
 import { ProductVideo } from "./product-video";
 import { proseSections, slotText } from "@/lib/slots";
+import { sizeChart } from "@/lib/product-data";
 import { categoryFor } from "@/lib/categories";
 
 // A size is sold out when every variant carrying it is unavailable (F-011).
@@ -149,6 +150,7 @@ export default async function ProductPage({
           title: section.heading,
           body: section.paragraph,
         }))}
+        sizeChart={sizeChart(handle)}
         name={product.title}
         price={Number(product.minPrice.amount)}
         currency={product.minPrice.currencyCode}
