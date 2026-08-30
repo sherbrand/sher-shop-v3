@@ -24,6 +24,20 @@ export type Video = {
   width: number | null;
   height: number | null;
   previewImage: Image | null;
+  /** The HLS manifest. It plays in chunks, so a brief preview downloads only
+   *  the seconds it shows. Null when Shopify lists no manifest. */
+  streamUrl: string | null;
+};
+
+/* One entry of the product's media, in the order Shopify shows it in the admin.
+   `images` and `videos` above are split by kind; this keeps them interleaved, so
+   a position counted in the admin means the same thing here (D-005's `thumb`). */
+export type MediaEntry = {
+  kind: "image" | "video";
+  /** The picture: the image itself, or a video's still frame. */
+  image: Image | null;
+  /** Set on a video entry only. */
+  video: Video | null;
 };
 
 export type SelectedOption = {
@@ -62,6 +76,8 @@ export type Product = {
   images: Image[];
   // The product's video(s), if any. F-010 shows the first one before the images.
   videos: Video[];
+  // Every media item in admin order, video included (D-005 `thumb` counts these).
+  media: MediaEntry[];
   options: ProductOption[];
   variants: ProductVariant[];
   // The filter attribute (closure type / set type / length), from the

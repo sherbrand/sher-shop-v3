@@ -57,3 +57,21 @@ export function sizeChart(slug: string): SizeChart {
   }
   return { measures: MEASURES, rows };
 }
+
+/* Which media a product's grid card shows, counted the way Shopify's admin
+   shows it: from 1, with the video counted. 0 when D-005 has no row, which
+   leaves the card on the product's featured image.
+
+   The number moves when media does. Add a video, or reorder the images, and
+   the card quietly shows a different picture, so this column is worth checking
+   whenever a product's media changes. */
+export function thumbIndex(slug: string): number {
+  const raw = BY_SLUG.get(slug)?.thumb;
+  if (!raw) return 0;
+  const n = Number(raw);
+  if (!Number.isInteger(n) || n < 1) {
+    console.warn(`[D-005] "${slug}" has thumb="${raw}", which is not a position — ignored.`);
+    return 0;
+  }
+  return n;
+}
