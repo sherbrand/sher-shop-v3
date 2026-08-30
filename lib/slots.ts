@@ -1,5 +1,4 @@
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
+import { readRows } from "@/lib/tsv";
 
 /* F-008 Slot Content — the hand-placed slots behind Home (S-001) and the five
    commerce screens (S-002, S-003, S-004, S-005, S-012).
@@ -22,30 +21,6 @@ import { join } from "node:path";
 
 const MEDIA_SOURCE = "data/d-004_media.tsv";
 const VALUES_SOURCE = "data/d-006_slot-values.tsv";
-
-type Row = Record<string, string>;
-
-/* Reads a TSV into rows keyed by column name. Note lines (#) and blank lines are
-   dropped, and the first line left is the header. */
-function readRows(source: string): Row[] {
-  const path = join(process.cwd(), source);
-  const lines = readFileSync(path, "utf8")
-    .split("\n")
-    .filter((line) => line.trim() !== "" && !line.startsWith("#"));
-
-  // The files are edited in a spreadsheet, so one can come back empty. No header
-  // means no slots, which every screen already handles.
-  const [headerLine, ...bodyLines] = lines;
-  if (!headerLine) return [];
-
-  const header = headerLine.split("\t").map((key) => key.trim());
-  return bodyLines.map((line) => {
-    const cells = line.split("\t");
-    return Object.fromEntries(
-      header.map((key, i) => [key, (cells[i] ?? "").trim()]),
-    );
-  });
-}
 
 export interface MediaSlot {
   image: string;
