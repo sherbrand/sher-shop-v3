@@ -252,7 +252,12 @@ export function HeroCarousel({
   }, [step]);
   const onEnd = (event: TransitionEvent<HTMLDivElement>): void => {
     if (fade) {
-      if (event.propertyName !== "transform") return;
+      /* Tailwind v4 puts translate-x on the standalone `translate` property, so
+         that is what animates and what transitionend reports. The export names
+         `transform` because its own CSS sets a real transform. Accept either, or
+         the re-base never runs and a drag leaves the track parked one cell off
+         with nothing behind it. */
+      if (event.propertyName !== "translate" && event.propertyName !== "transform") return;
       const k = stepRef.current;
       if (k !== 0) {
         setAnimate(false);
