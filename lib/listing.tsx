@@ -12,9 +12,9 @@ import { thumbIndex } from "@/lib/product-data";
    it. A product with no row, or a number past the end, falls back to the
    featured image (F-001).
 
-   On hover, or a touch-hold, a product with a video plays it. One without swaps
-   to its first picture instead, or to the second when the first is already the
-   card's own. A product with nothing else to show simply never swaps.
+   On hover, or a touch-hold, the card moves to the product's first media, or
+   its second where the first is already the card's own. A video there plays; an
+   image just swaps in. A product with nothing else to show never swaps.
 
    The card's category eyebrow comes from the product's own collections. A
    product in no category simply has no eyebrow, and the card closes up. */
@@ -37,13 +37,15 @@ export function toGridProduct(product: Product): GridProduct {
   }
   const thumb = (picked?.kind === "image" ? picked.image?.url : undefined) ?? featured;
 
-  /* A video plays on hover, and the picture is what a browser that cannot play
-     the stream falls back to. Both are worked out, since which one a visitor
-     gets is only known in the browser. */
-  const video = product.videos[0];
-  const swap = product.media.find(
-    (entry) => entry.kind === "image" && entry.image?.url !== thumb,
-  )?.image?.url;
+  /* Hover moves to the product's first media, or its second where the first is
+     already the card's. A video there plays; an image just swaps in. Its
+     picture comes along either way, since a video that cannot stream still
+     shows its own still frame. */
+  const thumbAt =
+    picked?.kind === "image"
+      ? index - 1
+      : product.media.findIndex((entry) => entry.image?.url === thumb);
+  const hover = product.media.find((_, i) => i !== thumbAt);
 
   return {
     id: product.id,
@@ -55,8 +57,8 @@ export function toGridProduct(product: Product): GridProduct {
     media: thumb ? (
       <HoverMedia
         first={thumb}
-        second={swap}
-        stream={video?.streamUrl ?? undefined}
+        second={hover?.image?.url}
+        stream={hover?.video?.streamUrl ?? undefined}
         alt={product.featuredImage?.altText ?? product.title}
       />
     ) : undefined,
