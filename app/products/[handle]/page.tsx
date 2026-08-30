@@ -15,6 +15,7 @@ import { sized } from "@/lib/media";
 import { JsonLd } from "@/components/JsonLd";
 import { breadcrumbLd, pageMetadata, productLd } from "@/lib/seo";
 import { ProductDetail } from "./product-detail";
+import { ProductVideo } from "./product-video";
 import { proseSections, slotText } from "@/lib/slots";
 import { categoryFor } from "@/lib/categories";
 
@@ -43,28 +44,22 @@ const SHOT_SIZES = "(min-width: 1024px) 31vw, (min-width: 768px) 61vw, 100vw";
    `node` in the stage and paints a string `thumb` in its thumb strip, so an item
    without those comes out empty there. */
 function toMedia(product: Product): MediaItem[] {
-  const posterUrl = product.featuredImage?.url;
-  const videos: MediaItem[] = product.videos.map((v): MediaItem => ({
-    type: "video",
-    src: v.url,
-    poster: posterUrl,
-    alt: product.title,
-    node: (
-      <video
-        src={v.url}
-        poster={sized(posterUrl, 1200)}
-        muted
-        loop
-        playsInline
-        autoPlay
-        // The poster paints the cell straight away and the file itself is never
-        // preloaded, so the video does not compete for LCP (F-010, B-011).
-        preload="none"
-        aria-label={product.title}
-      />
-    ),
-    thumb: sized(posterUrl, 200),
-  }));
+  const videos: MediaItem[] = product.videos.map((v): MediaItem => {
+    /* The clip's own still. It matches what plays, in scene and in shape. The
+       featured image does not: it is a different photo, and it is already the
+       first thumbnail, so using it here shows the same picture twice. */
+    const still = v.previewImage?.url;
+    return {
+      type: "video",
+      src: v.url,
+      poster: still,
+      alt: product.title,
+      node: (
+        <ProductVideo src={v.url} poster={sized(still, 1200)} label={product.title} />
+      ),
+      thumb: sized(still, 200),
+    };
+  });
   const images: MediaItem[] = product.images.map((img, i): MediaItem => ({
     type: "image",
     src: img.url,

@@ -17,9 +17,18 @@ import type {
 } from "@/lib/shopify/types";
 
 // --- Raw shapes as they come back from the queries above ---
+type RawVideoSource = {
+  url: string;
+  mimeType: string;
+  format: string;
+  width: number | null;
+  height: number | null;
+};
+
 type RawMediaNode = {
   mediaContentType: string;
-  sources?: Array<{ url: string; mimeType: string }>;
+  previewImage: Image | null;
+  sources?: Array<RawVideoSource>;
 };
 
 type RawProduct = {
@@ -50,10 +59,26 @@ type RawCollection = {
 function reshapeProduct(p: RawProduct): Product {
   const videos: Video[] = [];
   for (const m of p.media.nodes) {
-    if (m.mediaContentType === "VIDEO" && m.sources && m.sources.length > 0) {
-      const source = m.sources[0];
-      if (source) videos.push({ url: source.url, mimeType: source.mimeType });
+    if (m.mediaContentType !== "VIDEO" || !m.sources) continue;
+    // Shopify lists the HLS manifest first, then the mp4 renditions. Take the
+    // biggest mp4: a <video> given the manifest streams the smallest rendition
+    // it can, which on a short muted loop is the only one it ever reaches.
+    const mp4s = m.sources.filter((s) => s.mimeType === "video/mp4");
+    const best = mp4s.reduce<RawVideoSource | null>(
+      (a, b) => (a === null || (b.height ?? 0) > (a.height ?? 0) ? b : a),
+      null,
+    );
+    if (!best) {
+      console.warn(`[shopify] video on ${p.handle} has no mp4 source; skipped`);
+      continue;
     }
+    videos.push({
+      url: best.url,
+      mimeType: best.mimeType,
+      width: best.width,
+      height: best.height,
+      previewImage: m.previewImage,
+    });
   }
   return {
     id: p.id,
