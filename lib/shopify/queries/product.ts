@@ -18,7 +18,7 @@ export const PRODUCT_FRAGMENT = /* GraphQL */ `
     images(first: 20) {
       nodes { url altText width height }
     }
-    media(first: 10) {
+    media(first: 20) {
       nodes {
         mediaContentType
         # A video's own still frame. Without it the video has no picture of its

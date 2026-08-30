@@ -57,3 +57,31 @@ export function sizeChart(slug: string): SizeChart {
   }
   return { measures: MEASURES, rows };
 }
+
+/* A media position from D-005, counted the way Shopify's admin counts it: from
+   1, with the video counted. 0 when the column is blank or the row is missing.
+
+   A position moves when media does. Add a video, or reorder the images, and the
+   card quietly shows a different picture, so both columns are worth checking
+   whenever a product's media changes. */
+function position(slug: string, column: "thumb" | "hover"): number {
+  const raw = BY_SLUG.get(slug)?.[column];
+  if (!raw) return 0;
+  const n = Number(raw);
+  if (!Number.isInteger(n) || n < 1) {
+    console.warn(`[D-005] "${slug}" has ${column}="${raw}", which is not a position — ignored.`);
+    return 0;
+  }
+  return n;
+}
+
+/* Which media the grid card shows. 0 leaves the card on the featured image. */
+export function thumbIndex(slug: string): number {
+  return position(slug, "thumb");
+}
+
+/* Which media the card moves to on hover. 0 means the column is blank, and the
+   card falls back to the first media that is not its own. */
+export function hoverIndex(slug: string): number {
+  return position(slug, "hover");
+}

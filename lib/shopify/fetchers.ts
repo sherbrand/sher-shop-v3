@@ -9,6 +9,7 @@ import type {
   Collection,
   CollectionWithProducts,
   Image,
+  MediaEntry,
   Money,
   Product,
   ProductOption,
@@ -58,8 +59,13 @@ type RawCollection = {
 // --- Reshapers ---
 function reshapeProduct(p: RawProduct): Product {
   const videos: Video[] = [];
+  const media: MediaEntry[] = [];
   for (const m of p.media.nodes) {
-    if (m.mediaContentType !== "VIDEO" || !m.sources) continue;
+    if (m.mediaContentType !== "VIDEO" || !m.sources) {
+      // An image entry carries its own picture as the media preview.
+      media.push({ kind: "image", image: m.previewImage, video: null });
+      continue;
+    }
     // Shopify lists the HLS manifest first, then the mp4 renditions. Take the
     // biggest mp4: a <video> given the manifest streams the smallest rendition
     // it can, which on a short muted loop is the only one it ever reaches.
@@ -72,13 +78,19 @@ function reshapeProduct(p: RawProduct): Product {
       console.warn(`[shopify] video on ${p.handle} has no mp4 source; skipped`);
       continue;
     }
-    videos.push({
+    // The manifest sits alongside the mp4 renditions and is what a short hover
+    // preview plays, since it arrives in chunks rather than as a whole file.
+    const stream = m.sources.find((source) => source.format === "m3u8");
+    const video: Video = {
       url: best.url,
       mimeType: best.mimeType,
       width: best.width,
       height: best.height,
       previewImage: m.previewImage,
-    });
+      streamUrl: stream?.url ?? null,
+    };
+    videos.push(video);
+    media.push({ kind: "video", image: m.previewImage, video });
   }
   return {
     id: p.id,
@@ -93,6 +105,7 @@ function reshapeProduct(p: RawProduct): Product {
     featuredImage: p.featuredImage,
     images: p.images.nodes,
     videos,
+    media,
     options: p.options,
     variants: p.variants.nodes,
     typeAttribute: p.typeAttribute?.value ?? null,
