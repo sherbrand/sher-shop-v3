@@ -30,8 +30,16 @@ import { Icon } from "@/components/Icon";
    and every dot tap, goes through the overlay instead: fade a copy in, jump with
    behavior "auto" underneath, fade out.
 
-   BOTH WRAPS crossfade, and the condition is page arithmetic, forward when
-   active === pages - 1 and backward when active === 0. Never an intersection
+   THERE IS NO WRAP BY FINGER. An earlier version watched touch at either end and
+   crossfaded once a swipe travelled the commit distance outward. It never worked on
+   a real phone and was removed rather than left claiming to. On a phone, swiping
+   again at the last page does nothing: the reader waits for autoplay or taps a dot.
+   The component now has no touch listeners at all, which is right, because the
+   swipe is the browser scrolling.
+
+   BOTH WRAPS still crossfade for the arrows and the autoplay tick, and the
+   condition is page arithmetic, forward when active === pages - 1 and backward when
+   active === 0. Never an intersection
    ratio: after a smooth scroll or a momentum flick a ratio has often not settled
    when a tick lands, and the wrap would be skipped for a rail-long scroll. */
 
@@ -43,8 +51,6 @@ const FLICK_V = 0.4;
 const FADE_FALLBACK = 360;
 // ms of quiet after the last scroll event before the rail counts as settled
 const SCROLL_IDLE = 140;
-// used only if --swipe-commit is unreadable; the same token every rail commits at
-const COMMIT_FALLBACK = 56;
 
 const mod = (a: number, n: number): number => ((a % n) + n) % n;
 
@@ -63,6 +69,7 @@ const RAIL = [
   "[&>*]:snap-always",
   // snap off while a mouse drag writes scrollLeft, so the two do not fight
   "data-[drag]:snap-none data-[drag]:[scroll-behavior:auto]",
+  "data-[jump]:snap-none data-[jump]:[scroll-behavior:auto]",
   "@min-[1024px]:cursor-grab @min-[1024px]:data-[drag]:cursor-grabbing",
   "motion-reduce:[scroll-behavior:auto]",
 ].join(" ");
@@ -102,6 +109,11 @@ export interface HeroSlide {
   alt?: string;
   /** Makes the whole banner a link. A linked slide must carry `alt`. */
   href?: string;
+  /** How the banner is cropped when the cell is proportionally wider than the
+   *  image. "top" is the default and keeps the top edge, so a head-to-toe studio
+   *  shot never loses a head. "center" opts back, for a banner with sky or
+   *  architecture above the subject that can afford to lose some. */
+  crop?: "center" | "top";
 }
 
 export interface HeroCarouselProps {
@@ -147,13 +159,6 @@ export function HeroCarousel({
   useEffect(() => {
     xfadeRef.current = xfade;
   }, [xfade]);
-
-  const commitDistance = (): number => {
-    const rail = railRef.current;
-    if (!rail) return COMMIT_FALLBACK;
-    const v = parseFloat(getComputedStyle(rail).getPropertyValue("--swipe-commit"));
-    return Number.isFinite(v) && v > 0 ? v : COMMIT_FALLBACK;
-  };
 
   /* Which PAGE is showing, without measuring anything: the observer watches only the
      snap cells, the left of each pair, so a page is what it reports at both widths.
@@ -374,15 +379,27 @@ export function HeroCarousel({
     setNudge((v) => v + 1);
   };
 
+  /* Land on a page with no animation and no snapping. scrollTo with behavior
+     "auto" is still re-snapped by the browser, which is what made the wrap appear
+     not to return to the first banner: scrollLeft is assigned directly so the
+     landing is exact, under data-jump so snap cannot correct it, and restored on
+     the next frame before anything can be scrolled by hand. */
+  const jumpTo = useCallback((p: number): void => {
+    const rail = railRef.current;
+    const cell = cellRefs.current[mod(p, pages) * 2];
+    if (!rail || !cell) return;
+    rail.setAttribute("data-jump", "");
+    rail.scrollLeft = cell.offsetLeft;
+    requestAnimationFrame(() => rail.removeAttribute("data-jump"));
+  }, [pages]);
+
   const finish = useCallback((): void => {
     const k = xfadeRef.current;
     if (k == null) return;
-    const rail = railRef.current;
-    const cell = cellRefs.current[k * 2];
-    if (rail && cell) rail.scrollTo({ left: cell.offsetLeft, behavior: "auto" });
+    jumpTo(k);
     setLit(false);
     setXfade(null);
-  }, []);
+  }, [jumpTo]);
 
   /* transitionend is the normal path; the timer is the floor for a transition with
      no duration, which fires no event and would strand the overlay. */
@@ -396,55 +413,6 @@ export function HeroCarousel({
     const id = window.setTimeout(finish, floor);
     return () => window.clearTimeout(id);
   }, [xfade, finish]);
-
-  /* EDGE SWIPE — the wrap by finger. At either end the rail has nowhere left to
-     scroll, so a swipe outward produces no scroll event and the gesture would die.
-     Touch only, and only while the rail is already parked at that end. It is not a
-     drag: nothing follows the finger, it is one threshold firing one crossfade. */
-  useEffect(() => {
-    const rail = railRef.current;
-    if (!rail || pages <= 1) return;
-    let g: { x: number; atStart: boolean; atEnd: boolean; done: boolean } | null = null;
-    const start = (e: TouchEvent): void => {
-      if (e.touches.length !== 1) {
-        g = null;
-        return;
-      }
-      const atStart = rail.scrollLeft <= 1;
-      const atEnd = rail.scrollLeft >= rail.scrollWidth - rail.clientWidth - 1;
-      g =
-        atStart || atEnd
-          ? { x: e.touches[0]?.clientX ?? 0, atStart, atEnd, done: false }
-          : null;
-    };
-    const move = (e: TouchEvent): void => {
-      if (!g || g.done || xfadeRef.current != null) return;
-      const dx = (e.touches[0]?.clientX ?? 0) - g.x;
-      const commit = commitDistance();
-      // pulling right at the start reaches the last page; left at the end reaches the first
-      if (g.atStart && dx > commit) {
-        g.done = true;
-        fadeTo(pages - 1);
-      } else if (g.atEnd && dx < -commit) {
-        g.done = true;
-        fadeTo(0);
-      }
-    };
-    const end = (): void => {
-      g = null;
-    };
-    rail.addEventListener("touchstart", start, { passive: true });
-    rail.addEventListener("touchmove", move, { passive: true });
-    rail.addEventListener("touchend", end, { passive: true });
-    rail.addEventListener("touchcancel", end, { passive: true });
-    return () => {
-      rail.removeEventListener("touchstart", start);
-      rail.removeEventListener("touchmove", move);
-      rail.removeEventListener("touchend", end);
-      rail.removeEventListener("touchcancel", end);
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pages]);
 
   useEffect(() => {
     if (!autoPlay || pages <= 1) return;
@@ -478,6 +446,16 @@ export function HeroCarousel({
      each pair costs a phone nothing. */
   const banner = (slide: HeroSlide, muted: boolean, eager: "high" | boolean): ReactElement => {
     const named = !slide.image && !slide.href && !!slide.alt && !muted;
+    /* Written as whole literal classes, not a data-attribute variant: Tailwind reads
+       the source as text and a container-query variant stacked on another variant is
+       not generated. "top" keeps the top edge, which is what a head-to-toe studio
+       shot needs when a wide cell crops the height. A centre-cropped banner also
+       shifts down below 640px so the subject sits lower in the narrow frame; a
+       top-cropped one does not, since keeping the top edge is the whole point. */
+    const crop =
+      slide.crop === "center"
+        ? "object-center @max-[639.98px]:object-[center_40%]"
+        : "object-[center_top]";
     const media = (
       <>
         <div
@@ -497,7 +475,7 @@ export function HeroCarousel({
             // camelCase here: React 19 types and accepts it. The export writes it
             // lowercase because its own preview runs React 18, which warns.
             fetchPriority={eager === "high" ? "high" : undefined}
-            className="absolute inset-0 block h-full w-full object-cover object-[center_40%] @min-[640px]:object-center"
+            className={`absolute inset-0 block h-full w-full object-cover ${crop}`}
           />
         )}
       </>
