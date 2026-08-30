@@ -332,6 +332,7 @@
   - Opens from the Details link on the product page.
   - Closes on the close control or a tap outside the drawer.
   - Shows the product name and its description, read from D-001 Product.
+  - Shows the type attribute below the description, under the label "Type".
 
 ### C-Sizing — Size Chart Drawer
 - **Component:** Refer to /components/C-Sizing.tsx
