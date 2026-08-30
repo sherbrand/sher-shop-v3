@@ -81,8 +81,8 @@ const AWAY = {
     /* Visibility is delayed by the fade so it cannot clip it, which needs
        per-property timing and so the shorthand again. */
     below:
-      "@max-[1023.98px]:opacity-0 @max-[1023.98px]:pointer-events-none @max-[1023.98px]:invisible @max-[1023.98px]:[transition:opacity_var(--dur-med)_var(--ease-out),visibility_0s_linear_var(--dur-med)]",
-    from: "@min-[1024px]:opacity-0 @min-[1024px]:pointer-events-none @min-[1024px]:invisible @min-[1024px]:[transition:opacity_var(--dur-med)_var(--ease-out),visibility_0s_linear_var(--dur-med)]",
+      "motion-reduce:[transition-duration:1ms] motion-reduce:[transition-delay:0s] @max-[1023.98px]:opacity-0 @max-[1023.98px]:pointer-events-none @max-[1023.98px]:invisible @max-[1023.98px]:[transition:opacity_var(--dur-slow)_var(--ease-out),visibility_0s_linear_var(--dur-slow)]",
+    from: "motion-reduce:[transition-duration:1ms] motion-reduce:[transition-delay:0s] @min-[1024px]:opacity-0 @min-[1024px]:pointer-events-none @min-[1024px]:invisible @min-[1024px]:[transition:opacity_var(--dur-slow)_var(--ease-out),visibility_0s_linear_var(--dur-slow)]",
   },
 } as const;
 
@@ -208,7 +208,7 @@ export function Sticky({
              class silently replaces the first, and visibility alone is a step
              function: the bar would blink rather than fade. Per-property timing is
              the point here, and no utility can express it. */
-          "motion-safe:[transition:translate_var(--dur-med)_var(--ease-out),opacity_var(--dur-med)_var(--ease-out),visibility_0s_linear_0s]",
+          "motion-safe:[transition:translate_var(--dur-slow)_var(--ease-out),opacity_var(--dur-slow)_var(--ease-out),visibility_0s_linear_0s]",
           /* Below 1024px a hidden-at-rest header is away until the page has
              scrolled past the threshold, and away again once it scrolls back
              inside it. A swipeable gallery makes scroll direction unreliable,

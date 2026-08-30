@@ -100,10 +100,51 @@ export function HeroCarousel({
   const [pos, setPos] = useState(0);
   // in fade mode a drag settles by sliding one slot; step carries that, then re-bases
   const [step, setStep] = useState(0);
+  /* Bumped by any DELIBERATE move: a dot, an arrow, a completed drag. It sits in the
+     interval's deps, so the clock restarts and a pending tick never lands on top of
+     the reader's own move, which reads as skipping two banners. */
+  const [nudge, setNudge] = useState(0);
   const fade = transition === "fade";
+
   const [animate, setAnimate] = useState(true);
   const [dragging, setDragging] = useState(false);
   const count = slides.length || 1;
+
+  /* Preload the window plus one, so a crossfade never runs on a banner whose image
+     has not arrived: the layer would fade in on its tone and the photograph would
+     pop, which reads as a blink rather than a fade. Cost in requests is unchanged
+     over a loop, since each banner is still fetched once and only as the carousel
+     approaches it. Nothing extra is held in the DOM. */
+  const readyRef = useRef<Set<number> | null>(null);
+  if (readyRef.current === null) readyRef.current = new Set();
+  const [, bumpReady] = useState(0);
+  useEffect(() => {
+    if (!fade) return;
+    for (let i = 0; i <= FADE_SLOTS; i++) {
+      const k = mod(pos + i, count);
+      const slide = slides[k];
+      // a tone-only banner has nothing to wait for
+      if (!slide || !slide.image) {
+        readyRef.current?.add(k);
+        continue;
+      }
+      if (readyRef.current?.has(k)) continue;
+      const probe = new window.Image();
+      probe.decoding = "async";
+      const done = (): void => {
+        readyRef.current?.add(k);
+        bumpReady((v) => v + 1);
+      };
+      probe.onload = done;
+      // a banner that will not load must not stall the carousel for ever
+      probe.onerror = done;
+      probe.src = slide.image;
+    }
+  }, [fade, pos, count, slides]);
+
+  /* How many ticks in a row have been held waiting for an image. Capped, so a banner
+     that never loads cannot freeze the carousel. */
+  const held = useRef(0);
   const trackRef = useRef<HTMLDivElement>(null);
   const drag = useRef<{ x: number; dx: number } | null>(null);
   const [down, setDown] = useState<{ x: number; y: number } | null>(null);
@@ -150,6 +191,7 @@ export function HeroCarousel({
       // fade settles the gesture by sliding one slot, then re-bases; slide just moves on
       if (fade) setStep(dir);
       else setPos((p) => p + dir);
+      setNudge((v) => v + 1);
     }
   };
 
@@ -170,10 +212,20 @@ export function HeroCarousel({
       // pos used to climb past the slide count faster than transitionend could
       // reset it. Not advancing a carousel nobody can see is right anyway.
       if (document.hidden) return;
-      setPos((p) => (fade ? mod(p + 1, count) : p + 1));
+      if (fade) {
+        const next = mod(posRef.current + 1, count);
+        if (!readyRef.current?.has(next) && held.current < 2) {
+          held.current += 1;
+          return;
+        }
+        held.current = 0;
+        setPos((p) => mod(p + 1, count));
+        return;
+      }
+      setPos((p) => p + 1);
     }, interval);
     return () => clearInterval(timer);
-  }, [autoPlay, interval, count, dragging, fade]);
+  }, [autoPlay, interval, count, dragging, fade, nudge]);
 
   // Re-enable the transition on the frame after the silent wrap-around jump.
   useEffect(() => {
@@ -182,7 +234,10 @@ export function HeroCarousel({
 
   const extended = [...slides, ...slides.slice(0, 2)];
   const active = ((pos % count) + count) % count;
-  const go = (k: number): void => setPos((((k % count) + count) % count));
+  const go = (k: number): void => {
+    setPos(mod(k, count));
+    setNudge((v) => v + 1);
+  };
   /* posRef mirrors pos so the wrap reset never reads a stale closure value: onEnd is
      a DOM handler, so the `pos` captured when it was created can be several ticks
      behind. The reset is a modulo, not a single subtraction, so an overshoot of any

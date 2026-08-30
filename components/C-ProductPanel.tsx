@@ -134,14 +134,14 @@ const DOTS = [
   "[&>button[aria-current='true']]:bg-[var(--surface-inverse)]",
 ].join(" ");
 
-// Fallback when --dur-med cannot be read, matching the token's own value.
-const FADE_FALLBACK = 240;
+// Used only if the overlay's own duration is unreadable (mounted before the CSS).
+const FADE_FALLBACK = 360;
 
 /* The crossfade overlay. Hidden from 768px, where the shots are a column rather
    than a carousel and there is nothing to jump between. */
 const XFADE = [
   "pointer-events-none absolute inset-0 z-[2] overflow-hidden",
-  "transition-opacity duration-[var(--dur-med)] ease-[var(--ease-out)]",
+  "transition-opacity duration-[var(--dur-slow)] ease-[var(--ease-out)]",
   "motion-reduce:duration-[1ms]",
   "[&>*]:absolute [&>*]:inset-0 [&>*]:block [&>*]:h-full [&>*]:w-full [&>*]:object-cover",
   "@min-[768px]:hidden",
@@ -277,6 +277,7 @@ function StackedGallery({
   // the shot being crossfaded to, or null when the overlay is not in play
   const [xfade, setXfade] = useState<number | null>(null);
   const [lit, setLit] = useState(false);
+  const xfadeRef = useRef<HTMLDivElement>(null);
   const fade = transition === "fade";
 
   const onScroll = (): void => {
@@ -301,8 +302,12 @@ function StackedGallery({
 
   useEffect(() => {
     if (xfade == null) return;
-    const el = railRef.current;
-    const raw = el ? getComputedStyle(el).getPropertyValue("--dur-med") : "";
+    /* The overlay's OWN duration, read off the element rather than from a token
+       name: the stylesheet owns the value, so retuning it there cannot leave a
+       stale number here, and naming a token in JS would go wrong silently the
+       moment the CSS used a different one. */
+    const el = xfadeRef.current ?? railRef.current;
+    const raw = el ? getComputedStyle(el).transitionDuration : "";
     const ms = /ms/.test(raw) ? parseFloat(raw) : parseFloat(raw) * 1000;
     const floor = (Number.isFinite(ms) && ms > 0 ? ms : FADE_FALLBACK) + 60;
     const timer = window.setTimeout(finish, floor);
@@ -341,6 +346,7 @@ function StackedGallery({
           /* Sits over the rail while the rail jumps underneath with no animation,
              so a tap moves shot 1 to shot 7 without scrolling through five. */
           <div
+            ref={xfadeRef}
             aria-hidden
             onTransitionEnd={finish}
             style={{ opacity: lit ? 1 : 0 }}
