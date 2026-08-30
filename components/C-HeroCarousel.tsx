@@ -29,7 +29,10 @@ import { Icon } from "@/components/Icon";
 // px of pointer travel past which a click counts as a drag, not a tap
 const DRAG_SLOP = 10;
 // slots rendered in fade mode: up to two are on screen, the last is the drag reveal
-const FADE_SLOTS = 3;
+// two slots: the two-up peek from 768px, one banner below it. Layout only.
+const FADE_SLOTS = 2;
+// used only if the blend layer's own duration is unreadable (mounted before the CSS)
+const BLEND_FALLBACK = 360;
 
 const mod = (a: number, n: number): number => ((a % n) + n) % n;
 // Used when --swipe-commit cannot be read. Matches the token's own value.
@@ -99,16 +102,24 @@ export function HeroCarousel({
 }: HeroCarouselProps): ReactElement {
   const [pos, setPos] = useState(0);
   // in fade mode a drag settles by sliding one slot; step carries that, then re-bases
-  const [step, setStep] = useState(0);
+  /* FADE MODE IS ONE MECHANISM: a blend, and nothing else. `target` is the banner
+     being faded TO (null when settled) and `blend` is how far that fade has got, 0
+     to 1. Autoplay, an arrow, a dot and a drag all set a target and move the blend,
+     and differ only in what moves it: a transition for the first three, the pointer
+     for the fourth. Nothing translates, so there is no track position to re-base and
+     no second mechanism to hand back to. Committing is invisible by construction: at
+     blend 1 the incoming layer already covers the outgoing one, so adopting it
+     changes no pixel. */
+  const [target, setTarget] = useState<number | null>(null);
+  const [blend, setBlend] = useState(0);
   /* Bumped by any DELIBERATE move: a dot, an arrow, a completed drag. It sits in the
      interval's deps, so the clock restarts and a pending tick never lands on top of
      the reader's own move, which reads as skipping two banners. */
   const [nudge, setNudge] = useState(0);
-  const fade = transition === "fade";
-
   const [animate, setAnimate] = useState(true);
   const [dragging, setDragging] = useState(false);
   const count = slides.length || 1;
+  const fade = transition === "fade";
 
   /* Preload the window plus one, so a crossfade never runs on a banner whose image
      has not arrived: the layer would fade in on its tone and the photograph would
@@ -120,7 +131,8 @@ export function HeroCarousel({
   const [, bumpReady] = useState(0);
   useEffect(() => {
     if (!fade) return;
-    for (let i = 0; i <= FADE_SLOTS; i++) {
+    // starts at -1: a backward drag blends towards the banner behind
+    for (let i = -1; i <= FADE_SLOTS; i++) {
       const k = mod(pos + i, count);
       const slide = slides[k];
       // a tone-only banner has nothing to wait for
@@ -174,28 +186,61 @@ export function HeroCarousel({
     }
   };
 
+  /* Coalesce pointer moves into one update per frame. Slide mode writes a CSS
+     variable and needs no render; the blend is React state, so without this a 60Hz
+     drag re-renders sixty times a second. */
   const onDragMove = (e: PointerEvent<HTMLDivElement>): void => {
-    if (!drag.current) return;
-    drag.current.dx = e.clientX - drag.current.x;
-    setOffset(drag.current.dx);
+    const d = drag.current;
+    if (!d) return;
+    d.dx = e.clientX - d.x;
+    if (!fade) {
+      setOffset(d.dx);
+      return;
+    }
+    if (raf.current) return;
+    raf.current = requestAnimationFrame(() => {
+      raf.current = 0;
+      const g = drag.current;
+      if (!g) return;
+      // direction decides WHICH banner is next; distance decides how far the blend got
+      const dir = g.dx < 0 ? 1 : -1;
+      setTarget(mod(posRef.current + dir, count));
+      setBlend(Math.min(1, Math.abs(g.dx) / commitDistance()));
+    });
   };
 
   const endDrag = (commit: boolean): void => {
     const d = drag.current;
     drag.current = null;
-    setOffset(0);
-    setDragging(false);
-    if (!d) return;
-    if (commit && Math.abs(d.dx) > commitDistance()) {
-      const dir = d.dx < 0 ? 1 : -1;
-      // fade settles the gesture by sliding one slot, then re-bases; slide just moves on
-      if (fade) setStep(dir);
-      else setPos((p) => p + dir);
-      setNudge((v) => v + 1);
+    if (raf.current) {
+      cancelAnimationFrame(raf.current);
+      raf.current = 0;
     }
+    setDragging(false);
+    if (!fade) {
+      setOffset(0);
+      if (!d) return;
+      if (commit && Math.abs(d.dx) > commitDistance()) {
+        setPos((p) => p + (d.dx < 0 ? 1 : -1));
+        setNudge((v) => v + 1);
+      }
+      return;
+    }
+    if (!d) return;
+    const through = commit && Math.abs(d.dx) > commitDistance();
+    if (!through) {
+      // reverse: back to the banner the reader started on
+      if (bRef.current === 0) setTarget(null);
+      else setBlend(0);
+      return;
+    }
+    setNudge((v) => v + 1);
+    /* A drag that already reached the far end has nothing left to animate, so no
+       transitionend would ever arrive to finish it. */
+    if (bRef.current >= 1) commitBlend();
+    else setBlend(1);
   };
 
-  // A linked banner must not navigate when the gesture was a swipe.
   const onPointerDown = (e: PointerEvent<HTMLAnchorElement>): void =>
     setDown({ x: e.clientX, y: e.clientY });
   const onLinkClick = (e: MouseEvent<HTMLAnchorElement>): void => {
@@ -219,7 +264,9 @@ export function HeroCarousel({
           return;
         }
         held.current = 0;
-        setPos((p) => mod(p + 1, count));
+        // the same operation a drag performs, started by the clock instead of a finger
+        setTarget(next);
+        setBlend(1);
         return;
       }
       setPos((p) => p + 1);
@@ -234,38 +281,61 @@ export function HeroCarousel({
 
   const extended = [...slides, ...slides.slice(0, 2)];
   const active = ((pos % count) + count) % count;
+  /* A dot or an arrow is the same operation as a drag: name a target and run the
+     blend. A distant dot therefore crossfades straight to that banner rather than
+     travelling through the ones between. */
   const go = (k: number): void => {
-    setPos(mod(k, count));
+    const t = mod(k, count);
     setNudge((v) => v + 1);
+    if (!fade) {
+      setPos(t);
+      return;
+    }
+    if (t === posRef.current) return;
+    setTarget(t);
+    setBlend(1);
   };
-  /* posRef mirrors pos so the wrap reset never reads a stale closure value: onEnd is
-     a DOM handler, so the `pos` captured when it was created can be several ticks
-     behind. The reset is a modulo, not a single subtraction, so an overshoot of any
-     size lands back inside the real slide range instead of on the clone cells. */
+
   const posRef = useRef(0);
   useEffect(() => {
     posRef.current = pos;
   }, [pos]);
-  const stepRef = useRef(0);
+  const tRef = useRef<number | null>(null);
   useEffect(() => {
-    stepRef.current = step;
-  }, [step]);
-  const onEnd = (event: TransitionEvent<HTMLDivElement>): void => {
-    if (fade) {
-      /* Tailwind v4 puts translate-x on the standalone `translate` property, so
-         that is what animates and what transitionend reports. The export names
-         `transform` because its own CSS sets a real transform. Accept either, or
-         the re-base never runs and a drag leaves the track parked one cell off
-         with nothing behind it. */
-      if (event.propertyName !== "translate" && event.propertyName !== "transform") return;
-      const k = stepRef.current;
-      if (k !== 0) {
-        setAnimate(false);
-        setPos((p) => mod(p + k, count));
-        setStep(0);
-      }
-      return;
-    }
+    tRef.current = target;
+  }, [target]);
+  const bRef = useRef(0);
+  useEffect(() => {
+    bRef.current = blend;
+  }, [blend]);
+  const blendRef = useRef<HTMLDivElement>(null);
+  const raf = useRef(0);
+
+  /* Adopt the target as the current banner. Invisible: at blend 1 the incoming layer
+     already covers the outgoing one, so this changes no pixel. */
+  const commitBlend = (): void => {
+    if (tRef.current == null) return;
+    setAnimate(false);
+    setPos(tRef.current);
+    setTarget(null);
+    setBlend(0);
+  };
+  /* A floor under the transition: a blend set to a value it already holds fires no
+     transitionend and would strand the fade. Read off the blend layer itself, so
+     retuning the duration in the markup cannot leave a stale number here. */
+  useEffect(() => {
+    if (!fade || target == null || dragging || blend !== 1) return;
+    const el = blendRef.current;
+    const raw = el ? getComputedStyle(el).transitionDuration : "";
+    const first = String(raw).split(",")[0].trim();
+    const ms = /ms$/.test(first) ? parseFloat(first) : parseFloat(first) * 1000;
+    const floor = (Number.isFinite(ms) && ms > 0 ? ms : BLEND_FALLBACK) + 60;
+    const id = window.setTimeout(commitBlend, floor);
+    return () => window.clearTimeout(id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [fade, target, blend, dragging]);
+
+  const onEnd = (): void => {
     const p = posRef.current;
     if (p >= count) {
       setAnimate(false);
@@ -273,10 +343,14 @@ export function HeroCarousel({
     }
   };
 
-  /* A drag, and the frame that re-bases the track after one, must not crossfade:
-     the continuity there comes from the geometry, and a fade running at the same
-     time would read as a second, unexplained change. */
-  const holding = dragging || step !== 0 || !animate;
+  /* The blend layer finished. Past the far end it becomes the current banner; short
+     of it the fade simply reverses and there is nothing to adopt. */
+  const onBlendEnd = (event: TransitionEvent<HTMLDivElement>): void => {
+    if (event.propertyName !== "opacity") return;
+    if (bRef.current >= 1) commitBlend();
+    else setTarget(null);
+  };
+
 
   const cellClass = [
     "relative shrink-0 grow-0 basis-full overflow-hidden",
@@ -360,57 +434,66 @@ export function HeroCarousel({
       {/* Both modes drive the SAME transform, --pos times the cell width. "slide"
           grows --pos; "fade" leaves it at 0 and uses it only while settling a drag,
           so the cell width stays a container query and JS never counts banners. */}
+      {/* The two modes share nothing. "slide" moves the track by --pos times the
+          cell width; "fade" never transforms at all, so its slots are layout only
+          and every pixel of motion is the blend layer's opacity. */}
       <div
         ref={trackRef}
-        onTransitionEnd={onEnd}
+        onTransitionEnd={fade ? undefined : onEnd}
         onPointerDown={onDragStart}
         onPointerMove={onDragMove}
         onPointerUp={() => endDrag(true)}
         onPointerCancel={() => endDrag(false)}
         className={[
           "flex touch-pan-y",
-          "translate-x-[calc(var(--pos,0)*-100%+var(--drag,0px))] @min-[768px]:translate-x-[calc(var(--pos,0)*-50%+var(--drag,0px))]",
           fade
-            ? step !== 0 && animate
-              ? "transition-transform duration-[var(--dur-med)] ease-[var(--ease-out)]"
-              : "transition-none"
+            ? ""
+            : "translate-x-[calc(var(--pos,0)*-100%+var(--drag,0px))] @min-[768px]:translate-x-[calc(var(--pos,0)*-50%+var(--drag,0px))]",
+          fade
+            ? ""
             : animate && !dragging
               ? "transition-transform duration-[var(--dur-slow)] ease-[var(--ease-out)]"
               : "transition-none",
         ].join(" ")}
-        style={{ "--pos": fade ? step : pos } as CSSProperties}
+        style={fade ? undefined : ({ "--pos": pos } as CSSProperties)}
       >
         {fade
-          ? Array.from({ length: FADE_SLOTS }, (_, i) => (
-              <div key={i} className={cellClass}>
-                {[0, 1].map((j) => {
-                  /* The layer whose parity matches this slot's step holds the
-                     incoming banner; the other still holds the one it replaces. */
-                  const on = mod(pos + i, 2) === j;
-                  const slide = slides[mod(pos + i - (on ? 0 : 1), count)];
-                  if (!slide) return null;
-                  /* Slot 2 is off screen at every width, and an outgoing layer is a
-                     second copy of a banner shown elsewhere. Neither is announced. */
-                  const muted = !on || i >= FADE_SLOTS - 1;
-                  return (
+          ? Array.from({ length: FADE_SLOTS }, (_, i) => {
+              const current = slides[mod(pos + i, count)];
+              const next = target == null ? null : slides[mod(target + i, count)];
+              /* The second slot is off screen at 1-up and visible at 2-up. Only a
+                 settled banner in an on-screen slot is announced, and the blend
+                 layer is always a second copy of one named elsewhere. */
+              const off = i > 0;
+              return (
+                <div key={i} className={cellClass}>
+                  {current && (
+                    <div className="absolute inset-0 overflow-hidden">
+                      {banner(current, off, i === 0 ? "high" : true)}
+                    </div>
+                  )}
+                  {next && (
                     <div
-                      key={j}
-                      aria-hidden={muted ? true : undefined}
+                      ref={i === 0 ? blendRef : undefined}
+                      onTransitionEnd={i === 0 ? onBlendEnd : undefined}
+                      aria-hidden
+                      style={{ opacity: blend }}
                       className={[
                         "absolute inset-0 overflow-hidden",
-                        on ? "z-[2] opacity-100" : "z-[1] opacity-0",
-                        holding
+                        /* The pointer drives the blend directly, so a drag must not
+                           also be easing towards where the finger already is. */
+                        dragging || !animate
                           ? "transition-none"
-                          : "transition-opacity duration-[var(--dur-med)] ease-[var(--ease-out)]",
+                          : "transition-opacity duration-[var(--dur-slow)] ease-[var(--ease-out)]",
                       ].join(" ")}
                     >
-                      {banner(slide, muted, i === 0 ? "high" : i === 1)}
+                      {banner(next, true, true)}
                     </div>
-                  );
-                })}
-                <div className="pointer-events-none absolute inset-0 bg-[image:var(--overlay-hero)]" />
-              </div>
-            ))
+                  )}
+                  <div className="pointer-events-none absolute inset-0 bg-[image:var(--overlay-hero)]" />
+                </div>
+              );
+            })
           : extended.map((slide, k) => (
               <div key={k} className={cellClass}>
                 {/* The trailing cells are wrap clones: out of the a11y tree and the
