@@ -144,7 +144,7 @@ components:
     backgroundColor: "{colors.surfaceInverse}"
     textColor: "{colors.textOnInverse}"
     typography: "{typography.button}"
-    rounded: "{rounded.sm}"
+    rounded: "{rounded.btn}"
     padding: 0.75rem
   ButtonPill:
     backgroundColor: "{colors.surfaceInverse}"
@@ -267,9 +267,9 @@ components:
 
 ## Overview
 
-SHER is a modern womenswear storefront design system — warm editorial minimalism, tonal and photography-led. The palette is a closed set of warm neutrals; type pairs Cormorant Infant (uppercase display, nav, buttons) with Cardo (serif prose). Surfaces are flat, radii are small, and depth is reserved for edge-anchored overlays. Everything here is token-driven so it maps cleanly onto Next.js + Tailwind.
-
 Tokens CSS holds the tokens. This file only describes them.
+
+SHER is a modern womenswear storefront design system — warm editorial minimalism, tonal and photography-led. The palette is a closed set of warm neutrals; type pairs Cormorant Infant (uppercase display, nav, buttons) with Cardo (serif prose). Surfaces are flat, radii are small, and depth is reserved for edge-anchored overlays. Everything here is token-driven so it maps cleanly onto Next.js + Tailwind.
 
 ## Colors
 
@@ -293,9 +293,13 @@ Layout components resolve every stepped size themselves, via CSS container queri
 
 ## Layout
 
-Breakpoints: 640 / 768 / 1024 / 1280 / 1536. Container max-width 1536px; wide media bands cap at 1536px (`--container-media`); readable prose measure 768px. The page edge padding (`--gutter`) is responsive, scaling with the frame: 1rem (16px) on mobile, 1.5rem (24px) on tablet, 3rem (48px) on desktop — driven by container queries at the breakpoints, not viewport units. Header height 4.5rem, announcement bar 2rem.
+Breakpoints: 640 / 768 / 1024 / 1280 / 1536. Container max-width 1536px; wide media bands cap at 1536px (`--container-media`); readable prose measure 768px. The page edge padding (`--gutter`) is responsive, scaling with the band's own width: 1rem on mobile, 2rem on tablet, 3rem on desktop — driven by container queries at the breakpoints, not viewport units, and declared in `tokens/components.css` so the steps ship with the tokens rather than being re-authored per app.
 
-Spacing follows a 4px base on a generous editorial rhythm — `spacing.1` (0.25rem) through `spacing.10` (8rem). Lay groups out with flex/grid + `gap` on this scale.
+**Integration note.** Those steps are `@container` queries, and an unnamed container query matches the nearest ANCESTOR container — so they need one to exist. The system ships `body { container-type: inline-size }` in `tokens/base.css` to establish it. An app that cannot cede `body` should put `container-type: inline-size` on its own layout root instead; any ancestor of the system's markup will do. Without a container somewhere above, the gutter stays at its 1rem base at every width. Header height 4.5rem, announcement bar 2rem at every width.
+
+Note on rem: `tokens/base.css` sets the root to `81.25%`, a percentage so a reader who has changed their browser font size still scales the whole design. 1rem therefore renders as **13px** at the default, not 16px — so the gutter is 13 / 26 / 39px, the header 58.5px, the announcement bar 26px. Every rem in this document is the authored value; multiply by 13 for pixels.
+
+Spacing follows a generous editorial rhythm — `spacing.1` (0.25rem) through `spacing.10` (8rem), rendering 3.25px to 104px at the 81.25% root. Lay groups out with flex/grid + `gap` on this scale.
 
 Chrome behavior: a sticky header on every screen; a transparent, non-sticky header over the Home hero that hands off to the sticky header once the hero's bottom edge scrolls past. Overlays (menu, cart, size chart, shipping) are edge-anchored drawers.
 

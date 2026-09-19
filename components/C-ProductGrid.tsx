@@ -79,13 +79,12 @@ const STEP_BODY =
   "text-[length:var(--size-body-sm)] @min-[640px]:text-[length:var(--size-body-md)] @min-[1024px]:text-[length:var(--size-body-lg)]";
 const STEP_LABEL =
   "text-[length:var(--size-label-sm)] @min-[640px]:text-[length:var(--size-label-md)] @min-[1024px]:text-[length:var(--size-label-lg)]";
-/* End-mark clearance steps at 820px, not 1024: the band caps at --container, so on
-   the tablet frame it measures ~786 and on desktop ~836. It never reaches 1024. */
-const END_MARK = "mt-[var(--space-8)] @min-[820px]:mt-[var(--space-9)]";
+/* End-mark clearance steps at the system's desktop breakpoint. */
+const END_MARK = "mt-[var(--space-8)] @min-[1024px]:mt-[var(--space-9)]";
 /* endSlot sits where the end mark would, so it takes the same clearance. Its children are
    centred and wrap, which is what a back-to-parent button pair wants. */
 const END_SLOT =
-  "flex flex-wrap justify-center mt-[var(--space-8)] gap-[var(--space-3)] @min-[820px]:mt-[var(--space-9)] @min-[820px]:gap-[var(--space-4)]";
+  "flex flex-wrap justify-center mt-[var(--space-8)] gap-[var(--space-3)] @min-[1024px]:mt-[var(--space-9)] @min-[1024px]:gap-[var(--space-4)]";
 /* At 2-up the card is wide enough for the name to take the title rung; 3-up holds
    at the item rung. Keyed off the grid's own data-cols-lg, so no prop threads down. */
 const TWO_UP_TITLE = [

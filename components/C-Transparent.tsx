@@ -31,9 +31,13 @@ export interface TransparentProps {
   className?: string;
 }
 
+/* The announcement tone Home asks for. A default its only caller always overrode is not
+   a default, so this is "dark" rather than the "accent" it shipped with. */
+const DEFAULT_TONE = "dark";
+
 export function Transparent({
   announcement,
-  announcementTone = "accent",
+  announcementTone = DEFAULT_TONE,
   onMenu,
   onCart,
   cartCount = 0,

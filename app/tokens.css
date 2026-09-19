@@ -143,16 +143,19 @@
 :root {
   /* Spacing scale — 4px base */
   --space-0:  0;
-  --space-1:  0.25rem; /* 4  */
-  --space-2:  0.5rem;  /* 8  */
-  --space-3:  0.75rem; /* 12 */
-  --space-4:  1rem;    /* 16 */
-  --space-5:  1.5rem;  /* 24 */
-  --space-6:  2rem;    /* 32 */
-  --space-7:  3rem;    /* 48 */
-  --space-8:  4rem;    /* 64 */
-  --space-9:  6rem;    /* 96 */
-  --space-10: 8rem;    /* 128 */
+  /* px comments are the RENDERED size at the 81.25% root in base.css, not rem x 16 —
+     a 1rem gutter draws 13px, and a reader who raises their browser font size gets
+     proportionally more. */
+  --space-1:  0.25rem; /* 3.25px */
+  --space-2:  0.5rem;  /* 6.5px */
+  --space-3:  0.75rem; /* 9.75px */
+  --space-4:  1rem;    /* 13px */
+  --space-5:  1.5rem;  /* 19.5px */
+  --space-6:  2rem;    /* 26px */
+  --space-7:  3rem;    /* 39px */
+  --space-8:  4rem;    /* 52px */
+  --space-9:  6rem;    /* 78px */
+  --space-10: 8rem;    /* 104px */
 
   /* Pointer travel that commits a carousel swipe to the next banner. A fixed
      distance, not a fraction of the banner: the gesture then feels identical
@@ -259,9 +262,14 @@
   --container-media:1536px; /* wide media bands — category tiles, galleries: runs
                                wider than text content but still capped */
   --container-prose:768px;  /* readable measure for policy / info pages */
-  --gutter:         1.5rem; /* 24 — page padding */
-  --header-h:       4.5rem; /* 72 */
-  --announce-h:     2rem;   /* 32 */
+  /* page padding — the MOBILE value and the only declaration of it; the 2rem / 3rem
+     steps are container queries in tokens/components.css, which must not re-declare the
+     base or the two compete at the same scope. */
+  --gutter:         1rem;   /* 13px */
+  /* the announcement bar is 2rem at EVERY width: it is a fixed strip of one line of
+     label text, so nothing in it grows with the breakpoint */
+  --header-h:       4.5rem; /* 58.5px */
+  --announce-h:     2rem;   /* 26px */
 
   /* C-Transparent's oversized square logo. --logo-w is read by C-Logo's SVG itself
      (`width: var(--logo-w, <size>)` on the viewBox element), so these set the mark's own
