@@ -6,6 +6,7 @@ import { CategoryGrid } from "@/components/C-CategoryGrid";
 import { ProductCarousel } from "@/components/C-ProductCarousel";
 import type { GridProduct } from "@/components/C-ProductGrid";
 import { Divider } from "@/components/Divider";
+import { SECTION_MB, SECTION_Y } from "@/lib/rhythm";
 import { getProducts } from "@/lib/shopify/fetchers";
 import type { Product } from "@/lib/shopify/types";
 import { toGridProduct } from "@/lib/listing";
@@ -77,8 +78,10 @@ export default async function HomePage(): Promise<ReactElement> {
           its own cta button. The band is the last thing on the page, so the
           button sends the reader on to the shop. */}
       {featured.length > 0 && (
-        <section className="mx-auto mt-[var(--space-9)] max-w-[var(--container)] px-[var(--gutter)]">
-          <Divider variant="mark" className="mb-[var(--space-8)]" />
+        <section
+          className={`mx-auto max-w-[var(--container)] px-[var(--gutter)] ${SECTION_Y}`}
+        >
+          <Divider variant="mark" className={SECTION_MB} />
           <ProductCarousel
             heading={slotText("s-001.4.heading")}
             headingLevel={2}

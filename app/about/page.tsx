@@ -7,6 +7,7 @@ import { JsonLd } from "@/components/JsonLd";
 import { breadcrumbLd, pageMetadata } from "@/lib/seo";
 import { bandCopy, metaCopy, slotText } from "@/lib/slots";
 import type { Crumb } from "@/components/Breadcrumb";
+import { SECTION_Y } from "@/lib/rhythm";
 
 const BREADCRUMB: Crumb[] = [{ label: "Home", href: "/" }, { label: "About Us" }];
 
@@ -20,7 +21,7 @@ export const metadata: Metadata = pageMetadata({
 
 export default function AboutPage(): ReactElement {
   return (
-    <main className="mx-auto flex max-w-[var(--container)] flex-col gap-[var(--space-9)] px-[var(--gutter)] py-[var(--space-7)]">
+    <main className={`mx-auto flex max-w-[var(--container)] flex-col gap-[var(--space-9)] px-[var(--gutter)] ${SECTION_Y}`}>
       <JsonLd data={breadcrumbLd(BREADCRUMB, "/about")} />
       <HeroTitle
         breadcrumb={BREADCRUMB}

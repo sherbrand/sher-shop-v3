@@ -12,6 +12,7 @@ import { ShopFaq } from "@/components/C-ShopFaq";
 import { JsonLd } from "@/components/JsonLd";
 import { breadcrumbLd, pageMetadata } from "@/lib/seo";
 import type { Crumb } from "@/components/Breadcrumb";
+import { SECTION_Y } from "@/lib/rhythm";
 
 const CAT = category("beachwear");
 
@@ -71,7 +72,7 @@ export default async function BeachwearPage(): Promise<ReactElement> {
         }
       />
 
-      <div className="mx-auto w-full max-w-[var(--container)] px-[var(--gutter)] py-[var(--space-7)]">
+      <div className={`mx-auto w-full max-w-[var(--container)] px-[var(--gutter)] ${SECTION_Y}`}>
         <ShopFaq
           items={faqItems("s-012.6")}
         />
