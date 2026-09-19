@@ -5,6 +5,7 @@ import Image from "next/image";
 import { getProduct, getProducts } from "@/lib/shopify/fetchers";
 import type { Product } from "@/lib/shopify/types";
 import { ProductCarousel } from "@/components/C-ProductCarousel";
+import { Divider } from "@/components/Divider";
 import type { GridProduct } from "@/components/C-ProductGrid";
 import { toGridProduct } from "@/lib/listing";
 import type { Crumb } from "@/components/Breadcrumb";
@@ -165,6 +166,12 @@ export default async function ProductPage({
         attributeValue={product.typeAttribute ?? undefined}
         preorderHref="/contact"
       />
+      {/* The mark sits in its OWN section on the page background, not inside the
+          tint band below. Inside the band it lands on the tint, so the band reads
+          as overlapping the mark rather than starting below it. */}
+      <div className="mx-auto w-full max-w-[var(--container)] px-[var(--gutter)]">
+        <Divider variant="mark" />
+      </div>
       {/* S-006.2 — a swipe rail of four, products alone: no actions cell, since
           the breadcrumb above already carries the way back to the category and
           the shop.

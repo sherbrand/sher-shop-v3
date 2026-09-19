@@ -2,7 +2,7 @@
 
 import type { ReactElement } from "react";
 import { useEffect, useState } from "react";
-import { usePathname, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Transparent } from "@/components/C-Transparent";
 import { Sticky } from "@/components/C-Sticky";
 import { Menu } from "@/components/C-Menu";
@@ -25,12 +25,7 @@ export function SiteHeader({
    *  files are read on the server, so layout passes it in. Omit for no bar. */
   announcement?: string;
 }): ReactElement {
-  const pathname = usePathname();
   const router = useRouter();
-  // S-006: the product page opens on a full-bleed gallery shot, so the header
-  // starts off-screen. C-Sticky's own 1024px query then splits how it returns:
-  // distance below the breakpoint, scroll direction above it.
-  const isProduct = pathname.startsWith("/products/");
 
   const [menuOpen, setMenuOpen] = useState(false);
   /* null until the client has looked for a hero. The server cannot decide this:
@@ -148,8 +143,6 @@ export function SiteHeader({
           onMenu={openMenu}
           onCart={openCart}
           cartCount={cartCount}
-          hiddenAtRest={isProduct}
-          reveal={isProduct ? "threshold" : "direction"}
         />
       </div>
       <Menu

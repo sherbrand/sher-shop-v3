@@ -204,7 +204,6 @@
 - **Outline:** Refer to /docs/content/s-006_product-detail.md
 - **Feature:** F-001 Product Grid, F-004 Add to Cart, F-006 Checkout, F-007 Size Chart, F-009 Structured Data, F-010 Product Media Gallery, F-011 Size and Stock, F-013 Breadcrumb Trail
 - **Behavior:**
-  - The header starts hidden so the first gallery shot meets the top edge. C-Sticky covers how it comes back.
   - Add to Cart opens C-Cart. Buy Now goes straight to Shopify checkout.
   - The details link opens C-Details. The sizing link opens C-Sizing. The shipping link opens C-Shipping.
   - "You May Also Like" shows 4 random products from anywhere in the store, not just this product's category.
@@ -298,7 +297,6 @@
 - **Behavior:**
   - Sticks to the top of every screen and holds its own height. Below 1024px it stays put once it is there. From 1024px it hides on a downward scroll and returns on an upward one.
   - On Home it takes over once the hero's bottom edge scrolls past the top. Below 1024px it then stays. From 1024px it hides and returns with the scroll, as on every other page.
-  - On the product page it starts hidden and holds no space, so the first gallery shot meets the top edge. Below 1024px it appears once the page has scrolled past about a third of the screen height, and hides again when it scrolls back inside that band. From 1024px it appears on an upward scroll and hides going down, and stays hidden at the very top.
   - The item count shows how many items are in the cart. It is hidden when the cart is empty.
 
 ### C-Menu — Menu Drawer
