@@ -76,8 +76,10 @@ export function Transparent({
 
         {/* Oversized square logo, centered, anchored at the bar top so it overflows only downward.
             --logo-w steps with the header's own width, so no page CSS has to override
-            Logo's inline width. */}
-        <div className="pointer-events-none absolute left-1/2 top-[calc(var(--space-2)+4px)] -translate-x-1/2 [--logo-w:96px] @min-[640px]:[--logo-w:112px] @min-[1024px]:[--logo-w:128px]">
+            Logo's inline width, and --logo-top steps its offset from the bar top with it.
+            Both are tokens: the mark is sized against the header bar, not the reader's
+            font size, and it overflows the bar on purpose. */}
+        <div className="pointer-events-none absolute left-1/2 -translate-x-1/2 top-[var(--logo-top-sm)] [--logo-w:var(--logo-w-sm)] @min-[640px]:top-[var(--logo-top-md)] @min-[640px]:[--logo-w:var(--logo-w-md)] @min-[1024px]:top-[var(--logo-top-lg)] @min-[1024px]:[--logo-w:var(--logo-w-lg)]">
           <Logo
             variant="square"
             color="white"

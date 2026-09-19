@@ -40,7 +40,11 @@ export interface StickyProps {
   /** Start the header off-screen, for a page whose first band is full-bleed
    *  imagery that should meet the top edge. `reveal` decides how it comes back.
    *  Default false. */
-  hiddenAtRest?: boolean;
+  /** "compact" hides at rest on MOBILE ONLY: from 768px the header is present on load and
+   *  reserves its height again, so a tablet behaves like every other page and only the
+   *  narrowest width, where a full-bleed band and a header genuinely compete for the
+   *  screen, starts away. */
+  hiddenAtRest?: boolean | "compact";
   /** HOW the header comes and goes, as distinct from `reveal`, which is WHEN.
    *  "fade" (default) does not move: only opacity changes, so there is no travel
    *  for the eye to follow. "slide" travels the bar's own height. */
@@ -49,9 +53,11 @@ export interface StickyProps {
    *  and hides going down — with `hiddenAtRest` it stays hidden all the way down
    *  from the top, with no distance floor. "threshold" stays away until
    *  `revealRatio` of `revealTarget` has scrolled past. Neither latches: scrolling
-   *  back to the top hides the header again. Both are tracked; the 1024px container
-   *  query picks direction above the breakpoint and threshold below it. */
-  reveal?: "direction" | "threshold";
+   *  back to the top hides the header again. "scrolled" is away only at the very top, so
+   *  the header arrives on the FIRST downward movement instead of waiting for an upward
+   *  one. Both are tracked; the 1024px container query picks direction above the
+   *  breakpoint and threshold or scrolled below it. */
+  reveal?: "direction" | "threshold" | "scrolled";
   /** CSS selector for the element whose HEIGHT sets the threshold distance.
    *  Falls back to the scrollport height. */
   revealTarget?: string;
@@ -75,6 +81,10 @@ export interface StickyProps {
 const AWAY = {
   slide: {
     below: "@max-[1023.98px]:-translate-y-full",
+    /* compact hides at rest only BELOW 768px. Expressed as its own range rather than as
+       a restore rule on top of `below`: the two would overlap between 768 and 1024, and
+       which one won would come down to Tailwind's class order rather than intent. */
+    belowCompact: "@max-[767.98px]:-translate-y-full",
     from: "@min-[1024px]:-translate-y-full",
   },
   fade: {
@@ -82,9 +92,20 @@ const AWAY = {
        per-property timing and so the shorthand again. */
     below:
       "motion-reduce:[transition-duration:1ms] motion-reduce:[transition-delay:0s] @max-[1023.98px]:opacity-0 @max-[1023.98px]:pointer-events-none @max-[1023.98px]:invisible @max-[1023.98px]:[transition:opacity_var(--dur-slow)_var(--ease-out),visibility_0s_linear_var(--dur-slow)]",
+    belowCompact:
+      "motion-reduce:[transition-duration:1ms] motion-reduce:[transition-delay:0s] @max-[767.98px]:opacity-0 @max-[767.98px]:pointer-events-none @max-[767.98px]:invisible @max-[767.98px]:[transition:opacity_var(--dur-slow)_var(--ease-out),visibility_0s_linear_var(--dur-slow)]",
     from: "motion-reduce:[transition-duration:1ms] motion-reduce:[transition-delay:0s] @min-[1024px]:opacity-0 @min-[1024px]:pointer-events-none @min-[1024px]:invisible @min-[1024px]:[transition:opacity_var(--dur-slow)_var(--ease-out),visibility_0s_linear_var(--dur-slow)]",
   },
 } as const;
+
+/* px of travel that still counts as "at the top" — a tap or a rubber-band bounce should
+   not register as scrolling. */
+const TOP_EPSILON = 8;
+
+/* px of downward travel before an ORDINARY header gives way, so a small nudge does not
+   pull the chrome off screen. A hidden-at-rest header has no floor: it is meant to be
+   away, so any downward move keeps it there. */
+const HIDE_FLOOR = 80;
 
 export function Sticky({
   announcement,
@@ -143,7 +164,11 @@ export function Sticky({
     const onScroll = (): void => {
       const y = readY();
 
-      if (reveal === "threshold" || hiddenAtRest) {
+      // "scrolled" wants the FIRST downward movement, so the answer is simply "not at the
+      // top any more". Every other mode measures a distance.
+      if (reveal === "scrolled") {
+        setPast(y > TOP_EPSILON);
+      } else if (reveal === "threshold" || hiddenAtRest) {
         // HEIGHT, not width: the target's own height sets the trigger distance.
         // Width is what container queries own, so it is never measured here.
         const target = revealTarget
@@ -155,6 +180,8 @@ export function Sticky({
             ? host.clientHeight
             : window.innerHeight;
         setPast(y > span * revealRatio);
+      } else {
+        setPast(false);
       }
 
       // Ignore jitter. A hidden-at-rest header stays hidden all the way DOWN from
@@ -163,7 +190,11 @@ export function Sticky({
       // upward move. The ordinary header keeps its floor, which is there to ignore
       // small scrolls near the top.
       if (Math.abs(y - last) >= 6) {
-        setAway(hiddenAtRest ? y <= 8 || y > last : y > last && y > 80);
+        setAway(
+          hiddenAtRest
+            ? y <= TOP_EPSILON || y > last
+            : y > last && y > HIDE_FLOOR,
+        );
         last = y;
       }
     };
@@ -191,7 +222,13 @@ export function Sticky({
            reserve its height and leave a blank strip above the band. Everywhere
            else it stays sticky and reserves its height, so nothing jumps on the
            Home handoff. */
-        hiddenAtRest ? "fixed inset-x-0" : "sticky",
+        /* "compact" needs its height back from 768px, where the header is present on load
+           and would otherwise be a fixed bar sitting on the first band. */
+        hiddenAtRest === "compact"
+          ? "fixed inset-x-0 @min-[768px]:sticky @min-[768px]:inset-x-auto"
+          : hiddenAtRest
+            ? "fixed inset-x-0"
+            : "sticky",
         className,
       ].join(" ")}
     >
@@ -213,7 +250,14 @@ export function Sticky({
              scrolled past the threshold, and away again once it scrolls back
              inside it. A swipeable gallery makes scroll direction unreliable,
              so distance decides. */
-          hiddenAtRest && !past ? AWAY[motion].below : "",
+          /* Only "threshold" and "scrolled" hide at rest below the breakpoint. A page that
+             asks for reveal="direction" opts out: it follows scroll direction at every
+             width, so the mode is the page's choice rather than the breakpoint's. */
+          hiddenAtRest && !past && reveal !== "direction"
+            ? hiddenAtRest === "compact"
+              ? AWAY[motion].belowCompact
+              : AWAY[motion].below
+            : "",
           /* From 1024px direction decides, for both the plain and the
              hidden-at-rest header. Resolved against the header's OWN width: a
              viewport media query here fires inside narrow frames on a wide screen. */

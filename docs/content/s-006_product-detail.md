@@ -12,8 +12,6 @@ url: /products/[product-slug]
 - Link.2: Sizing
 - Link.3: Shipping & Returns
 
-`S-006.2: (H2 / Subtitle) // (Product Grid <3 products from this and other categories, in a swipe rail> + (Btn.1 <to /{category}> / Btn.2 <to /shop>))`
+`S-006.2: (H2 / Subtitle) // Product Grid <4 products from this and other categories, in a swipe rail>`
 - H2: You May Also Like
 - Subtitle: Browse popular pieces from this and other categories.
-- Btn.1: Back to {Category}
-- Btn.2: Back to All Products

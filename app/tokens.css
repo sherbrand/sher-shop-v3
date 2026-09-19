@@ -162,9 +162,28 @@
   /* Control + indicator geometry. Fixed px, not rem: these are hit targets and
      optical marks, so they must not grow with the reader's font size. 44px is the
      minimum comfortable touch target. */
-  --control-hit:  44px;  /* min tap target — size chips, icon buttons */
+  --control-hit:  44px;  /* min tap target — buttons, icon buttons */
+  /* The size well is deliberately smaller than the tap target: a row of size chips is a
+     tight cluster where 44px reads as chunky, and each chip is a low-risk, reversible
+     choice sitting well away from any destructive control. Do not reuse this for a lone
+     control — 44px stays the floor everywhere else. */
+  --control-well: 40px;
   --control-min-w: 48px; /* wide chip's minimum width, so "XS" and "XXL" agree */
   --thumb-w:      44px;  /* gallery thumb strip cell */
+  /* the vertical strip's cell: wide enough to read as a picture rather than a marker,
+     since it has a whole column of height to sit in */
+  --thumb-w-lg:   88px;
+  /* Documented hooks for the thumb strip, declared here so they are real tokens rather
+     than properties invented inside a component rule. The strip narrows its inline
+     padding and lifts its per-thumb cap from 768px up, where the cell would otherwise
+     leave a wide column half empty. */
+  --pp-strip-pad: var(--space-2);
+  /* a per-thumb width cap; "none" at 768px+ lifts it so thumbs fill a wide column */
+  --pp-thumb-max: var(--thumb-w); /* @kind spacing */
+  /* The thumb's proportion as a UNITLESS ratio. aspect-ratio takes only numbers: with
+     lengths (44px / 58px) the declaration is invalid at computed-value time and falls
+     back to auto, which collapsed the strip to its borders. */
+  --thumb-ar: 44 / 58; /* @kind other */
   --thumb-h:      58px;  /* 44 x 3:4-ish, matching the shot ratio */
   --dot-sm:       10px;  /* carousel dot */
   --dot-wide:     26px;  /* the active dot, stretched to a pill */
@@ -179,6 +198,11 @@
   --radius-none: 0;
   --radius-sm:   2px;
   --radius-md:   4px;
+  /* Button radius, expressed against the button's OWN type size rather than in px, so
+     the corner keeps one ratio at every size instead of reading heavier on a small
+     button than a large one. 0.7em is ~10px on the lg button (14.6px type), ~9px on md,
+     ~8px on sm — the proportion the Shop the Full Collection button was tuned at. */
+  --radius-btn:  0.7em;
   --radius-pill: 999px;
 
   /* Vertical banner aspect ratios (portrait crops for hero/imagery) */
@@ -197,7 +221,11 @@
   --pad-pill-y: 0.6rem;  /* @kind spacing */
 
   /* Shared minimum width for the page's primary CTAs, so buttons with different
-     label lengths still line up when stacked in one column. */
+     label lengths still line up when stacked in one column. Stepped on .sher-band in
+     tokens/components.css — 22rem is wider than a 390px phone's content column, so a
+     single value would force every CTA to the full gutter-to-gutter width there. */
+  --cta-min-w-sm: 14rem; /* @kind spacing */
+  --cta-min-w-md: 18rem; /* @kind spacing */
   --cta-min-w: 22rem; /* @kind spacing */
   /* Tight vertical rhythm for stacked link lists and table cells — deliberately
      between --space-1 (4px) and --space-2 (8px) so rows stay dense but tappable. */
@@ -234,6 +262,19 @@
   --gutter:         1.5rem; /* 24 — page padding */
   --header-h:       4.5rem; /* 72 */
   --announce-h:     2rem;   /* 32 */
+
+  /* C-Transparent's oversized square logo. --logo-w is read by C-Logo's SVG itself
+     (`width: var(--logo-w, <size>)` on the viewBox element), so these set the mark's own
+     rendered width; --logo-top is its wrapper's offset from the bar top. Fixed px, not
+     rem: the mark is sized against the header bar, not the reader's font size, and it
+     overflows the bar on purpose. Desktop is 110px, and the two smaller steps hold the
+     same 0.86 ratio off their previous sizes. */
+  --logo-w-sm:      82px;  /* mobile  (was 96) */
+  --logo-w-md:      96px;  /* tablet  (was 112) */
+  --logo-w-lg:      110px; /* desktop (was 128) */
+  --logo-top-sm:    12px;  /* mobile */
+  --logo-top-md:    15px;  /* tablet */
+  --logo-top-lg:    17px;  /* desktop */
 
   /* Motion — quick, ease-out, no bounce/overshoot */
   --ease-out: cubic-bezier(0.22, 1, 0.36, 1); /* @kind other */

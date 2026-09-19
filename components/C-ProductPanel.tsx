@@ -7,10 +7,13 @@ import type { HeadingLevel } from "@/components/Heading";
 import { Breadcrumb } from "@/components/Breadcrumb";
 import type { Crumb } from "@/components/Breadcrumb";
 import { Button } from "@/components/Button";
+import type { ButtonProps } from "@/components/Button";
 import { Price } from "@/components/Price";
 import { QuantityStepper } from "@/components/QuantityStepper";
 import { SizeSelector } from "@/components/SizeSelector";
 import type { SizeOption } from "@/components/SizeSelector";
+import { IconButton } from "@/components/IconButton";
+import { Icon } from "@/components/Icon";
 import { MediaGallery } from "@/components/MediaGallery";
 import type { MediaItem } from "@/components/MediaGallery";
 
@@ -77,6 +80,20 @@ export interface ProductPanelProps {
    *  rail there. "fade" crossfades straight to it, so shot 1 to shot 7 does not
    *  drag the reader through five images. The swipe is native scroll either way. */
   transition?: "slide" | "fade";
+  /** What the shots do above 768px, in the stacked layout. "column" (default) stacks them
+   *  beside the sticky panel, so the whole set scrolls past it. "carousel" keeps the
+   *  MOBILE treatment at every width: one shot in view, swipeable, with the `indicator`
+   *  below it, so the gallery behaves the same on a phone and a desktop. Below 768px both
+   *  values look the same, since the shots are a carousel there either way.
+   *  "carousel" also makes the buy column static: the sticky floor exists so a column of
+   *  shots can scroll past the panel, and a one-shot carousel would only gain empty space
+   *  beneath the gallery from it. */
+  gallery?: "column" | "carousel";
+  /** Fill of the Add to Cart button, the quieter half of the buy pair. Defaults to "tint"
+   *  in the stacked layout and "surface" beside, both chosen to recede next to Buy Now's
+   *  "primary" dark fill. Set it to try a different companion: "secondary" gives an
+   *  outlined button that matches the dark fill's weight without competing. */
+  addToCartVariant?: ButtonProps["variant"];
   /** Show the quantity stepper. Default true. */
   showQuantity?: boolean;
   /** Where Preorder points when every size is sold out. Default "/contact". */
@@ -91,6 +108,11 @@ const STEP_HERO =
   "text-[length:var(--size-hero-sm)] @min-[640px]:text-[length:var(--size-hero-md)] @min-[1024px]:text-[length:var(--size-hero-lg)]";
 const STEP_TITLE =
   "text-[length:var(--size-title-sm)] @min-[640px]:text-[length:var(--size-title-md)] @min-[1024px]:text-[length:var(--size-title-lg)]";
+/* The product name takes the SECTION rung, not TITLE: it is the page's H1, and on title it
+   rendered a rung below the "You May Also Like" heading further down the page. The price
+   stays on title, a rung under the name. */
+const STEP_SECTION =
+  "text-[length:var(--size-section-sm)] @min-[640px]:text-[length:var(--size-section-md)] @min-[1024px]:text-[length:var(--size-section-lg)]";
 const STEP_BODY =
   "text-[length:var(--size-body-sm)] @min-[640px]:text-[length:var(--size-body-md)] @min-[1024px]:text-[length:var(--size-body-lg)]";
 const STEP_LABEL =
@@ -99,12 +121,14 @@ const STEP_LABEL =
 const HEADING =
   "m-0 font-[family-name:var(--font-display)] font-normal uppercase leading-[var(--leading-snug)] tracking-[var(--tracking-display)] text-[var(--text-strong)]";
 
+/* The drawer links STEP with the band's width, so the size is a stepped class rather than
+   one fixed --size-sm. */
 const DRAWER_LINK =
-  "cursor-pointer border-none bg-none p-0 font-[family-name:var(--font-body)] text-[length:var(--size-sm)] text-[var(--text-strong)] underline underline-offset-[0.25em]";
+  "cursor-pointer border-none bg-none p-0 font-[family-name:var(--font-body)] text-[length:var(--size-sm)] @min-[640px]:text-[length:var(--size-body-md)] @min-[1024px]:text-[length:var(--size-body-lg)] text-[var(--text-strong)] underline underline-offset-[0.25em]";
 
 /* The shot rail. A hairline 2px seam between stacked shots, and below 768px the
    column becomes a snapping, full-bleed swipe carousel one shot per view. */
-const RAIL = [
+const RAIL_COLUMN = [
   "grid grid-cols-1 gap-[2px]",
   "@max-[767.98px]:grid-flow-col @max-[767.98px]:grid-cols-none @max-[767.98px]:auto-cols-[100%]",
   "@max-[767.98px]:gap-0 @max-[767.98px]:overflow-x-auto @max-[767.98px]:snap-x @max-[767.98px]:snap-mandatory",
@@ -120,35 +144,119 @@ const RAIL = [
   "@min-[1024px]:grid-cols-2",
 ].join(" ");
 
+/* gallery="carousel" keeps the mobile treatment at EVERY width. The classes are written
+   out again unprefixed rather than widening the block above, which is a container query
+   that cannot be widened without changing mobile too. */
+const RAIL_CAROUSEL = [
+  "grid grid-flow-col auto-cols-[100%] gap-0",
+  "overflow-x-auto snap-x snap-mandatory overscroll-x-contain",
+  "[touch-action:pan-x_pan-y] cursor-grab [-webkit-overflow-scrolling:touch]",
+  "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+  "[&>*]:snap-start [&>*]:snap-always",
+  "data-[drag=1]:cursor-grabbing data-[drag=1]:snap-none",
+].join(" ");
+
+const RAIL = { column: RAIL_COLUMN, carousel: RAIL_CAROUSEL } as const;
+
+/* The media column. From 768px a carousel gallery stands the thumb strip UP beside the
+   shot: the strip takes column 1 and the shot column 2. The column is exactly the thumb
+   plus the strip's own inline padding twice, and the grid gap is 0 — a column gap would
+   be added to that padding on the shot side only, making the right side twice the left. */
+const MEDIACOL = {
+  column: "min-w-0 group/shots",
+  carousel: [
+    "min-w-0 group/shots",
+    "@min-[768px]:relative @min-[768px]:grid @min-[768px]:gap-0 @min-[768px]:items-start",
+    "@min-[768px]:[grid-template-columns:calc(var(--thumb-w-lg)_+_2_*_var(--space-3))_minmax(0,1fr)]",
+  ].join(" "),
+} as const;
+
+/* ABSOLUTE, not a stretched grid item: as an item the strip is the taller column, so it
+   sizes the row and its own max-height resolves against itself — it never clamps and never
+   scrolls. Out of flow, the shot alone sets the row height and the strip is bounded by it.
+   The track above reserves the width it no longer claims.
+   The thumbs then SHARE the shot's height (flex-1, height and aspect-ratio released), so
+   the last one ends exactly where the shot does instead of stopping short. The crop still
+   holds, since each thumb paints its image with background cover. */
+const THUMBS_UPRIGHT = [
+  "@min-[768px]:absolute @min-[768px]:inset-y-0 @min-[768px]:left-0",
+  "@min-[768px]:w-[calc(var(--thumb-w-lg)_+_2_*_var(--space-3))]",
+  "@min-[768px]:flex-col @min-[768px]:flex-nowrap @min-[768px]:items-center",
+  "@min-[768px]:overflow-x-hidden @min-[768px]:overflow-y-auto @min-[768px]:[touch-action:pan-y]",
+  "@min-[768px]:p-[var(--pp-strip-pad)_var(--space-3)]",
+  "@min-[768px]:[&>button]:w-[var(--thumb-w-lg)] @min-[768px]:[&>button]:flex-1 @min-[768px]:[&>button]:min-h-0",
+  "@min-[768px]:[&>button]:h-auto @min-[768px]:[&>button]:aspect-auto",
+].join(" ");
+
+/* The SAME affordance as C-HeroCarousel's: a light disc with a dark glyph, revealed by
+   hover or focus-within from 1024px. Clamped at the ends, where the hero wraps — a
+   product's shots are a finite set, not a loop.
+   On touch there is no hover to reveal on, so the arrows appear while a finger is on the
+   gallery and fade out when it lifts: asked for, not permanent furniture over the
+   photograph. Keyed on (hover: none) rather than a width, since the arrows are about the
+   INPUT, not the layout, so a touch tablet gets them at any width and a mouse never sees
+   the rule. The touch insets are tighter, since a phone has no room to spare. */
+const ARROW = [
+  "hidden absolute top-1/2 -translate-y-1/2 z-[2]",
+  "@min-[1024px]:grid @min-[1024px]:place-items-center",
+  "@min-[1024px]:h-[var(--hc-arrow-size)] @min-[1024px]:w-[var(--hc-arrow-size)]",
+  "@min-[1024px]:rounded-[var(--radius-pill)] @min-[1024px]:bg-[var(--veil-light)]",
+  "@min-[1024px]:text-[var(--sher-dark)] @min-[1024px]:opacity-0",
+  "@min-[1024px]:hover:bg-[var(--sher-white)]",
+  "motion-safe:transition-[opacity,background] motion-safe:duration-[var(--dur-med)] motion-safe:ease-[var(--ease-out)]",
+  "@min-[1024px]:group-hover/shots:opacity-100 @min-[1024px]:group-focus-within/shots:opacity-100",
+  /* --dur-slow on touch, where the desktop hover uses --dur-med: a cue tied to a gesture
+     wants a softer arrival than a pointer's hover. */
+  "[@media(hover:none)]:motion-safe:duration-[var(--dur-slow)]",
+  "[@media(hover:none)]:grid [@media(hover:none)]:place-items-center",
+  "[@media(hover:none)]:h-[var(--hc-arrow-size)] [@media(hover:none)]:w-[var(--hc-arrow-size)]",
+  "[@media(hover:none)]:rounded-[var(--radius-pill)] [@media(hover:none)]:bg-[var(--veil-light)]",
+  "[@media(hover:none)]:text-[var(--sher-dark)] [@media(hover:none)]:opacity-0",
+  "[@media(hover:none)]:group-data-[touched]/shots:opacity-100",
+].join(" ");
+
 const SHOT = [
   "relative overflow-hidden bg-[var(--surface-raised)] aspect-[var(--ratio-3-4)]",
   "[&>*]:absolute [&>*]:inset-0 [&>*]:block [&>*]:h-full [&>*]:w-full [&>*]:object-cover",
 ].join(" ");
 
-/* Indicators belong to the carousel, so they are hidden above 768px. */
-const DOTS = [
-  "hidden @max-[767.98px]:flex justify-center gap-[var(--space-2)] pt-[var(--space-3)]",
+/* Indicators belong to the carousel, so they are hidden above 768px in "column" and shown
+   at every width in "carousel". */
+const DOTS_BODY = [
+  "justify-center gap-[var(--space-2)] pt-[var(--space-3)]",
   "[&>button]:h-[var(--dot-sm)] [&>button]:w-[var(--dot-sm)] [&>button]:cursor-pointer",
   "[&>button]:border-0 [&>button]:p-0 [&>button]:rounded-[var(--radius-pill)]",
   "[&>button]:bg-[var(--border-strong)]",
   "[&>button[aria-current='true']]:bg-[var(--surface-inverse)]",
 ].join(" ");
 
+const DOTS = {
+  column: `hidden @max-[767.98px]:flex ${DOTS_BODY}`,
+  /* dots belong to the swipe affordance, which the upright strip replaces from 768px */
+  carousel: `flex @min-[768px]:hidden ${DOTS_BODY}`,
+} as const;
+
 // Used only if the overlay's own duration is unreadable (mounted before the CSS).
 const FADE_FALLBACK = 360;
 
-/* The crossfade overlay. Hidden from 768px, where the shots are a column rather
-   than a carousel and there is nothing to jump between. */
-const XFADE = [
+/* The crossfade overlay. */
+const XFADE_BODY = [
   "pointer-events-none absolute inset-0 z-[2] overflow-hidden",
   "transition-opacity duration-[var(--dur-slow)] ease-[var(--ease-out)]",
   "motion-reduce:duration-[1ms]",
   "[&>*]:absolute [&>*]:inset-0 [&>*]:block [&>*]:h-full [&>*]:w-full [&>*]:object-cover",
-  "@min-[768px]:hidden",
 ].join(" ");
 
-const THUMBS = [
-  "hidden @max-[767.98px]:flex flex-nowrap gap-[var(--space-2)]",
+/* In "column" the overlay is hidden from 768px, where the shots are a column rather than a
+   carousel and there is nothing to jump between. A carousel gallery keeps it at every
+   width. */
+const XFADE = {
+  column: `${XFADE_BODY} @min-[768px]:hidden`,
+  carousel: XFADE_BODY,
+} as const;
+
+const THUMBS_BODY = [
+  "flex-nowrap gap-[var(--space-2)]",
   "pl-[var(--space-2)] pt-[var(--space-3)] overflow-x-auto overscroll-x-contain",
   "[touch-action:pan-x_pan-y] cursor-grab [-webkit-overflow-scrolling:touch]",
   "[scrollbar-width:none] [&::-webkit-scrollbar]:hidden data-[drag=1]:cursor-grabbing",
@@ -158,6 +266,14 @@ const THUMBS = [
   "[&>button]:bg-[var(--surface-raised)] [&>button]:bg-cover [&>button]:bg-center [&>button]:bg-no-repeat",
   "[&>button[aria-current='true']]:border-[var(--surface-inverse)]",
 ].join(" ");
+
+/* From 768px a carousel gallery gives the thumbs a whole column of height to sit in, so
+   the cell widens: --pp-thumb-max lifts to --thumb-w-lg and the strip's inline padding
+   narrows, both tokens rather than values invented here. */
+const THUMBS = {
+  column: `hidden @max-[767.98px]:flex ${THUMBS_BODY}`,
+  carousel: `flex ${THUMBS_BODY} ${THUMBS_UPRIGHT}`,
+} as const;
 
 interface RailDragHandlers {
   onPointerDown: (e: PointerEvent<HTMLDivElement>) => void;
@@ -264,16 +380,22 @@ function StackedGallery({
   media,
   indicator,
   transition,
+  gallery,
 }: {
   media: MediaItem[];
   indicator: "dots" | "thumbs";
   transition: "slide" | "fade";
+  gallery: "column" | "carousel";
 }): ReactElement {
   const railRef = useRef<HTMLDivElement>(null);
   const thumbRef = useRef<HTMLDivElement>(null);
   const railDrag = useRailDrag(railRef, true);
   const thumbDrag = useRailDrag(thumbRef, false);
   const [shot, setShot] = useState(0);
+  /* On touch the arrows are a SWIPE CUE, not a control to aim at: the finger is already
+     doing the work, so they live exactly as long as it is down. No timer, and nothing to
+     cancel or re-arm — touchstart shows, touchend hides. */
+  const [touched, setTouched] = useState(false);
   // the shot being crossfaded to, or null when the overlay is not in play
   const [xfade, setXfade] = useState<number | null>(null);
   const [lit, setLit] = useState(false);
@@ -333,9 +455,21 @@ function StackedGallery({
     item.type === "video" ? "Video" : `Shot ${i + 1}`;
 
   return (
-    <div className="min-w-0">
-      <div className="relative">
-        <div ref={railRef} onScroll={onScroll} className={RAIL} {...railDrag}>
+    <div
+      className={MEDIACOL[gallery]}
+      data-touched={touched && media.length > 1 ? "" : undefined}
+      onTouchStart={() => setTouched(true)}
+      onTouchEnd={() => setTouched(false)}
+      onTouchCancel={() => setTouched(false)}
+    >
+      <div
+        className={
+          gallery === "carousel"
+            ? "relative @min-[768px]:col-start-2 @min-[768px]:row-start-1"
+            : "relative"
+        }
+      >
+        <div ref={railRef} onScroll={onScroll} className={RAIL[gallery]} {...railDrag}>
           {media.map((item, i) => (
             <div key={i} className={SHOT}>
               {item.node}
@@ -350,15 +484,33 @@ function StackedGallery({
             aria-hidden
             onTransitionEnd={finish}
             style={{ opacity: lit ? 1 : 0 }}
-            className={XFADE}
+            className={XFADE[gallery]}
           >
             {media[xfade]?.node}
           </div>
         )}
+
+        {media.length > 1 && (
+          <>
+            <div className={`${ARROW} left-[var(--space-3)] @min-[1024px]:left-[var(--space-6)]`}>
+              <IconButton label="Previous shot" onClick={() => goTo(Math.max(0, shot - 1))}>
+                <Icon name="chevron-left" size={26} />
+              </IconButton>
+            </div>
+            <div className={`${ARROW} right-[var(--space-3)] @min-[1024px]:right-[var(--space-6)]`}>
+              <IconButton
+                label="Next shot"
+                onClick={() => goTo(Math.min(media.length - 1, shot + 1))}
+              >
+                <Icon name="chevron-right" size={26} />
+              </IconButton>
+            </div>
+          </>
+        )}
       </div>
 
       {indicator === "dots" && (
-        <div className={DOTS}>
+        <div className={DOTS[gallery]}>
           {media.map((item, i) => (
             <button
               key={i}
@@ -372,7 +524,7 @@ function StackedGallery({
       )}
 
       {indicator === "thumbs" && (
-        <div ref={thumbRef} className={THUMBS} {...thumbDrag}>
+        <div ref={thumbRef} className={THUMBS[gallery]} {...thumbDrag}>
           {media.map((item, i) => (
             <button
               key={i}
@@ -422,6 +574,8 @@ export function ProductPanel({
   layout = "beside",
   indicator = "dots",
   transition = "slide",
+  gallery = "column",
+  addToCartVariant,
   showQuantity = true,
   preorderHref = "/contact",
   stacked = false,
@@ -429,6 +583,8 @@ export function ProductPanel({
 }: ProductPanelProps): ReactElement {
   const allSoldOut = sizes.length > 0 && sizes.every((s) => s.soldOut);
   const isStacked = layout === "stacked";
+  // the quieter half of the buy pair; Buy Now is always the primary dark fill
+  const cartVariant = addToCartVariant ?? (isStacked ? "tint" : "surface");
 
   const buy = allSoldOut ? (
     <Button as="a" href={preorderHref} variant="primary" size="lg" fullWidth>
@@ -436,15 +592,10 @@ export function ProductPanel({
     </Button>
   ) : (
     <>
-      <Button
-        variant={isStacked ? "tint" : "surface"}
-        size="lg"
-        fullWidth
-        onClick={onAddToCart}
-      >
+      <Button variant={cartVariant} size="lg" fullWidth onClick={onAddToCart}>
         Add to Cart
       </Button>
-      <Button variant="accent" size="lg" fullWidth onClick={onBuyNow}>
+      <Button variant="primary" size="lg" fullWidth onClick={onBuyNow}>
         Buy Now
       </Button>
     </>
@@ -494,12 +645,28 @@ export function ProductPanel({
     return (
       <div className={`@container ${className}`}>
         <div className="grid grid-cols-1 items-start gap-0 @min-[768px]:grid-cols-[minmax(0,1.55fr)_minmax(0,1fr)]">
-          <StackedGallery media={media} indicator={indicator} transition={transition} />
+          <StackedGallery
+            media={media}
+            indicator={indicator}
+            transition={transition}
+            gallery={gallery}
+          />
 
           {/* cqh needs a size container above (the page frame). Without one the
               declaration is dropped and the panel simply sticks without vertical
               centring. */}
-          <div className="bg-[var(--surface-page)] @min-[768px]:sticky @min-[768px]:top-0 @min-[768px]:flex @min-[768px]:max-h-[100cqh] @min-[768px]:min-h-[100cqh] @min-[768px]:overflow-y-auto @min-[768px]:[align-items:safe_center]">
+          {/* The sticky 100cqh floor exists so a COLUMN of shots can scroll past the
+              panel. A carousel gallery is one shot tall and never scrolls, so that floor
+              would only add empty space under it: the row takes its height from its
+              content instead, and the column stretches to the row so centring puts the
+              purchase controls level with the middle of the shot. */}
+          <div
+            className={
+              gallery === "carousel"
+                ? "bg-[var(--surface-page)] @min-[768px]:flex @min-[768px]:self-stretch @min-[768px]:items-center"
+                : "bg-[var(--surface-page)] @min-[768px]:sticky @min-[768px]:top-0 @min-[768px]:flex @min-[768px]:max-h-[100cqh] @min-[768px]:min-h-[100cqh] @min-[768px]:overflow-y-auto @min-[768px]:[align-items:safe_center]"
+            }
+          >
             {/* min-w-0 and the 100% arm are both load-bearing: this is a flex item of
                 the buy column, so min-width:auto would refuse to shrink below the
                 60ch measure and spill past the grid track, which is narrower than
@@ -509,7 +676,7 @@ export function ProductPanel({
                 <Breadcrumb items={breadcrumb} className="mx-auto justify-center" />
               )}
 
-              <Heading level={headingLevel} className={`${HEADING} ${STEP_TITLE}`}>
+              <Heading level={headingLevel} className={`${HEADING} ${STEP_SECTION}`}>
                 {name}
               </Heading>
 

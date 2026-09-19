@@ -110,18 +110,21 @@
 - **Outline:** Refer to /docs/content/s-001_home.md
 - **Feature:** F-008 Slot Content, F-012 Featured Products
 - **Behavior:**
-  - The hero carousel slides through its banners. With one banner it does not slide.
-  - A banner follows the finger when dragged sideways, and settles on the next banner
-    or springs back on release. Dragging up or down scrolls the page as usual.
+  - The hero carousel moves a page at a time. Banners come in pairs, so a page is two
+    banners on desktop and one on mobile.
+  - A swipe is the browser's own scrolling, so one swipe moves one page however hard it
+    is thrown. Swiping up or down scrolls the page as usual.
+  - Moving past either end crossfades to the other end instead of running back through
+    the pages between. Autoplay stops while a finger is down, while a scroll is still
+    moving, and while the tab is hidden.
 - **Assets:**
   - S-001.3 → D-004 Media Slots
   - S-001.4 → D-001 Product
 - **Components:**
-  - S-001.1 → C-HeroCarousel [indicator=bars]
-  - S-001.2 → C-HeroTitle [headingLevel=1]
-  - S-001.3 → C-CategoryGrid [cta]
-  - S-001.4 → C-ProductGrid [align=center, showToolbar=false, columns=1/2/2]
-  - S-001.5 → C-HeroTitle [headingLevel=2]
+  - S-001.1 → C-HeroCarousel [indicator=bars, fillScreen]
+  - S-001.2 → C-HeroTitle [headingLevel=1, measure=none]
+  - S-001.3 → C-CategoryGrid
+  - S-001.4 → C-ProductCarousel [peek=1.5/2.5/3.5, cta]
 
 ### S-002 — All Products
 - **Outline:** Refer to /docs/content/s-002_all-products.md
@@ -208,8 +211,8 @@
 - **Assets:**
   - None
 - **Components:**
-  - S-006.1 → C-ProductPanel [layout=stacked, indicator=thumbs, showQuantity=false]
-  - S-006.2 → C-RelatedProducts [layout=stacked, backVariant=tint]
+  - S-006.1 → C-ProductPanel [layout=stacked, indicator=thumbs, showQuantity=false, transition=slide, gallery=carousel, addToCartVariant=secondary]
+  - S-006.2 → C-ProductCarousel [peek=1.5/2.5/4]
 
 ### S-007 — About Us
 - **Outline:** Refer to /docs/content/s-007_about-us.md
@@ -380,8 +383,8 @@ Home tiles — S-001
  ├── Shop Matching Sets → S-004 (/matching-sets)
  ├── Shop Cocktail Dresses → S-005 (/cocktail-dresses)
  ├── Shop Beachwear → S-012 (/beachwear)
- ├── Shop All Products button → S-002 (/shop)
- └── Featured product → S-006 (/products/[product-slug])
+ ├── Featured product → S-006 (/products/[product-slug])
+ └── Shop the Full Collection button → S-002 (/shop)
 
 Shop button pills — S-002
  ├── Corset Tops → S-003 (/corset-tops)
@@ -395,8 +398,7 @@ Product Detail — in page (S-006)
  ├── Shipping link → opens C-Shipping
  ├── Add to Cart → opens C-Cart
  ├── Buy Now → Shopify hosted checkout
- ├── Preorder (every size sold out) → S-008 (/contact)
- └── Back to {Category} → S-003, S-004, S-005, or S-012
+ └── Preorder (every size sold out) → S-008 (/contact)
 
 Footer (C-Footer) — every screen
  ├── Logo → S-001 (/)
@@ -538,6 +540,7 @@ Every screen scores 90 or higher on Lighthouse for performance, accessibility, b
 | C-ShopFaq | Shop FAQ | Active |
 | C-ProductPanel | Product Panel | Active |
 | C-RelatedProducts | Related Products | Active |
+| C-ProductCarousel | Product Carousel | Active |
 | C-EditorialSplit | Editorial Split | Active |
 | C-ContactMethods | Contact Methods | Active |
 | C-ContentProse | Content Prose | Active |

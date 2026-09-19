@@ -257,7 +257,7 @@ export function Menu({
 
         {/* Square logo, centered. --logo-w steps with the drawer's own width, so no
             page CSS has to override Logo's inline width. */}
-        <div className="mb-[var(--space-8)] flex items-center justify-center pt-[calc(var(--announce-h)+var(--space-2)+4px-var(--space-5))] [--logo-w:96px] @min-[640px]:[--logo-w:112px] @min-[1024px]:[--logo-w:128px]">
+        <div className="mb-[var(--space-8)] flex items-center justify-center pt-[calc(var(--announce-h)+var(--space-2)+4px-var(--space-5))] [--logo-w:var(--logo-w-sm)] @min-[640px]:[--logo-w:var(--logo-w-md)] @min-[1024px]:[--logo-w:var(--logo-w-lg)]">
           <Logo variant="square" color="text" size={128} href={logoHref} onClick={go(logoHref)} />
         </div>
 
