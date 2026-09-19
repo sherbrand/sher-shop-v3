@@ -85,7 +85,7 @@
 - **If something goes wrong:** If stock cannot be read, no size can be picked and the Preorder link shows instead.
 
 ### F-012 — Featured Products
-- **What it does:** Shows two hand-picked products on Home. D-006 Slot Values names the slot and the product handle, and the name, price, and image come from D-001.
+- **What it does:** Shows six hand-picked products on Home. D-006 Slot Values names the slot and the product handle, and the name, price, and image come from D-001.
 - **When it appears:** In the Featured Products block on S-001.
 - **If something goes wrong:** If a handle no longer matches a live product, leave that slot out.
 
@@ -207,7 +207,7 @@
   - The header starts hidden so the first gallery shot meets the top edge. C-Sticky covers how it comes back.
   - Add to Cart opens C-Cart. Buy Now goes straight to Shopify checkout.
   - The details link opens C-Details. The sizing link opens C-Sizing. The shipping link opens C-Shipping.
-  - "You May Also Like" shows 3 random products from anywhere in the store, not just this product's category.
+  - "You May Also Like" shows 4 random products from anywhere in the store, not just this product's category.
 - **Assets:**
   - None
 - **Components:**
@@ -449,7 +449,7 @@ Footer (C-Footer) — every screen
 ### Phase 5 — Content & Launch
 | Step | What to Build | References |
 |---|---|---|
-| B-008 | Build the Home page: hero carousel, category tiles with the shop-all button, and featured products from the slot files. | S-001, F-008, F-012, D-004, D-006 |
+| B-008 | Build the Home page: hero carousel, category tiles, and featured products from the slot files with the shop-all button below. | S-001, F-008, F-012, D-004, D-006 |
 | B-009 | Build About, Contact, and the three policy pages as one static-content set. | S-007, S-008, S-009, S-010, S-011, /docs/knowledge-sher.md |
 | B-010 | Add the SEO layer: per-page metadata, canonical URLs, Product and BreadcrumbList structured data, the sitemap, and robots. | F-009, all screens, Planning TSV `seo_role` |
 | B-011 | Run the launch gate: hit the performance target, meet the accessibility bar, and run full QA. | Extra Details |
