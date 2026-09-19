@@ -190,30 +190,29 @@ const THUMBS_UPRIGHT = [
   "@min-[1024px]:[&>button]:h-auto @min-[1024px]:[&>button]:aspect-auto",
 ].join(" ");
 
-/* The SAME affordance as C-HeroCarousel's: a light disc with a dark glyph, revealed by
-   hover or focus-within from 1024px. Clamped at the ends, where the hero wraps — a
-   product's shots are a finite set, not a loop.
+/* The SAME affordance as C-HeroCarousel's: a light disc with a dark glyph. The LOOK is
+   declared once, unconditionally, so the hover reveal and the touch reveal share it
+   rather than restating it. Only `display` and `opacity` are conditional. Clamped at the
+   ends, where the hero wraps — a product's shots are a finite set, not a loop.
+   The mouse gate is POINTER CAPABILITY, not a width, with a 768px container floor.
    On touch there is no hover to reveal on, so the arrows appear while a finger is on the
    gallery and fade out when it lifts: asked for, not permanent furniture over the
-   photograph. Keyed on (hover: none) rather than a width, since the arrows are about the
-   INPUT, not the layout, so a touch tablet gets them at any width and a mouse never sees
-   the rule. The touch insets are tighter, since a phone has no room to spare. */
+   photograph. Keyed on (hover: none) for the same reason, so a touch tablet gets them at
+   any width and a mouse never sees the rule. The touch insets are tighter, since a phone
+   has no room to spare. */
 const ARROW = [
-  "hidden absolute top-1/2 -translate-y-1/2 z-[2]",
-  "@min-[1024px]:grid @min-[1024px]:place-items-center",
-  "@min-[1024px]:h-[var(--hc-arrow-size)] @min-[1024px]:w-[var(--hc-arrow-size)]",
-  "@min-[1024px]:rounded-[var(--radius-pill)] @min-[1024px]:bg-[var(--veil-light)]",
-  "@min-[1024px]:text-[var(--sher-dark)] @min-[1024px]:opacity-0",
-  "@min-[1024px]:hover:bg-[var(--sher-white)]",
+  "hidden absolute top-1/2 -translate-y-1/2 z-[2] place-items-center",
+  "h-[var(--hc-arrow-size)] w-[var(--hc-arrow-size)]",
+  "rounded-[var(--radius-pill)] bg-[var(--veil-light)] text-[var(--sher-dark)] opacity-0",
   "motion-safe:transition-[opacity,background] motion-safe:duration-[var(--dur-med)] motion-safe:ease-[var(--ease-out)]",
-  "@min-[1024px]:group-hover/shots:opacity-100 @min-[1024px]:group-focus-within/shots:opacity-100",
+  "[@media(hover:hover)_and_(pointer:fine)]:@min-[768px]:grid",
+  "[@media(hover:hover)_and_(pointer:fine)]:@min-[768px]:hover:bg-[var(--sher-white)]",
+  "[@media(hover:hover)_and_(pointer:fine)]:@min-[768px]:group-hover/shots:opacity-100",
+  "[@media(hover:hover)_and_(pointer:fine)]:@min-[768px]:group-has-[:focus-visible]/shots:opacity-100",
   /* --dur-slow on touch, where the desktop hover uses --dur-med: a cue tied to a gesture
      wants a softer arrival than a pointer's hover. */
   "[@media(hover:none)]:motion-safe:duration-[var(--dur-slow)]",
-  "[@media(hover:none)]:grid [@media(hover:none)]:place-items-center",
-  "[@media(hover:none)]:h-[var(--hc-arrow-size)] [@media(hover:none)]:w-[var(--hc-arrow-size)]",
-  "[@media(hover:none)]:rounded-[var(--radius-pill)] [@media(hover:none)]:bg-[var(--veil-light)]",
-  "[@media(hover:none)]:text-[var(--sher-dark)] [@media(hover:none)]:opacity-0",
+  "[@media(hover:none)]:grid",
   "[@media(hover:none)]:group-data-[touched]/shots:opacity-100",
 ].join(" ");
 

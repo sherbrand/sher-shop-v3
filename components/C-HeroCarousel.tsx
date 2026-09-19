@@ -85,17 +85,27 @@ const XFADE = [
   "motion-reduce:duration-[1ms]",
 ].join(" ");
 
-/* Arrow disc. Hidden below 1024px, and above it revealed by hover or focus-within
-   on the band. Left/right insets are set per arrow at the call site. */
+/* Arrow disc. The LOOK is declared once, unconditionally, so nothing restates it: only
+   `display` and `opacity` are conditional, since what turns the affordance on differs by
+   input, not how it looks.
+   The gate is POINTER CAPABILITY, not a width. A hover-revealed control means nothing
+   without a hover-capable pointer, so a phone or a touch tablet never shows one however
+   wide its band, and a desktop always does. The 768px container query is a second floor,
+   for 1-up layouts.
+   group-has-[:focus-visible], NOT group-focus-within: a mouse click leaves focus ON the
+   arrow, and focus-within then held the pair visible after the pointer had left the band,
+   so the affordance stopped being a hover state at all. :focus-visible only matches the
+   focus a KEYBOARD puts there, so tabbing reveals them and clicking does not pin them.
+   Left/right insets are set per arrow at the call site. */
 const ARROW = [
-  "hidden absolute top-1/2 -translate-y-1/2",
-  "@min-[1024px]:grid @min-[1024px]:place-items-center",
-  "@min-[1024px]:h-[var(--hc-arrow-size)] @min-[1024px]:w-[var(--hc-arrow-size)]",
-  "@min-[1024px]:rounded-[var(--radius-pill)] @min-[1024px]:bg-[var(--veil-light)]",
-  "@min-[1024px]:text-[var(--sher-dark)] @min-[1024px]:opacity-0",
-  "@min-[1024px]:hover:bg-[var(--sher-white)]",
+  "hidden absolute top-1/2 -translate-y-1/2 place-items-center",
+  "h-[var(--hc-arrow-size)] w-[var(--hc-arrow-size)]",
+  "rounded-[var(--radius-pill)] bg-[var(--veil-light)] text-[var(--sher-dark)] opacity-0",
   "motion-safe:transition-[opacity,background] motion-safe:duration-[var(--dur-med)] motion-safe:ease-[var(--ease-out)]",
-  "@min-[1024px]:group-hover/hero:opacity-100 @min-[1024px]:group-focus-within/hero:opacity-100",
+  "[@media(hover:hover)_and_(pointer:fine)]:@min-[768px]:grid",
+  "[@media(hover:hover)_and_(pointer:fine)]:@min-[768px]:hover:bg-[var(--sher-white)]",
+  "[@media(hover:hover)_and_(pointer:fine)]:@min-[768px]:group-hover/hero:opacity-100",
+  "[@media(hover:hover)_and_(pointer:fine)]:@min-[768px]:group-has-[:focus-visible]/hero:opacity-100",
 ].join(" ");
 
 /* Banners carry no overlay text — Home's headline lives in the C-HeroTitle band

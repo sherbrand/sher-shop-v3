@@ -40,10 +40,22 @@ export function ShopListing({
 
   const shown = active === ALL ? items : items.filter((it) => it.typeAttribute === active);
 
-  // No pills when the collection has no attribute values yet (nothing to filter).
+  /* No pills when the collection has no attribute values yet (nothing to filter).
+     The first pill leaves the category rather than filtering it, so it is a real link to
+     the shop and carries no handler. The rest take a per-item onClick instead of a shared
+     one, which is what keeps that first pill a link. */
   const filters =
     filterValues.length > 0
-      ? [{ label: "All", key: ALL }, ...filterValues.map((value) => ({ label: value, key: value }))]
+      ? [
+          { label: "Back to all", href: "/shop" },
+          ...filterValues.map((value) => ({
+            label: value,
+            active: active === value,
+            // Clicking the active pill clears back to All, so a filter can be undone
+            // without hunting for the Back-to-all pill.
+            onClick: () => setActive((cur) => (cur === value ? ALL : value)),
+          })),
+        ]
       : undefined;
 
   return (
@@ -53,8 +65,6 @@ export function ShopListing({
         heading={heading}
         description={description}
         filters={filters}
-        activeFilter={active}
-        onFilter={setActive}
       />
       <ProductGrid
         products={shown.map((it) => it.product)}
