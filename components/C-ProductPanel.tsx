@@ -158,16 +158,18 @@ const RAIL_CAROUSEL = [
 
 const RAIL = { column: RAIL_COLUMN, carousel: RAIL_CAROUSEL } as const;
 
-/* The media column. From 768px a carousel gallery stands the thumb strip UP beside the
-   shot: the strip takes column 1 and the shot column 2. The column is exactly the thumb
-   plus the strip's own inline padding twice, and the grid gap is 0 — a column gap would
-   be added to that padding on the shot side only, making the right side twice the left. */
+/* The media column. DESKTOP ONLY: from 1024px a carousel gallery stands the thumb strip
+   UP beside the shot, taking column 1 with the shot in column 2. Below that the strip
+   stays horizontal under the shot, since a tablet has no spare width to give it.
+   The column is exactly the thumb plus the strip's own inline padding twice, and the grid
+   gap is 0 — a column gap would be added to that padding on the shot side only, making
+   the right side twice the left. */
 const MEDIACOL = {
   column: "min-w-0 group/shots",
   carousel: [
     "min-w-0 group/shots",
-    "@min-[768px]:relative @min-[768px]:grid @min-[768px]:gap-0 @min-[768px]:items-start",
-    "@min-[768px]:[grid-template-columns:calc(var(--thumb-w-lg)_+_2_*_var(--space-3))_minmax(0,1fr)]",
+    "@min-[1024px]:relative @min-[1024px]:grid @min-[1024px]:gap-0 @min-[1024px]:items-start",
+    "@min-[1024px]:[grid-template-columns:calc(var(--thumb-w-lg)_+_2_*_var(--space-3))_minmax(0,1fr)]",
   ].join(" "),
 } as const;
 
@@ -179,13 +181,13 @@ const MEDIACOL = {
    the last one ends exactly where the shot does instead of stopping short. The crop still
    holds, since each thumb paints its image with background cover. */
 const THUMBS_UPRIGHT = [
-  "@min-[768px]:absolute @min-[768px]:inset-y-0 @min-[768px]:left-0",
-  "@min-[768px]:w-[calc(var(--thumb-w-lg)_+_2_*_var(--space-3))]",
-  "@min-[768px]:flex-col @min-[768px]:flex-nowrap @min-[768px]:items-center",
-  "@min-[768px]:overflow-x-hidden @min-[768px]:overflow-y-auto @min-[768px]:[touch-action:pan-y]",
-  "@min-[768px]:p-[var(--pp-strip-pad)_var(--space-3)]",
-  "@min-[768px]:[&>button]:w-[var(--thumb-w-lg)] @min-[768px]:[&>button]:flex-1 @min-[768px]:[&>button]:min-h-0",
-  "@min-[768px]:[&>button]:h-auto @min-[768px]:[&>button]:aspect-auto",
+  "@min-[1024px]:absolute @min-[1024px]:inset-y-0 @min-[1024px]:left-0",
+  "@min-[1024px]:w-[calc(var(--thumb-w-lg)_+_2_*_var(--space-3))]",
+  "@min-[1024px]:flex-col @min-[1024px]:flex-nowrap @min-[1024px]:items-center",
+  "@min-[1024px]:overflow-x-hidden @min-[1024px]:overflow-y-auto @min-[1024px]:[touch-action:pan-y]",
+  "@min-[1024px]:p-[var(--pp-strip-pad)_var(--space-3)]",
+  "@min-[1024px]:[&>button]:w-[var(--thumb-w-lg)] @min-[1024px]:[&>button]:flex-1 @min-[1024px]:[&>button]:min-h-0",
+  "@min-[1024px]:[&>button]:h-auto @min-[1024px]:[&>button]:aspect-auto",
 ].join(" ");
 
 /* The SAME affordance as C-HeroCarousel's: a light disc with a dark glyph, revealed by
@@ -220,8 +222,9 @@ const SHOT = [
   "[&>*]:absolute [&>*]:inset-0 [&>*]:block [&>*]:h-full [&>*]:w-full [&>*]:object-cover",
 ].join(" ");
 
-/* Indicators belong to the carousel, so they are hidden above 768px in "column" and shown
-   at every width in "carousel". */
+/* Indicators belong to the carousel, so they are hidden above 768px in "column", where the
+   shots become a column, and shown in "carousel" until 1024px, where the upright strip
+   takes over the job. */
 const DOTS_BODY = [
   "justify-center gap-[var(--space-2)] pt-[var(--space-3)]",
   "[&>button]:h-[var(--dot-sm)] [&>button]:w-[var(--dot-sm)] [&>button]:cursor-pointer",
@@ -232,8 +235,8 @@ const DOTS_BODY = [
 
 const DOTS = {
   column: `hidden @max-[767.98px]:flex ${DOTS_BODY}`,
-  /* dots belong to the swipe affordance, which the upright strip replaces from 768px */
-  carousel: `flex @min-[768px]:hidden ${DOTS_BODY}`,
+  /* dots belong to the swipe affordance, which the upright strip replaces from 1024px */
+  carousel: `flex @min-[1024px]:hidden ${DOTS_BODY}`,
 } as const;
 
 // Used only if the overlay's own duration is unreadable (mounted before the CSS).
@@ -267,9 +270,9 @@ const THUMBS_BODY = [
   "[&>button[aria-current='true']]:border-[var(--surface-inverse)]",
 ].join(" ");
 
-/* From 768px a carousel gallery gives the thumbs a whole column of height to sit in, so
-   the cell widens: --pp-thumb-max lifts to --thumb-w-lg and the strip's inline padding
-   narrows, both tokens rather than values invented here. */
+/* From 1024px a carousel gallery gives the thumbs a whole column of height to sit in, so
+   the cell widens to --thumb-w-lg and the strip's inline padding narrows to
+   --pp-strip-pad, both tokens rather than values invented here. */
 const THUMBS = {
   column: `hidden @max-[767.98px]:flex ${THUMBS_BODY}`,
   carousel: `flex ${THUMBS_BODY} ${THUMBS_UPRIGHT}`,
@@ -465,7 +468,7 @@ function StackedGallery({
       <div
         className={
           gallery === "carousel"
-            ? "relative @min-[768px]:col-start-2 @min-[768px]:row-start-1"
+            ? "relative @min-[1024px]:col-start-2 @min-[1024px]:row-start-1"
             : "relative"
         }
       >
