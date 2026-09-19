@@ -4,7 +4,7 @@ description: "{SHER makes modern womenswear that reads elegant, never cheap. Cor
 url: /
 ---
 
-`S-001.1: Hero Carousel <featured banners with text overlay>`
+`S-001.1: Hero Carousel <featured banners>`
 
 `S-001.2: Eyebrow / H1 / Subtitle`
 - Eyebrow: {Refined Sensuality}
