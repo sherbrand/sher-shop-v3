@@ -4,7 +4,7 @@ description: "{Corset tops by SHER, built on real corsetry with each bone set by
 url: /corset-tops
 ---
 
-`S-003.1: Breadcrumb <Shop › Corset Tops> / H1 / Subtitle / Button Pills <filter by closure type>`
+`S-003.1: Breadcrumb <Shop › Corset Tops> / H1 / Subtitle / Button Pills <back to /shop; filter by closure type>`
 - H1: {Shop Corset Tops}
 - Subtitle: {Shop corset tops built on real corsetry, in two closures. Pick Lace Closure for an adjustable fit, or Zip Closure for the easiest way in and out.}
 

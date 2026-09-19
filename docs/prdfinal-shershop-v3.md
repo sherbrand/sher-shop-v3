@@ -35,9 +35,9 @@
 - **If something goes wrong:** If products fail to load, show a skeleton, then an error and retry state, not a blank grid. An empty collection shows a short "nothing here yet" note. A collection over 250 products is more than one Storefront API fetch returns, so cap the query at 250 and log it.
 
 ### F-002 — Attribute Filter
-- **What it does:** Filters the category grid in place by one type attribute: closure type on corset tops, set type on matching sets, length on cocktail dresses, swim type on beachwear. No page reload.
+- **What it does:** Filters the category grid in place by one type attribute: closure type on corset tops, set type on matching sets, length on cocktail dresses, swim type on beachwear. No page reload. While a filter is on, the editorial bands are hidden and the FAQ stays. The grid's end mark is replaced by a pair of buttons: "Back to All Products" to /shop, and "Back to All {Category}" which clears the filter.
 - **When it appears:** On the four category pages (S-003, S-004, S-005, S-012), as Button Pills above the grid.
-- **If something goes wrong:** If a filter matches no products, show a short empty message and keep the pills so the customer can clear it.
+- **If something goes wrong:** If a filter matches no products, show "No pieces match this filter yet. Try another {attribute}." in place of the grid and keep the pills. Clicking the active pill again clears the filter back to all, and so does the second button in the pair. Either way the page scrolls back to the top.
 
 ### F-003 — Grid View Toggle
 - **What it does:** Switches how many columns the grid shows: 1 or 2 on mobile, 2 or 3 on desktop. The choice holds while the customer stays on the page, including through Load More. The toggle sticks to the bottom-left once it scrolls out of view.
@@ -149,7 +149,7 @@
 - **Assets:** D-004 Media Slots
 - **Components:**
   - S-003.1 → C-ShopTitle
-  - S-003.2 → C-ProductGrid [columns=1/1/2, pageSize=12, endMark=mark]
+  - S-003.2 → C-ProductGrid [columns=1/1/2, pageSize=12, endMark=mark, endSlot]
   - S-003.3 → C-ShopEditorial [fullBleed, mobileFirst=media, mobileAlign=right]
   - S-003.4 → C-ShopEditorial [fullBleed, mirror, mobileFirst=media, mobileAlign=left]
   - S-003.5 → C-ShopEditorial [fullBleed, mobileFirst=media, mobileAlign=right]
@@ -164,7 +164,7 @@
 - **Assets:** D-004 Media Slots
 - **Components:**
   - S-004.1 → C-ShopTitle
-  - S-004.2 → C-ProductGrid [columns=1/1/2, pageSize=12, endMark=mark]
+  - S-004.2 → C-ProductGrid [columns=1/1/2, pageSize=12, endMark=mark, endSlot]
   - S-004.3 → C-ShopEditorial [fullBleed, mobileFirst=media, mobileAlign=right]
   - S-004.4 → C-ShopEditorial [fullBleed, mirror, mobileFirst=media, mobileAlign=left]
   - S-004.5 → C-ShopEditorial [fullBleed, mobileFirst=media, mobileAlign=right]
@@ -179,7 +179,7 @@
 - **Assets:** D-004 Media Slots
 - **Components:**
   - S-005.1 → C-ShopTitle
-  - S-005.2 → C-ProductGrid [columns=1/1/2, pageSize=12, endMark=mark]
+  - S-005.2 → C-ProductGrid [columns=1/1/2, pageSize=12, endMark=mark, endSlot]
   - S-005.3 → C-ShopEditorial [fullBleed, mobileFirst=media, mobileAlign=right]
   - S-005.4 → C-ShopEditorial [fullBleed, mirror, mobileFirst=media, mobileAlign=left]
   - S-005.5 → C-ShopEditorial [fullBleed, mobileFirst=media, mobileAlign=right]
@@ -194,7 +194,7 @@
 - **Assets:** D-004 Media Slots
 - **Components:**
   - S-012.1 → C-ShopTitle
-  - S-012.2 → C-ProductGrid [columns=1/1/2, pageSize=12, endMark=mark]
+  - S-012.2 → C-ProductGrid [columns=1/1/2, pageSize=12, endMark=mark, endSlot]
   - S-012.3 → C-ShopEditorial [fullBleed, mobileFirst=media, mobileAlign=right]
   - S-012.4 → C-ShopEditorial [fullBleed, mirror, mobileFirst=media, mobileAlign=left]
   - S-012.5 → C-ShopEditorial [fullBleed, mobileFirst=media, mobileAlign=right]

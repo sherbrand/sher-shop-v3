@@ -4,7 +4,7 @@ description: "{Cocktail dresses by SHER, cut in satin to skim the body and be se
 url: /cocktail-dresses
 ---
 
-`S-005.1: Breadcrumb <Shop › Cocktail Dresses> / H1 / Subtitle / Button Pills <filter by length>`
+`S-005.1: Breadcrumb <Shop › Cocktail Dresses> / H1 / Subtitle / Button Pills <back to /shop; filter by length>`
 - H1: {Shop Cocktail Dresses}
 - Subtitle: {Shop cocktail dresses cut in satin and slip shapes, made to be seen. Pick Mini for a bold short look, Midi for easy elegance, or Maxi for a long evening statement.}
 

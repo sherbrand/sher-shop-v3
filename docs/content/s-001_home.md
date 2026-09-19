@@ -21,7 +21,7 @@ url: /
 - Image Link#3: {a SHER cocktail dress in olive ribbed knit, on a model against a plain concrete wall}
 - Image Link#4: {SHER beachwear: a black lace one piece on a model on a boat's swim platform at golden hour}
 
-`S-001.4: (H2 / Subtitle) // Product Grid <6 featured products, in a swipe rail> / Btn <to /shop>`
+`S-001.4: Divider // (H2 / Subtitle) // Product Grid <6 featured products, in a swipe rail> / Btn <to /shop>`
 - H2: A Closer Look
 - Subtitle: Every piece lined, shaped, and finished the same inside as out. Sensual, never loud.
 - Btn: Shop the Full Collection

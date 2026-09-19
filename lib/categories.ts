@@ -22,17 +22,36 @@ export interface Category {
   label: string;
   /** Route for the category page. */
   href: string;
+  /** The type attribute this category filters by, named the way F-002 names it.
+   *  Reads back in the empty-filter message: "Try another closure type." */
+  attribute: string;
 }
 
 export const CATEGORIES: Category[] = [
-  { handle: "corset-tops", label: "Corset Tops", href: "/corset-tops" },
-  { handle: "matching-sets", label: "Matching Sets", href: "/matching-sets" },
+  {
+    handle: "corset-tops",
+    label: "Corset Tops",
+    href: "/corset-tops",
+    attribute: "closure type",
+  },
+  {
+    handle: "matching-sets",
+    label: "Matching Sets",
+    href: "/matching-sets",
+    attribute: "set type",
+  },
   {
     handle: "cocktail-dresses",
     label: "Cocktail Dresses",
     href: "/cocktail-dresses",
+    attribute: "length",
   },
-  { handle: "beachwear", label: "Beachwear", href: "/beachwear" },
+  {
+    handle: "beachwear",
+    label: "Beachwear",
+    href: "/beachwear",
+    attribute: "swim type",
+  },
 ];
 
 /* The category one of a product's collections belongs to, or undefined when none
