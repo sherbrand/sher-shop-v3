@@ -4,8 +4,8 @@ description: "{Beachwear by SHER, lined front and back so it holds its shape wet
 url: /beachwear
 ---
 
-`S-012.1: Breadcrumb <Shop › Beachwear> / H1 / Subtitle / Button Pills <filter by swim type>`
-- H1: {Shop Beachwear}
+`S-012.1: Breadcrumb <Shop › Beachwear> / H1 / Subtitle / Button Pills <back to /shop; filter by swim type>`
+- H1: {Beachwear}
 - Subtitle: {Shop beachwear in two cuts. Pick a One Piece for one long, clean line, or a Bikini set for two pieces to move between.}
 
 `S-012.2: View Toggle <grid columns> / Product Grid <1 col mobile, 2 col desktop> / Btn`

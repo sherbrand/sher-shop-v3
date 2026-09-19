@@ -11,10 +11,16 @@ export interface AnnouncementBarProps {
   className?: string;
 }
 
+/* Colors go through --announce-bg / --announce-fg, each falling back to the tone's own
+   value, so a placement can scope a pair the tones do not cover. The bar sets its colors
+   itself, so these hooks are the only way a page can reach them. */
 const TONES: Record<NonNullable<AnnouncementBarProps["tone"]>, string> = {
-  dark: "bg-[var(--surface-inverse)] text-[var(--text-on-inverse)]",
-  light: "bg-[var(--surface-raised)] text-[var(--text-default)]",
-  accent: "bg-[var(--accent)] text-[var(--sher-white)]",
+  dark: "bg-[var(--announce-bg,var(--surface-inverse))] text-[var(--announce-fg,var(--text-on-inverse))]",
+  /* "light" takes --text-strong, not --text-default: the bar sits directly under the
+     logo on every screen, and the two read as one lockup only if the label is the same
+     ink as the mark. */
+  light: "bg-[var(--announce-bg,var(--surface-raised))] text-[var(--announce-fg,var(--text-strong))]",
+  accent: "bg-[var(--announce-bg,var(--accent))] text-[var(--announce-fg,var(--sher-white))]",
 };
 
 export function AnnouncementBar({

@@ -1,7 +1,7 @@
 import { HoverMedia } from "@/components/HoverMedia";
 import type { Product } from "@/lib/shopify/types";
 import type { GridProduct } from "@/components/C-ProductGrid";
-import type { ListingItem } from "@/components/ShopListing";
+import type { ListingItem } from "@/components/CategoryBody";
 import { categoryFor } from "@/lib/categories";
 import { hoverIndex, thumbIndex } from "@/lib/product-data";
 

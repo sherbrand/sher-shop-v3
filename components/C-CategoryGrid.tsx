@@ -1,12 +1,16 @@
 import type { ReactElement, ReactNode } from "react";
 import { Button } from "@/components/Button";
 import { Heading } from "@/components/Heading";
+import { Icon } from "@/components/Icon";
 import type { HeadingLevel } from "@/components/Heading";
 
 /* C-CategoryGrid — a full-bleed grid of category tiles. One column on mobile, two
    from 640px of the band's OWN width. Each tile is a portrait 4:5 crop with a media
    layer (image or a passed node) under a bottom gradient label. Labels alternate
-   bottom-left / bottom-right per tile.
+   bottom-left / bottom-right per tile, each followed by a chevron so it reads as the link
+   it is. The chevron always points right — it means "forward", so it is not mirrored on
+   right-aligned tiles — and is aria-hidden, since the anchor already carries the label as
+   its name.
    The band's `borderDefault` background shows through the 2px grid gaps, which is
    what draws the hairlines between tiles.
    An optional `cta` renders a centred accent button below the grid. */
@@ -90,17 +94,30 @@ export function CategoryGrid({
                   right ? "justify-end" : "justify-start",
                 ].join(" ")}
               >
-                <Heading
-                  level={headingLevel}
-                  className={[
-                    "m-0 font-[family-name:var(--font-display)] font-normal uppercase",
-                    "leading-[var(--leading-snug)] tracking-[var(--tracking-display)] text-[var(--sher-white)]",
-                    STEP_TITLE,
-                    right ? "text-right" : "text-left",
-                  ].join(" ")}
-                >
-                  {item.label}
-                </Heading>
+                {/* The label reads as the link it is: the name, then a chevron. The
+                    chevron always follows the label and always points right — it means
+                    "forward", so mirroring it on right-aligned tiles would read as
+                    "back". It is aria-hidden: the anchor is already named by the label,
+                    so announcing "chevron right" after it would be noise. */}
+                <span className="flex items-center gap-[var(--space-3)]">
+                  <Heading
+                    level={headingLevel}
+                    className={[
+                      "m-0 font-[family-name:var(--font-display)] font-normal uppercase",
+                      "leading-[var(--leading-snug)] tracking-[var(--tracking-display)] text-[var(--sher-white)]",
+                      STEP_TITLE,
+                      right ? "text-right" : "text-left",
+                    ].join(" ")}
+                  >
+                    {item.label}
+                  </Heading>
+                  <Icon
+                    name="chevron-right"
+                    size={22}
+                    aria-hidden="true"
+                    className="flex-none text-[var(--sher-white)]"
+                  />
+                </span>
               </span>
             </a>
           );
@@ -113,7 +130,7 @@ export function CategoryGrid({
             href={cta.href}
             variant="accent"
             size="lg"
-            className="min-w-[var(--cta-min-w)]"
+            className="min-w-[var(--cta-min-w-sm)] @min-[640px]:min-w-[var(--cta-min-w-md)] @min-[1024px]:min-w-[var(--cta-min-w)]"
           >
             {cta.label}
           </Button>

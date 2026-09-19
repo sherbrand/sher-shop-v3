@@ -4,32 +4,24 @@ description: "{SHER makes modern womenswear that reads elegant, never cheap. Cor
 url: /
 ---
 
-`S-001.1: Hero Carousel <featured banners with text overlay>`
+`S-001.1: Hero Carousel <featured banners>`
 
 `S-001.2: Eyebrow / H1 / Subtitle`
 - Eyebrow: {Refined Sensuality}
 - H1: {Modern Womenswear by SHER}
 - Subtitle: {Every SHER piece is made by hand, down to the boning set one at a time. Sensual, refined, and never cheap.}
 
-`S-001.3: (Image Link#1 <to /corset-tops> [H2.1] | Image Link#2 <to /matching-sets> [H2.2]) / (Image Link#3 <to /cocktail-dresses> [H2.3] | Image Link#4 <to /beachwear> [H2.4]) / Btn <to /shop>`
-- H2.1: Shop Corset Tops
-- H2.2: Shop Matching Sets
-- H2.3: Shop Cocktail Dresses
-- H2.4: Shop Beachwear
-- Btn: Shop all Products
+`S-001.3: (Image Link#1 <to /corset-tops> [H2.1] | Image Link#2 <to /matching-sets> [H2.2]) / (Image Link#3 <to /cocktail-dresses> [H2.3] | Image Link#4 <to /beachwear> [H2.4])`
+- H2.1: Corset Tops
+- H2.2: Matching Sets
+- H2.3: Cocktail Dresses
+- H2.4: Beachwear
 - Image Link#1: {a SHER corset top in ivory, strapless with structured bust seaming, against a terracotta wall}
 - Image Link#2: {a SHER matching set: a watercolor-print halter top with wide-leg trousers, on a model walking beside a reflecting pool lined with statues}
 - Image Link#3: {a SHER cocktail dress in olive ribbed knit, on a model against a plain concrete wall}
 - Image Link#4: {SHER beachwear: a black lace one piece on a model on a boat's swim platform at golden hour}
 
-`S-001.4: H2 / (Image Link#1 <to product> [Title.1 <product name>] | Image Link#2 <to product> [Title.2 <product name>])`
-- H2: {Featured Products}
-- Title.1: {Silk Lace Corset Top}
-- Title.2: {Satin Trouser Set}
-- Image Link#1: {a silk lace corset top on a model, front view}
-- Image Link#2: {a satin trouser set on a model, full length}
-
-`S-001.5: H2 / Subtitle / Btn <to /shop>`
-- H2: {Made to Be Seen}
-- Subtitle: {The right piece turns heads before you say a word. Find yours and own the room.}
+`S-001.4: Divider // (H2 / Subtitle) // Product Grid <6 featured products, in a swipe rail> / Btn <to /shop>`
+- H2: A Closer Look
+- Subtitle: Every piece lined, shaped, and finished the same inside as out. Sensual, never loud.
 - Btn: Shop the Full Collection

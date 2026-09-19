@@ -23,6 +23,15 @@
     text-rendering:optimizeLegibility;
   }
 
+  /* The system establishes its own layout container. Without this, every unnamed
+     `@container` rule in the system is dead: an unnamed query matches the nearest
+     ANCESTOR container, and a page that has none never applies the rule.
+     `body` is the safe root to claim: it is above everything the system renders and
+     below anything the app controls. Bands declare their own `container-type`, so they
+     remain the nearest ancestor for rules inside them; this only catches rules that
+     would otherwise have nothing to match. */
+  body { container-type: inline-size; }
+
   /* Display type — Cormorant Infant, uppercase, tracked */
   h1,h2,h3,h4{
     font-family:var(--font-display);

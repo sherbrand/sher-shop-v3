@@ -35,9 +35,9 @@
 - **If something goes wrong:** If products fail to load, show a skeleton, then an error and retry state, not a blank grid. An empty collection shows a short "nothing here yet" note. A collection over 250 products is more than one Storefront API fetch returns, so cap the query at 250 and log it.
 
 ### F-002 — Attribute Filter
-- **What it does:** Filters the category grid in place by one type attribute: closure type on corset tops, set type on matching sets, length on cocktail dresses, swim type on beachwear. No page reload.
+- **What it does:** Filters the category grid in place by one type attribute: closure type on corset tops, set type on matching sets, length on cocktail dresses, swim type on beachwear. No page reload. While a filter is on, the editorial bands are hidden and the FAQ stays. The grid's end mark is replaced by a pair of buttons: "Back to All Products" to /shop, and "Back to All {Category}" which clears the filter.
 - **When it appears:** On the four category pages (S-003, S-004, S-005, S-012), as Button Pills above the grid.
-- **If something goes wrong:** If a filter matches no products, show a short empty message and keep the pills so the customer can clear it.
+- **If something goes wrong:** If a filter matches no products, show "No pieces match this filter yet. Try another {attribute}." in place of the grid and keep the pills. Clicking the active pill again clears the filter back to all, and so does the second button in the pair. Either way the page scrolls back to the top.
 
 ### F-003 — Grid View Toggle
 - **What it does:** Switches how many columns the grid shows: 1 or 2 on mobile, 2 or 3 on desktop. The choice holds while the customer stays on the page, including through Load More. The toggle sticks to the bottom-left once it scrolls out of view.
@@ -85,7 +85,7 @@
 - **If something goes wrong:** If stock cannot be read, no size can be picked and the Preorder link shows instead.
 
 ### F-012 — Featured Products
-- **What it does:** Shows two hand-picked products on Home. D-006 Slot Values names the slot and the product handle, and the name, price, and image come from D-001.
+- **What it does:** Shows six hand-picked products on Home. D-006 Slot Values names the slot and the product handle, and the name, price, and image come from D-001.
 - **When it appears:** In the Featured Products block on S-001.
 - **If something goes wrong:** If a handle no longer matches a live product, leave that slot out.
 
@@ -110,18 +110,21 @@
 - **Outline:** Refer to /docs/content/s-001_home.md
 - **Feature:** F-008 Slot Content, F-012 Featured Products
 - **Behavior:**
-  - The hero carousel slides through its banners. With one banner it does not slide.
-  - A banner follows the finger when dragged sideways, and settles on the next banner
-    or springs back on release. Dragging up or down scrolls the page as usual.
+  - The hero carousel moves a page at a time. Banners come in pairs, so a page is two
+    banners on desktop and one on mobile.
+  - A swipe is the browser's own scrolling, so one swipe moves one page however hard it
+    is thrown. Swiping up or down scrolls the page as usual.
+  - Moving past either end crossfades to the other end instead of running back through
+    the pages between. Autoplay stops while a finger is down, while a scroll is still
+    moving, and while the tab is hidden.
 - **Assets:**
   - S-001.3 → D-004 Media Slots
   - S-001.4 → D-001 Product
 - **Components:**
-  - S-001.1 → C-HeroCarousel [indicator=bars]
-  - S-001.2 → C-HeroTitle [headingLevel=1]
-  - S-001.3 → C-CategoryGrid [cta]
-  - S-001.4 → C-ProductGrid [align=center, showToolbar=false, columns=1/2/2]
-  - S-001.5 → C-HeroTitle [headingLevel=2]
+  - S-001.1 → C-HeroCarousel [indicator=bars, fillScreen]
+  - S-001.2 → C-HeroTitle [headingLevel=1, measure=none]
+  - S-001.3 → C-CategoryGrid
+  - S-001.4 → C-ProductCarousel [peek=1.5/2.5/3.5, cta]
 
 ### S-002 — All Products
 - **Outline:** Refer to /docs/content/s-002_all-products.md
@@ -146,7 +149,7 @@
 - **Assets:** D-004 Media Slots
 - **Components:**
   - S-003.1 → C-ShopTitle
-  - S-003.2 → C-ProductGrid [columns=1/1/2, pageSize=12, endMark=mark]
+  - S-003.2 → C-ProductGrid [columns=1/1/2, pageSize=12, endMark=mark, endSlot]
   - S-003.3 → C-ShopEditorial [fullBleed, mobileFirst=media, mobileAlign=right]
   - S-003.4 → C-ShopEditorial [fullBleed, mirror, mobileFirst=media, mobileAlign=left]
   - S-003.5 → C-ShopEditorial [fullBleed, mobileFirst=media, mobileAlign=right]
@@ -161,7 +164,7 @@
 - **Assets:** D-004 Media Slots
 - **Components:**
   - S-004.1 → C-ShopTitle
-  - S-004.2 → C-ProductGrid [columns=1/1/2, pageSize=12, endMark=mark]
+  - S-004.2 → C-ProductGrid [columns=1/1/2, pageSize=12, endMark=mark, endSlot]
   - S-004.3 → C-ShopEditorial [fullBleed, mobileFirst=media, mobileAlign=right]
   - S-004.4 → C-ShopEditorial [fullBleed, mirror, mobileFirst=media, mobileAlign=left]
   - S-004.5 → C-ShopEditorial [fullBleed, mobileFirst=media, mobileAlign=right]
@@ -176,7 +179,7 @@
 - **Assets:** D-004 Media Slots
 - **Components:**
   - S-005.1 → C-ShopTitle
-  - S-005.2 → C-ProductGrid [columns=1/1/2, pageSize=12, endMark=mark]
+  - S-005.2 → C-ProductGrid [columns=1/1/2, pageSize=12, endMark=mark, endSlot]
   - S-005.3 → C-ShopEditorial [fullBleed, mobileFirst=media, mobileAlign=right]
   - S-005.4 → C-ShopEditorial [fullBleed, mirror, mobileFirst=media, mobileAlign=left]
   - S-005.5 → C-ShopEditorial [fullBleed, mobileFirst=media, mobileAlign=right]
@@ -191,7 +194,7 @@
 - **Assets:** D-004 Media Slots
 - **Components:**
   - S-012.1 → C-ShopTitle
-  - S-012.2 → C-ProductGrid [columns=1/1/2, pageSize=12, endMark=mark]
+  - S-012.2 → C-ProductGrid [columns=1/1/2, pageSize=12, endMark=mark, endSlot]
   - S-012.3 → C-ShopEditorial [fullBleed, mobileFirst=media, mobileAlign=right]
   - S-012.4 → C-ShopEditorial [fullBleed, mirror, mobileFirst=media, mobileAlign=left]
   - S-012.5 → C-ShopEditorial [fullBleed, mobileFirst=media, mobileAlign=right]
@@ -201,15 +204,14 @@
 - **Outline:** Refer to /docs/content/s-006_product-detail.md
 - **Feature:** F-001 Product Grid, F-004 Add to Cart, F-006 Checkout, F-007 Size Chart, F-009 Structured Data, F-010 Product Media Gallery, F-011 Size and Stock, F-013 Breadcrumb Trail
 - **Behavior:**
-  - The header starts hidden so the first gallery shot meets the top edge. C-Sticky covers how it comes back.
   - Add to Cart opens C-Cart. Buy Now goes straight to Shopify checkout.
   - The details link opens C-Details. The sizing link opens C-Sizing. The shipping link opens C-Shipping.
-  - "You May Also Like" shows 3 random products from anywhere in the store, not just this product's category.
+  - "You May Also Like" shows 4 random products from anywhere in the store, not just this product's category.
 - **Assets:**
   - None
 - **Components:**
-  - S-006.1 → C-ProductPanel [layout=stacked, indicator=thumbs, showQuantity=false]
-  - S-006.2 → C-RelatedProducts [layout=stacked, backVariant=tint]
+  - S-006.1 → C-ProductPanel [layout=stacked, indicator=thumbs, showQuantity=false, transition=slide, gallery=carousel, addToCartVariant=secondary]
+  - S-006.2 → C-ProductCarousel [peek=1.5/2.5/4]
 
 ### S-007 — About Us
 - **Outline:** Refer to /docs/content/s-007_about-us.md
@@ -295,7 +297,6 @@
 - **Behavior:**
   - Sticks to the top of every screen and holds its own height. Below 1024px it stays put once it is there. From 1024px it hides on a downward scroll and returns on an upward one.
   - On Home it takes over once the hero's bottom edge scrolls past the top. Below 1024px it then stays. From 1024px it hides and returns with the scroll, as on every other page.
-  - On the product page it starts hidden and holds no space, so the first gallery shot meets the top edge. Below 1024px it appears once the page has scrolled past about a third of the screen height, and hides again when it scrolls back inside that band. From 1024px it appears on an upward scroll and hides going down, and stays hidden at the very top.
   - The item count shows how many items are in the cart. It is hidden when the cart is empty.
 
 ### C-Menu — Menu Drawer
@@ -380,8 +381,8 @@ Home tiles — S-001
  ├── Shop Matching Sets → S-004 (/matching-sets)
  ├── Shop Cocktail Dresses → S-005 (/cocktail-dresses)
  ├── Shop Beachwear → S-012 (/beachwear)
- ├── Shop All Products button → S-002 (/shop)
- └── Featured product → S-006 (/products/[product-slug])
+ ├── Featured product → S-006 (/products/[product-slug])
+ └── Shop the Full Collection button → S-002 (/shop)
 
 Shop button pills — S-002
  ├── Corset Tops → S-003 (/corset-tops)
@@ -395,8 +396,7 @@ Product Detail — in page (S-006)
  ├── Shipping link → opens C-Shipping
  ├── Add to Cart → opens C-Cart
  ├── Buy Now → Shopify hosted checkout
- ├── Preorder (every size sold out) → S-008 (/contact)
- └── Back to {Category} → S-003, S-004, S-005, or S-012
+ └── Preorder (every size sold out) → S-008 (/contact)
 
 Footer (C-Footer) — every screen
  ├── Logo → S-001 (/)
@@ -447,7 +447,7 @@ Footer (C-Footer) — every screen
 ### Phase 5 — Content & Launch
 | Step | What to Build | References |
 |---|---|---|
-| B-008 | Build the Home page: hero carousel, category tiles with the shop-all button, and featured products from the slot files. | S-001, F-008, F-012, D-004, D-006 |
+| B-008 | Build the Home page: hero carousel, category tiles, and featured products from the slot files with the shop-all button below. | S-001, F-008, F-012, D-004, D-006 |
 | B-009 | Build About, Contact, and the three policy pages as one static-content set. | S-007, S-008, S-009, S-010, S-011, /docs/knowledge-sher.md |
 | B-010 | Add the SEO layer: per-page metadata, canonical URLs, Product and BreadcrumbList structured data, the sitemap, and robots. | F-009, all screens, Planning TSV `seo_role` |
 | B-011 | Run the launch gate: hit the performance target, meet the accessibility bar, and run full QA. | Extra Details |
@@ -538,6 +538,7 @@ Every screen scores 90 or higher on Lighthouse for performance, accessibility, b
 | C-ShopFaq | Shop FAQ | Active |
 | C-ProductPanel | Product Panel | Active |
 | C-RelatedProducts | Related Products | Active |
+| C-ProductCarousel | Product Carousel | Active |
 | C-EditorialSplit | Editorial Split | Active |
 | C-ContactMethods | Contact Methods | Active |
 | C-ContentProse | Content Prose | Active |

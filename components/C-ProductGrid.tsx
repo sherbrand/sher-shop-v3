@@ -61,6 +61,12 @@ export interface ProductGridProps {
   loadMoreLabel?: string;
   /** What closes the grid once every product is shown. Only applies when `pageSize` is set. */
   endMark?: "none" | "rule" | "mark" | "monogram";
+  /** Rendered in place of the end mark once the list has ENDED: Load More exhausted, or no
+   *  pageSize at all. The grid owns that knowledge (`shown` is internal state), so a page
+   *  cannot tell a final row from a paged one. Use this to close a list with its own
+   *  content, e.g. a back-to-parent button pair on a filtered view. Its children are
+   *  centred and wrap. Takes precedence over `endMark`. */
+  endSlot?: ReactNode;
   /** Message when products is empty. */
   emptyMessage?: string;
   className?: string;
@@ -73,9 +79,12 @@ const STEP_BODY =
   "text-[length:var(--size-body-sm)] @min-[640px]:text-[length:var(--size-body-md)] @min-[1024px]:text-[length:var(--size-body-lg)]";
 const STEP_LABEL =
   "text-[length:var(--size-label-sm)] @min-[640px]:text-[length:var(--size-label-md)] @min-[1024px]:text-[length:var(--size-label-lg)]";
-/* End-mark clearance steps at 820px, not 1024: the band caps at --container, so on
-   the tablet frame it measures ~786 and on desktop ~836. It never reaches 1024. */
-const END_MARK = "mt-[var(--space-8)] @min-[820px]:mt-[var(--space-9)]";
+/* End-mark clearance steps at the system's desktop breakpoint. */
+const END_MARK = "mt-[var(--space-8)] @min-[1024px]:mt-[var(--space-9)]";
+/* endSlot sits where the end mark would, so it takes the same clearance. Its children are
+   centred and wrap, which is what a back-to-parent button pair wants. */
+const END_SLOT =
+  "flex flex-wrap justify-center mt-[var(--space-8)] gap-[var(--space-3)] @min-[1024px]:mt-[var(--space-9)] @min-[1024px]:gap-[var(--space-4)]";
 /* At 2-up the card is wide enough for the name to take the title rung; 3-up holds
    at the item rung. Keyed off the grid's own data-cols-lg, so no prop threads down. */
 const TWO_UP_TITLE = [
@@ -108,6 +117,7 @@ export function ProductGrid({
   pageSize,
   loadMoreLabel = "Load More",
   endMark = "none",
+  endSlot,
   emptyMessage = "No pieces match this filter yet.",
   className = "",
 }: ProductGridProps): ReactElement {
@@ -235,12 +245,14 @@ export function ProductGrid({
             <Button
               variant="primary"
               size="lg"
-              className="min-w-[var(--cta-min-w)]"
+              className="min-w-[var(--cta-min-w-sm)] @min-[640px]:min-w-[var(--cta-min-w-md)] @min-[1024px]:min-w-[var(--cta-min-w)]"
               onClick={() => setShown((s) => s + step)}
             >
               {loadMoreLabel}
             </Button>
           </div>
+        ) : endSlot ? (
+          <div className={END_SLOT}>{endSlot}</div>
         ) : endMark !== "none" ? (
           <Divider variant={endMark} className={END_MARK} />
         ) : null

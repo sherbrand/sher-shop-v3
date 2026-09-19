@@ -4,8 +4,8 @@ import { notFound } from "next/navigation";
 import Image from "next/image";
 import { getProduct, getProducts } from "@/lib/shopify/fetchers";
 import type { Product } from "@/lib/shopify/types";
-import { RelatedProducts } from "@/components/C-RelatedProducts";
-import { Button } from "@/components/Button";
+import { ProductCarousel } from "@/components/C-ProductCarousel";
+import { Divider } from "@/components/Divider";
 import type { GridProduct } from "@/components/C-ProductGrid";
 import { toGridProduct } from "@/lib/listing";
 import type { Crumb } from "@/components/Breadcrumb";
@@ -123,10 +123,10 @@ export default async function ProductPage({
   ];
   const path = `/products/${handle}`;
 
-  // "You May Also Like": up to 2 products that are not this one (F-001). Mapped
+  // "You May Also Like": up to 4 products that are not this one (F-001). Mapped
   // through toGridProduct so the cards get the same hover/touch image swap.
   const others = (await getProducts(12)).filter((p) => p.handle !== product.handle);
-  const related: GridProduct[] = others.slice(0, 3).map(toGridProduct);
+  const related: GridProduct[] = others.slice(0, 4).map(toGridProduct);
 
   return (
     /* C-ProductPanel carries its own gutters (its buy column pads to --gutter),
@@ -166,25 +166,25 @@ export default async function ProductPage({
         attributeValue={product.typeAttribute ?? undefined}
         preorderHref="/contact"
       />
-      {/* S-006.2 — a swipe rail of three, with the two back buttons in its last
-          cell. The first points at the product's own category, the second at the
-          whole shop; a product with no category shows only the second.
-          The tint band is the page's, not the component's: C-RelatedProducts
+      {/* The mark sits in its OWN section on the page background, not inside the
+          tint band below. Inside the band it lands on the tint, so the band reads
+          as overlapping the mark rather than starting below it. */}
+      <div className="mx-auto w-full max-w-[var(--container)] px-[var(--gutter)]">
+        <Divider variant="mark" />
+      </div>
+      {/* S-006.2 — a swipe rail of four, products alone: no actions cell, since
+          the breadcrumb above already carries the way back to the category and
+          the shop.
+          The tint band is the page's, not the component's: C-ProductCarousel
           paints no background of its own. */}
       <div className="bg-[var(--surface-tint)]">
         <div className="mx-auto flex w-full max-w-[var(--container)] flex-col px-[var(--gutter)] py-[var(--space-7)]">
-          <RelatedProducts
+          <ProductCarousel
             products={related}
-            layout="stacked"
-            backVariant="tint"
+            heading="You May Also Like"
             subtitle={slotText("s-006.2.subtitle")}
-            backLabel={category ? `Back to ${category.label}` : undefined}
-            backHref={category?.href}
-          >
-            <Button as="a" href="/shop" variant="accent">
-              Back to All Products
-            </Button>
-          </RelatedProducts>
+            peek="1.5/2.5/4"
+          />
         </div>
       </div>
     </main>

@@ -37,10 +37,10 @@ export const HERO_SLIDES: HeroSlide[] = mediaSlots("s-001.1.image").flatMap((slo
    button, so its label is fixed UI copy and sits here beside the slot it belongs
    to. The picture, its alt, and the link come from D-004. */
 const CATEGORY_TILES: { slot: string; label: string }[] = [
-  { slot: "s-001.3.image-1", label: "Shop Corset Tops" },
-  { slot: "s-001.3.image-2", label: "Shop Matching Sets" },
-  { slot: "s-001.3.image-3", label: "Shop Cocktail Dresses" },
-  { slot: "s-001.3.image-4", label: "Shop Beachwear" },
+  { slot: "s-001.3.image-1", label: "Corset Tops" },
+  { slot: "s-001.3.image-2", label: "Matching Sets" },
+  { slot: "s-001.3.image-3", label: "Cocktail Dresses" },
+  { slot: "s-001.3.image-4", label: "Beachwear" },
 ];
 
 /* A tile needs a picture and a link to work, so a slot missing either is left
