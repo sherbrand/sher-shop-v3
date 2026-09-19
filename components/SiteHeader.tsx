@@ -107,6 +107,10 @@ export function SiteHeader({
       <Transparent
         className="[body:not(:has([data-hero]))_&]:hidden"
         announcement={announcement}
+        /* Dark, not the component's "accent" default. The default is written for
+           a header sitting on photography, but the bar sits above the hero, not
+           on it, so the accent fill reads as a stripe rather than as chrome. */
+        announcementTone="dark"
         onMenu={openMenu}
         onCart={openCart}
         cartCount={cartCount}
@@ -124,6 +128,11 @@ export function SiteHeader({
            this wrapper doing anything. */
         className={[
           "sticky top-0 z-[var(--z-header)]",
+          /* The announcement text in the strongest ink rather than --text-default,
+             so it matches the logo beside it. Set through AnnouncementBar's
+             --announce-fg hook, since the bar applies its colors inline and no
+             rule could otherwise reach them. */
+          "[--announce-fg:var(--sher-dark)]",
           "motion-safe:transition-[translate,opacity] motion-safe:duration-[var(--dur-slow)] motion-safe:ease-[var(--ease-out)]",
           // On by default: a page with no hero has nothing to hand off from.
           "translate-y-0 opacity-100",
