@@ -12,6 +12,7 @@ import { Button } from "@/components/Button";
 import { JsonLd } from "@/components/JsonLd";
 import { breadcrumbLd, pageMetadata } from "@/lib/seo";
 import type { Crumb } from "@/components/Breadcrumb";
+import { SECTION_Y } from "@/lib/rhythm";
 
 const BREADCRUMB: Crumb[] = [{ label: "Home", href: "/" }, { label: "Shop" }];
 
@@ -28,7 +29,7 @@ export default async function ShopPage(): Promise<ReactElement> {
 
   return (
     <main className="flex flex-col">
-      <div className="mx-auto flex w-full max-w-[var(--container)] flex-col gap-[var(--space-6)] px-[var(--gutter)] py-[var(--space-7)]">
+      <div className={`mx-auto flex w-full max-w-[var(--container)] flex-col gap-[var(--space-6)] px-[var(--gutter)] ${SECTION_Y}`}>
         <JsonLd data={breadcrumbLd(BREADCRUMB, "/shop")} />
         {/* Pills link to the four categories; they do not filter this grid (S-002). */}
         <ShopTitle

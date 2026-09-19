@@ -19,6 +19,7 @@ import { ProductVideo } from "./product-video";
 import { proseSections, slotText } from "@/lib/slots";
 import { sizeChart } from "@/lib/product-data";
 import { categoryFor } from "@/lib/categories";
+import { SECTION_Y } from "@/lib/rhythm";
 
 // A size is sold out when every variant carrying it is unavailable (F-011).
 // Colour and other options are ignored: the design panel selects size only.
@@ -131,8 +132,10 @@ export default async function ProductPage({
   return (
     /* C-ProductPanel carries its own gutters (its buy column pads to --gutter),
        so the band runs full-bleed and the gallery meets the screen edge. Only
-       the related rail below takes the page container. */
-    <main className="flex flex-col gap-[var(--space-9)]">
+       the related rail below takes the page container.
+       No gap here: each band owns the space around it, and the mark between the
+       panel and the related band is deliberately uneven. */
+    <main className="flex flex-col">
       <JsonLd
         data={productLd({
           name: product.title,
@@ -168,8 +171,13 @@ export default async function ProductPage({
       />
       {/* The mark sits in its OWN section on the page background, not inside the
           tint band below. Inside the band it lands on the tint, so the band reads
-          as overlapping the mark rather than starting below it. */}
-      <div className="mx-auto w-full max-w-[var(--container)] px-[var(--gutter)]">
+          as overlapping the mark rather than starting below it.
+          It carries the space on both sides itself, rather than taking an even
+          gap from <main>: the mark opens the band under it, so it sits closer to
+          that band than to the panel above. The space above steps with the page;
+          the space below holds at --space-7 so the tint always starts the same
+          distance under the mark. */}
+      <div className="mx-auto w-full max-w-[var(--container)] px-[var(--gutter)] pt-[var(--space-8)] pb-[var(--space-7)] @min-[1024px]:pt-[var(--space-9)]">
         <Divider variant="mark" />
       </div>
       {/* S-006.2 — a swipe rail of four, products alone: no actions cell, since
@@ -178,7 +186,10 @@ export default async function ProductPage({
           The tint band is the page's, not the component's: C-ProductCarousel
           paints no background of its own. */}
       <div className="bg-[var(--surface-tint)]">
-        <div className="mx-auto flex w-full max-w-[var(--container)] flex-col px-[var(--gutter)] py-[var(--space-7)]">
+        {/* The top holds at --space-7 rather than stepping, so the band's first
+            line sits the same distance under the mark at every width. Only the
+            bottom steps with the page. */}
+        <div className="mx-auto flex w-full max-w-[var(--container)] flex-col px-[var(--gutter)] pt-[var(--space-7)] pb-[var(--space-7)] @min-[640px]:pb-[var(--space-8)] @min-[1024px]:pb-[var(--space-9)]">
           <ProductCarousel
             products={related}
             heading="You May Also Like"

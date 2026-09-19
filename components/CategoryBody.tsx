@@ -7,6 +7,7 @@ import { ProductGrid } from "@/components/C-ProductGrid";
 import type { GridProduct } from "@/components/C-ProductGrid";
 import { Button } from "@/components/Button";
 import type { Crumb } from "@/components/Breadcrumb";
+import { SECTION_Y } from "@/lib/rhythm";
 
 /* Client glue for a category page (build step B-004). Holds the active attribute
    filter and everything that answers to it (F-002): it narrows the products in
@@ -107,7 +108,7 @@ export function CategoryBody({
 
   return (
     <>
-      <div className="mx-auto flex w-full max-w-[var(--container)] flex-col gap-[var(--space-6)] px-[var(--gutter)] py-[var(--space-7)]">
+      <div className={`mx-auto flex w-full max-w-[var(--container)] flex-col gap-[var(--space-6)] px-[var(--gutter)] ${SECTION_Y}`}>
         <ShopTitle
           breadcrumb={breadcrumb}
           heading={heading}
