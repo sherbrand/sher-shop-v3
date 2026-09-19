@@ -5,7 +5,7 @@ url: /cocktail-dresses
 ---
 
 `S-005.1: Breadcrumb <Shop › Cocktail Dresses> / H1 / Subtitle / Button Pills <back to /shop; filter by length>`
-- H1: {Shop Cocktail Dresses}
+- H1: {Cocktail Dresses}
 - Subtitle: {Shop cocktail dresses cut in satin and slip shapes, made to be seen. Pick Mini for a bold short look, Midi for easy elegance, or Maxi for a long evening statement.}
 
 `S-005.2: View Toggle <grid columns> / Product Grid <1 col mobile, 2 col desktop> / Btn`

@@ -5,7 +5,7 @@ url: /corset-tops
 ---
 
 `S-003.1: Breadcrumb <Shop › Corset Tops> / H1 / Subtitle / Button Pills <back to /shop; filter by closure type>`
-- H1: {Shop Corset Tops}
+- H1: {Corset Tops}
 - Subtitle: {Shop corset tops built on real corsetry, in two closures. Pick Lace Closure for an adjustable fit, or Zip Closure for the easiest way in and out.}
 
 `S-003.2: View Toggle <grid columns> / Product Grid <1 col mobile, 2 col desktop> / Btn`

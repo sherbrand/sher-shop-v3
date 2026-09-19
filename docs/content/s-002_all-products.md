@@ -5,7 +5,7 @@ url: /shop
 ---
 
 `S-002.1: Breadcrumb <Home › Shop> / H1 / Subtitle / Button Pills <links to /corset-tops, /matching-sets, /cocktail-dresses & /beachwear>`
-- H1: {Shop Modern Womenswear}
+- H1: {Modern Womenswear}
 - Subtitle: {Every SHER piece in one place. Corset tops with structure you can feel. Matching sets that land as one look. Cocktail dresses in satin that catches the light. Beachwear lined to hold its shape wet or dry. Four categories, one standard.}
 
 `S-002.2: View Toggle <grid columns> / Product Grid <1 col mobile, 2 col desktop> / Btn`

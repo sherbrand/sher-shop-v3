@@ -5,7 +5,7 @@ url: /matching-sets
 ---
 
 `S-004.1: Breadcrumb <Shop › Matching Sets> / H1 / Subtitle / Button Pills <back to /shop; filter by set type>`
-- H1: {Shop Matching Sets}
+- H1: {Matching Sets}
 - Subtitle: {Shop matching sets that pair a corset top with a skirt or trousers. Choose a Skirt Set for a soft, feminine line, or a Trouser Set for a sharp, sleek one.}
 
 `S-004.2: View Toggle <grid columns> / Product Grid <1 col mobile, 2 col desktop> / Btn`
