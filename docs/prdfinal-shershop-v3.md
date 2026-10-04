@@ -381,7 +381,7 @@ Home tiles — S-001
  ├── Shop Matching Sets → S-004 (/matching-sets)
  ├── Shop Cocktail Dresses → S-005 (/cocktail-dresses)
  ├── Shop Beachwear → S-012 (/beachwear)
- ├── Featured product → S-006 (/products/{product-slug})
+ ├── Featured product → S-006 (/products/[product-slug])
  └── Shop the Full Collection button → S-002 (/shop)
 
 Shop button pills — S-002
